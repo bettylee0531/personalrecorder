@@ -490,6 +490,591 @@
   .modal-actions button.danger { color: #b85c4a; }
   .modal-actions button.ghost { color: #888; }
 
+  @media (max-width: 860px) {
+    header { margin: 0 10px; padding: 16px 12px 10px; }
+    h1 { font-size: 30px; }
+    .header-right { gap: 10px 14px; }
+    .tabs { gap: 12px; }
+    .tabs a { font-size: 16px; }
+  }
+
+  .sheet {
+    margin: 18px auto 40px; max-width: 1180px;
+    background: #fdfdfd;
+    background-image:
+      linear-gradient(rgba(236,236,236,.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(236,236,236,.5) 1px, transparent 1px);
+    background-size: 16px 16px;
+    border: 1px solid #e3e3e3;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.06);
+    padding: 18px 16px 18px;
+    position: relative;
+  }
+  @media (min-width: 800px) {
+    .sheet { margin-left: 28px; margin-right: 28px; }
+  }
+
+  /* ===== panel: daily ===== */
+  #daily {
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .toolbar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-width: 0; }
+  .date-nav { display: flex; align-items: center; gap: 8px; }
+  .nav-btn {
+    width: 26px; height: 26px; border: 1px solid #ddd; background: #fff;
+    border-radius: 50%; color: #555; font-size: 13px; line-height: 24px;
+    text-align: center; font-family: 'Inter', sans-serif; font-weight: 700;
+    -webkit-text-stroke: 0; cursor: pointer; padding: 0;
+  }
+  .nav-btn:hover { background: #f4f4f4; }
+  .date-label {
+    font-size: 18px;
+    -webkit-text-stroke: calc(1.5px * 18 / 44) #fdfdfd;
+    white-space: nowrap;
+  }
+  .date-label em { font-style: normal; color: #888; font-size: 14px; margin-left: 4px; }
+  .jump-today {
+    border: 1px solid #ddd; background: #fff; border-radius: 16px;
+    padding: 3px 10px; font-size: 13px; color: #555; cursor: pointer;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fff;
+  }
+  .back-link {
+    border: none; background: none; cursor: pointer; padding: 0 2px 0 0;
+    font: inherit; font-size: 15px; color: #555;
+    -webkit-text-stroke: calc(1.5px * 15 / 44) #fdfdfd;
+    white-space: nowrap;
+  }
+  .back-link:hover { color: #2b2b2b; }
+  .entry-wrap { max-width: 680px; }
+  .stack { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  .sec-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px; margin-bottom: 8px;
+  }
+  .sec-label {
+    font-size: 13px; color: #888; margin: 0;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fdfdfd;
+  }
+  .sec-extra {
+    font-size: 12px; color: #aaa;
+    -webkit-text-stroke: calc(1.5px * 12 / 44) #fdfdfd;
+  }
+  .line-input {
+    width: 100%; border: none; border-bottom: 1px solid #e0e0e0;
+    background: transparent; outline: none; font: inherit;
+    font-size: 18px; line-height: 1.4; padding: 2px 0 7px; color: #333;
+    -webkit-text-stroke: calc(1.5px * 18 / 44) #fdfdfd;
+  }
+  .line-input::placeholder { color: #ccc; }
+  .moods { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .mood {
+    width: 48px; border: none; background: none; cursor: pointer;
+    padding: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .mood .face {
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid #e4e4e4; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; line-height: 1;
+  }
+  .mood.on .face { border-color: #2b2b2b; box-shadow: 0 0 0 1.5px #2b2b2b; }
+  .mood .cap {
+    font-size: 11px; color: #bbb; line-height: 1;
+    -webkit-text-stroke: calc(1.5px * 11 / 44) #fdfdfd;
+  }
+  .mood.on .cap { color: #666; }
+  .habits { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .habit {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.86);
+    border: 1px solid #eee; border-radius: 8px;
+    padding: 8px 12px 8px 10px; cursor: pointer;
+  }
+  .habit .check {
+    width: 18px; height: 18px; flex: 0 0 18px; padding: 0;
+    border: 1.5px solid #bbb; border-radius: 4px; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px; font-family: 'Inter', sans-serif; font-weight: 700;
+    -webkit-text-stroke: 0; pointer-events: none;
+  }
+  .habit.on .check { background: #3a3a3a; border-color: #3a3a3a; }
+  .habit .txt {
+    font-size: 16px; color: #333;
+    -webkit-text-stroke: calc(1.5px * 16 / 44) #fff;
+  }
+  .edit-link, .text-btn {
+    border: none; background: none; cursor: pointer; padding: 0 4px;
+    font: inherit; font-size: 13px; color: #999;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fdfdfd;
+  }
+  .edit-link:hover, .text-btn:hover { color: #555; }
+  .spend-list { display: flex; flex-direction: column; gap: 6px; }
+  .spend-row {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.86);
+    border: 1px solid #eee; border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .spend-row .name {
+    flex: 1; min-width: 0; font-size: 16px;
+    -webkit-text-stroke: calc(1.5px * 16 / 44) #fff;
+  }
+  .chip {
+    font-size: 12px; color: #6e6e6e; line-height: 1;
+    border: 1px solid #ddd; border-radius: 10px; padding: 3px 7px;
+    -webkit-text-stroke: calc(1.5px * 12 / 44) #fff;
+    white-space: nowrap;
+  }
+  .chip.ghost { color: #aaa; border-color: #e6e6e6; }
+  .amt {
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+    font-size: 14px; color: #2b2b2b; letter-spacing: -0.02em; white-space: nowrap;
+  }
+  .spend-row.in .amt, .amt.in { color: #5a7a55; }
+  .row-del {
+    border: none; background: none; color: #ccc; font-size: 15px;
+    font-family: 'Inter', sans-serif; -webkit-text-stroke: 0; padding: 0 2px;
+    cursor: pointer; line-height: 1; flex: 0 0 auto;
+  }
+  .row-del:hover { color: #e55; }
+  @media (hover: hover) and (pointer: fine) {
+    .spend-row .row-del { opacity: 0; }
+    .spend-row:hover .row-del { opacity: 1; }
+  }
+  .spend-sum {
+    display: flex; align-items: baseline; justify-content: flex-end;
+    gap: 14px; margin-top: 6px; padding: 0 2px; flex-wrap: wrap;
+  }
+  .spend-sum .lbl {
+    font-size: 13px; color: #888; margin-right: 4px;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fdfdfd;
+  }
+  .spend-sum .amt { font-size: 16px; }
+  .hint, .empty-msg {
+    margin: 10px 2px 0; font-size: 13px; color: #aaa;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fdfdfd;
+  }
+  .empty-msg { text-align: center; padding: 20px 8px; }
+  .seg {
+    display: inline-flex; border: 1px solid #d0d0d0; border-radius: 8px;
+    overflow: hidden; background: #fff; flex: 0 0 auto;
+  }
+  .seg button {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    padding: 4px 10px; font-size: 13px; color: #777;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fff;
+    border-right: 1px solid #d0d0d0;
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button.on {
+    background: #2b2b2b; color: #fff;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #2b2b2b;
+  }
+  .add-bar {
+    margin-top: 8px; display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid #e3e3e3; border-radius: 8px;
+    padding: 7px 10px; box-shadow: 0 2px 6px rgba(0,0,0,.06); flex-wrap: wrap;
+    position: relative;
+  }
+  .add-bar input {
+    border: none; outline: none; background: transparent; font: inherit;
+    font-size: 15px; color: #333; min-width: 0;
+    -webkit-text-stroke: calc(1.5px * 15 / 36) #fff;
+  }
+  .add-bar input::placeholder { color: #bbb; }
+  .add-bar .name-in { flex: 1 1 120px; }
+  .add-bar .won-in { width: 92px; text-align: right; font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0; font-size: 14px; }
+  .add-btn, .cat-btn {
+    border: 1px solid #ddd; background: #fff; border-radius: 16px;
+    padding: 4px 10px; font-size: 13px; color: #666; cursor: pointer; white-space: nowrap;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fff;
+  }
+  .add-btn:hover, .cat-btn:hover { background: #f6f6f6; }
+  .cat-menu {
+    position: absolute; left: 8px; bottom: calc(100% + 4px);
+    background: #fff; border: 1px solid #e3e3e3; border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.1); padding: 4px; z-index: 8;
+    min-width: 96px;
+  }
+  .cat-menu button {
+    display: block; width: 100%; text-align: left; border: none; background: none;
+    padding: 6px 10px; font: inherit; font-size: 14px; cursor: pointer; border-radius: 6px;
+    -webkit-text-stroke: calc(1.5px * 14 / 44) #fff;
+  }
+  .cat-menu button:hover { background: #f4f4f4; }
+  .photo-box {
+    border: 1.5px dashed #d5d5d5; border-radius: 8px;
+    background: rgba(255,255,255,.45);
+    min-height: 84px; padding: 14px 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: #bbb; font-size: 14px; text-align: center; line-height: 1.45;
+    -webkit-text-stroke: calc(1.5px * 14 / 44) #fdfdfd;
+    cursor: pointer; position: relative;
+  }
+  .photo-box.has { border-style: solid; border-color: #eee; background: #fff; padding: 8px; min-height: 0; }
+  .photo-box img { max-width: 100%; max-height: 220px; border-radius: 6px; display: block; }
+  .photo-box .ph-del {
+    position: absolute; top: 8px; right: 8px;
+    border: none; background: rgba(255,255,255,.9); color: #888;
+    width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+  }
+  .photo-box .ph-del:hover { color: #e55; }
+  .month-cal {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  .m-dow {
+    text-align: center; font-size: 12px; color: #aaa; padding: 2px 0 4px;
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+  }
+  .mday {
+    min-height: 92px; border-radius: 10px;
+    background: rgba(255,255,255,.72);
+    border: 1px solid transparent;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 8px 4px 8px; cursor: pointer;
+    position: relative;
+  }
+  .mday .heart {
+    position: absolute; top: 4px; right: 5px;
+    width: 22px; height: 22px; pointer-events: none;
+  }
+  .meet-toggle {
+    margin-top: 12px;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.86);
+    border: 1px solid #eee; border-radius: 8px;
+    padding: 8px 12px 8px 10px; cursor: pointer;
+    font: inherit; text-align: left; color: #333;
+  }
+  .meet-toggle .check {
+    width: 18px; height: 18px; flex: 0 0 18px; padding: 0;
+    border: 1.5px solid #bbb; border-radius: 4px; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px; font-family: 'Inter', sans-serif; font-weight: 700;
+    -webkit-text-stroke: 0; pointer-events: none;
+  }
+  .meet-toggle.on .check { background: #3a3a3a; border-color: #3a3a3a; }
+  .meet-toggle .txt {
+    font-size: 16px;
+    -webkit-text-stroke: calc(1.5px * 16 / 44) #fff;
+  }
+  .mday .num {
+    font-size: 13px; color: #555;
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+    line-height: 1;
+  }
+  .mday .face { font-size: 22px; line-height: 1; margin-top: 10px; }
+  .mday.today {
+    border: 1.5px solid #2b2b2b; background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .mday.mute { background: transparent; }
+  .mday.mute .num { color: #ccc; }
+  .mday:hover { background: #fff; }
+  .mday.mute:hover { background: rgba(255,255,255,.4); }
+  @media (max-width: 860px) {
+    .month-cal { gap: 3px; }
+    .mday { min-height: 62px; padding: 5px 2px 4px; border-radius: 8px; }
+    .mday .num { font-size: 11px; }
+    .mday .face { font-size: 16px; margin-top: 5px; }
+    .mday .heart { width: 18px; height: 18px; top: 2px; right: 3px; }
+    .m-dow { font-size: 11px; }
+  }
+  }
+
+  /* ===== panel: ledger ===== */
+  #ledger {
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .date-nav { display: flex; align-items: center; gap: 8px; }
+  .nav-btn {
+    width: 26px; height: 26px; border: 1px solid #ddd; background: #fff;
+    border-radius: 50%; color: #555; font-size: 13px; line-height: 24px;
+    text-align: center; font-family: 'Inter', sans-serif; font-weight: 700;
+    -webkit-text-stroke: 0; cursor: pointer; padding: 0;
+  }
+  .nav-btn:hover { background: #f4f4f4; }
+  .date-label {
+    font-size: 18px;
+    -webkit-text-stroke: calc(1.5px * 18 / 44) #fdfdfd;
+    white-space: nowrap;
+  }
+  .ledger-grid {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 22px 36px;
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .ledger-grid { grid-template-columns: 1fr; gap: 24px; }
+  }
+  .prev-bal {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px; margin-bottom: 12px;
+  }
+  .prev-bal .lbl, .flow-row .lbl {
+    font-size: 12px; color: #999; margin: 0;
+    -webkit-text-stroke: calc(1.5px * 12 / 44) #fdfdfd;
+  }
+  .prev-bal .amt, .prev-bal button.amt {
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+    font-size: 12px; color: #888; letter-spacing: -0.02em;
+    border: none; background: none; padding: 0; cursor: pointer;
+  }
+  .prev-bal button.amt { border-bottom: 1px dashed #ccc; }
+  .prev-bal button.amt:hover { color: #555; }
+  .flow { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .flow-row {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  }
+  .flow-row .lbl {
+    font-size: 14px; color: #555;
+    -webkit-text-stroke: calc(1.5px * 14 / 44) #fdfdfd;
+  }
+  .flow-row .amt {
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+    font-size: 15px; color: #2b2b2b; letter-spacing: -0.02em;
+  }
+  .flow-row .amt.in, .day-sum .in, .spend-row.in .amt, .amt.in { color: #5a7a55; }
+  .month-total {
+    padding-top: 12px; margin-top: 2px;
+    border-top: 1px solid #e6e6e6;
+  }
+  .month-total .lbl {
+    font-size: 13px; color: #888; margin: 0 0 4px;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fdfdfd;
+  }
+  .month-total .num {
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+    font-size: 32px; color: #2b2b2b; letter-spacing: -0.03em; line-height: 1.15;
+  }
+  .month-total .won { font-size: 16px; margin-left: 2px; font-weight: 700; }
+  .cats-label {
+    margin: 20px 0 10px; font-size: 13px; color: #888;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fdfdfd;
+  }
+  .cats { display: flex; flex-direction: column; gap: 10px; }
+  .cat-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px; margin-bottom: 4px;
+  }
+  .cat-name {
+    font-size: 14px; color: #555;
+    -webkit-text-stroke: calc(1.5px * 14 / 44) #fdfdfd;
+  }
+  .cat-amt {
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+    font-size: 13px; color: #2b2b2b; letter-spacing: -0.02em;
+  }
+  .bar { height: 6px; background: #ececec; border-radius: 99px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: #3a3a3a; border-radius: 99px; }
+  .list-col { min-width: 0; }
+  .seg {
+    display: inline-flex; border: 1px solid #d0d0d0; border-radius: 8px;
+    overflow: hidden; background: #fff; flex: 0 0 auto;
+  }
+  .seg button {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    padding: 4px 10px; font-size: 13px; color: #777;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fff;
+    border-right: 1px solid #d0d0d0;
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button.on {
+    background: #2b2b2b; color: #fff;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #2b2b2b;
+  }
+  .add-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid #e3e3e3; border-radius: 8px;
+    padding: 7px 10px; box-shadow: 0 2px 6px rgba(0,0,0,.06); flex-wrap: wrap;
+    margin-bottom: 14px; position: relative;
+  }
+  .add-bar input {
+    border: none; outline: none; background: transparent; font: inherit;
+    font-size: 15px; color: #333; min-width: 0;
+    -webkit-text-stroke: calc(1.5px * 15 / 36) #fff;
+  }
+  .add-bar input::placeholder { color: #bbb; }
+  .add-bar .name-in { flex: 1 1 120px; }
+  .add-bar .won-in { width: 92px; text-align: right; font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0; font-size: 14px; }
+  .add-btn, .cat-btn {
+    border: 1px solid #ddd; background: #fff; border-radius: 16px;
+    padding: 4px 10px; font-size: 13px; color: #666; cursor: pointer; white-space: nowrap;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fff;
+  }
+  .add-hint {
+    width: 100%; margin: 2px 0 0; font-size: 11px; color: #aaa;
+    -webkit-text-stroke: calc(1.5px * 11 / 44) #fff;
+  }
+  .cat-menu {
+    position: absolute; left: 8px; bottom: calc(100% + 4px);
+    background: #fff; border: 1px solid #e3e3e3; border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.1); padding: 4px; z-index: 8;
+    min-width: 96px;
+  }
+  .cat-menu button {
+    display: block; width: 100%; text-align: left; border: none; background: none;
+    padding: 6px 10px; font: inherit; font-size: 14px; cursor: pointer; border-radius: 6px;
+    -webkit-text-stroke: calc(1.5px * 14 / 44) #fff;
+  }
+  .cat-menu button:hover { background: #f4f4f4; }
+  .day-group { margin-bottom: 14px; }
+  .day-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px; margin: 0 2px 6px;
+  }
+  .day-name {
+    font-size: 15px;
+    -webkit-text-stroke: calc(1.5px * 15 / 44) #fdfdfd;
+  }
+  .day-name em { font-style: normal; color: #999; font-size: 12px; margin-left: 4px; }
+  .day-sum {
+    display: flex; align-items: baseline; gap: 8px;
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+    font-size: 14px; color: #2b2b2b; letter-spacing: -0.02em;
+  }
+  .spend-row {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.86);
+    border: 1px solid #eee; border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 5px;
+  }
+  .spend-row .name {
+    flex: 1; min-width: 0; font-size: 16px;
+    -webkit-text-stroke: calc(1.5px * 16 / 44) #fff;
+  }
+  .chip {
+    font-size: 12px; color: #6e6e6e; line-height: 1;
+    border: 1px solid #ddd; border-radius: 10px; padding: 3px 7px;
+    -webkit-text-stroke: calc(1.5px * 12 / 44) #fff;
+    white-space: nowrap;
+  }
+  .chip.ghost { color: #aaa; border-color: #e6e6e6; }
+  .amt {
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+    font-size: 14px; color: #2b2b2b; letter-spacing: -0.02em; white-space: nowrap;
+  }
+  .row-del {
+    border: none; background: none; color: #ccc; font-size: 15px;
+    font-family: 'Inter', sans-serif; -webkit-text-stroke: 0; padding: 0 2px;
+    cursor: pointer; line-height: 1; flex: 0 0 auto;
+  }
+  .row-del:hover { color: #e55; }
+  @media (hover: hover) and (pointer: fine) {
+    .spend-row .row-del { opacity: 0; }
+    .spend-row:hover .row-del { opacity: 1; }
+  }
+  .empty-msg {
+    color: #aaa; font-size: 15px; padding: 28px 8px; text-align: center;
+    -webkit-text-stroke: calc(1.5px * 15 / 44) #fdfdfd;
+  }
+  }
+
+  /* ===== panel: dday ===== */
+  #dday {
+  .toolbar {
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: 12px; margin-bottom: 10px; flex-wrap: wrap;
+  }
+  .dday-list { display: flex; flex-direction: column; gap: 8px; }
+  .dday-card {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,.9);
+    border: 1px solid #eee; border-radius: 10px;
+    padding: 12px 14px; cursor: pointer;
+  }
+  .dday-card.pinned {
+    border: 1.5px solid #2b2b2b;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    background: #fff;
+    padding: 16px 16px;
+    margin-bottom: 4px;
+  }
+  .dday-card.past { opacity: .62; background: rgba(255,255,255,.7); cursor: pointer; }
+  .dday-body { flex: 1; min-width: 0; }
+  .dday-title {
+    font-size: 18px; line-height: 1.3; color: #2b2b2b;
+    -webkit-text-stroke: calc(1.5px * 18 / 44) #fff;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .dday-card.pinned .dday-title { font-size: 22px; -webkit-text-stroke: calc(1.5px * 22 / 44) #fff; }
+  .pin-mark, .chip {
+    font-size: 11px; color: #6e6e6e; line-height: 1;
+    border: 1px solid #ddd; border-radius: 10px; padding: 3px 7px;
+    -webkit-text-stroke: calc(1.5px * 11 / 44) #fff;
+    white-space: nowrap;
+  }
+  .pin-mark { color: #555; border-color: #ccc; }
+  .dday-date {
+    margin-top: 4px;
+    font-family: sans-serif; font-size: 12px; color: #888;
+    -webkit-text-stroke: 0;
+  }
+  .dday-count {
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+    font-size: 28px; color: #2b2b2b; letter-spacing: -0.04em;
+    white-space: nowrap; line-height: 1; flex: 0 0 auto;
+  }
+  .dday-card.pinned .dday-count { font-size: 44px; }
+  .dday-card.past .dday-count { color: #888; font-size: 24px; }
+  .sec-label {
+    margin: 16px 2px 8px; font-size: 13px; color: #888;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fdfdfd;
+  }
+  .empty-msg {
+    color: #aaa; font-size: 16px; padding: 28px 8px; text-align: center;
+    -webkit-text-stroke: calc(1.5px * 16 / 44) #fdfdfd;
+  }
+  .add-bar {
+    margin-top: 16px; display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid #e3e3e3; border-radius: 8px;
+    padding: 8px 10px; box-shadow: 0 2px 6px rgba(0,0,0,.06); flex-wrap: wrap;
+  }
+  .add-bar input {
+    border: none; outline: none; background: transparent; font: inherit;
+    font-size: 16px; color: #333; min-width: 0;
+    -webkit-text-stroke: calc(1.5px * 16 / 36) #fff;
+  }
+  .add-bar input::placeholder { color: #bbb; }
+  .add-bar .name-in { flex: 1 1 160px; }
+  .add-bar .date-in {
+    flex: 0 0 148px; width: 148px; max-width: 148px;
+    font-family: sans-serif; font-size: 13px; color: #555;
+    -webkit-text-stroke: 0;
+  }
+  .opt-btn, .add-btn {
+    border: 1px solid #ddd; background: #fff; border-radius: 16px;
+    padding: 4px 10px; font-size: 13px; color: #666; cursor: pointer; white-space: nowrap;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fff; flex: 0 0 auto;
+  }
+  .opt-btn.on { border-color: #bbb; background: #f3f3f3; color: #333; }
+  .add-btn:hover, .opt-btn:hover { background: #f6f6f6; }
+  }
+
+  .modal input[type="text"], .modal input[type="number"], .modal input[type="date"] {
+    width: 100%; border: none; border-bottom: 1px solid #ddd; background: transparent;
+    outline: none; font: inherit; font-size: 16px; padding: 6px 0; margin: 0 0 12px;
+    -webkit-text-stroke: calc(1.5px * 16 / 44) #fff;
+  }
+  .modal .habit-edit-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  }
+  .modal .habit-edit-row input { margin: 0; }
+  .modal-check {
+    display: flex; align-items: center; gap: 8px; margin: 0 0 10px;
+    font-size: 15px; color: #444;
+    -webkit-text-stroke: calc(1.5px * 15 / 44) #fff;
+  }
+
 </style>
 </head>
 <body>
@@ -497,8 +1082,11 @@
   <h1>records</h1>
   <div class="header-right">
     <nav class="tabs">
-      <a href="#memo" data-panel="memo">메모</a>
       <a href="#todo" data-panel="todo">할 일</a>
+      <a href="#daily" data-panel="daily">매일 기록</a>
+      <a href="#ledger" data-panel="ledger">가계부</a>
+      <a href="#dday" data-panel="dday">디데이</a>
+      <a href="#memo" data-panel="memo">메모</a>
     </nav>
     <div class="search-wrap" id="memoSearchWrap">
       <input id="searchBox" placeholder="검색">
@@ -542,6 +1130,119 @@
 </div>
 </section>
 
+<section id="daily">
+<div class="sheet" id="dailyCalView">
+  <div class="toolbar">
+    <div class="date-nav" id="dailyCalNav"></div>
+  </div>
+  <div class="month-cal" id="dailyCalGrid"></div>
+  <p class="hint">날짜를 누르면 그날 기록을 쓸 수 있어요. 얼굴은 그날 고른 기분이에요.</p>
+</div>
+<div class="sheet" id="dailyEntryView" hidden>
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <button type="button" class="back-link" id="dailyBack">‹ 달력</button>
+      <div class="date-nav" id="dailyEntryNav"></div>
+    </div>
+  </div>
+  <div class="entry-wrap">
+    <div class="stack">
+      <section>
+        <div class="sec-head"><p class="sec-label">오늘의 한 줄</p></div>
+        <input class="line-input" id="dailyLine" placeholder="오늘 있었던 일을 한 줄로 적어보세요">
+      </section>
+      <section>
+        <div class="sec-head"><p class="sec-label">기분</p></div>
+        <div class="moods" id="dailyMoods"></div>
+        <button type="button" class="meet-toggle" id="dailyMetBf" aria-pressed="false">
+          <span class="check"></span>
+          <span class="txt">그누</span>
+        </button>
+      </section>
+      <section>
+        <div class="sec-head"><p class="sec-label">오늘 감사한 일 한 가지</p></div>
+        <input class="line-input" id="dailyThanks" placeholder="오늘 감사한 일을 적어보세요">
+      </section>
+      <section>
+        <div class="sec-head">
+          <p class="sec-label">습관 체크</p>
+        </div>
+        <div class="habits" id="dailyHabits"></div>
+      </section>
+      <section>
+        <div class="sec-head">
+          <p class="sec-label">수입 · 지출</p>
+          <span class="sec-extra">가계부에 함께 기록돼요</span>
+        </div>
+        <div class="spend-list" id="dailyMoneyList"></div>
+        <div class="spend-sum" id="dailyMoneySum"></div>
+        <form class="add-bar" id="dailyMoneyAdd" autocomplete="off">
+          <div class="seg" data-type="out">
+            <button type="button" data-type="out" class="on">지출</button>
+            <button type="button" data-type="in">수입</button>
+          </div>
+          <input class="name-in" name="name" placeholder="항목">
+          <input class="won-in" name="amount" placeholder="금액" inputmode="numeric">
+          <button type="button" class="cat-btn" id="dailyCatBtn">식비</button>
+          <button type="submit" class="add-btn">추가</button>
+        </form>
+      </section>
+      <section>
+        <div class="sec-head"><p class="sec-label">사진 (선택)</p></div>
+        <div class="photo-box" id="dailyPhotoBox" tabindex="0">첨부 또는 붙여넣기</div>
+        <input type="file" id="dailyPhotoFile" accept="image/*" hidden>
+      </section>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="ledger">
+<div class="sheet">
+  <div class="toolbar">
+    <div class="date-nav" id="ledgerNav"></div>
+  </div>
+  <div class="ledger-grid">
+    <div class="side" id="ledgerSide"></div>
+    <div class="list-col">
+      <form class="add-bar" id="ledgerMoneyAdd" autocomplete="off">
+        <div class="seg" data-type="out">
+          <button type="button" data-type="out" class="on">지출</button>
+          <button type="button" data-type="in">수입</button>
+        </div>
+        <input class="name-in" name="name" placeholder="항목">
+        <input class="won-in" name="amount" placeholder="금액" inputmode="numeric">
+        <button type="button" class="cat-btn" id="ledgerCatBtn">식비</button>
+        <button type="submit" class="add-btn">추가</button>
+        <div class="add-hint">여기서 추가하면 오늘 매일 기록의 수입·지출에도 보여요.</div>
+      </form>
+      <div id="ledgerList"></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="dday">
+<div class="sheet">
+  <div id="ddayList"></div>
+  <form class="add-bar" id="ddayAdd" autocomplete="off">
+    <input class="name-in" name="title" placeholder="제목">
+    <input class="date-in" name="date" type="date">
+    <button type="button" class="opt-btn" id="ddayYearly" data-on="0">매년 반복</button>
+    <button type="button" class="opt-btn" id="ddayFromOne" data-on="0">1일부터 세기</button>
+    <button type="submit" class="add-btn">+ 디데이 추가</button>
+  </form>
+</div>
+</section>
+
+<div class="backdrop" id="appModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <p id="appModalMsg"></p>
+    <div id="appModalBody"></div>
+    <div class="modal-actions" id="appModalActions"></div>
+  </div>
+</div>
+
 <div class="backdrop" id="modal" hidden>
   <div class="modal" role="dialog" aria-modal="true">
     <p id="modalMsg">이 반복 일과를 어떻게 할까요?</p>
@@ -559,10 +1260,10 @@
 /* ===== app shell: tab switching (more panels can be registered later) ===== */
 (function () {
   const TAB_KEY = 'records-tab';
-  const PANELS = ['memo', 'todo'];
+  const PANELS = ['todo', 'daily', 'ledger', 'dday', 'memo'];
 
   function normalize(name) {
-    return PANELS.includes(name) ? name : 'memo';
+    return PANELS.includes(name) ? name : 'todo';
   }
 
   function tabFromHash() {
@@ -590,6 +1291,7 @@
         catch (e) { location.hash = next; }
       }
     }
+    document.dispatchEvent(new CustomEvent('records-panel', { detail: name }));
   }
 
   document.querySelector('.tabs').addEventListener('click', e => {
@@ -607,7 +1309,7 @@
   const initial = tabFromHash() || (function () {
     try { return localStorage.getItem(TAB_KEY); } catch (e) { return null; }
   })();
-  showPanel(initial || 'memo', { hash: true });
+  showPanel(initial || 'todo', { hash: true });
 })();
 
 /* ===== panel: memo ===== */
@@ -1570,6 +2272,1170 @@ window.RecordsMemo = {
   };
 })();
 
+/* ===== helpers + money store + new panels ===== */
+(function () {
+  const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
+  const MOODS = [
+    { n: 1, face: '😞', cap: '별로' },
+    { n: 2, face: '🙁', cap: '그저' },
+    { n: 3, face: '😐', cap: '보통' },
+    { n: 4, face: '😊', cap: '좋음' },
+    { n: 5, face: '😄', cap: '최고' }
+  ];
+  const CATS = ['식비', '교통', '생활', '카페', '기타'];
+  const DEFAULT_HABITS = [
+    { id: 'qt', name: '큐티/묵상' },
+    { id: 'stretch', name: '스트레칭' },
+    { id: 'pray', name: '기도' }
+  ];
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function toISO(d) {
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+  function parseISO(s) {
+    const [y, m, d] = String(s).split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+  function todayISO() { return toISO(new Date()); }
+  function ymOf(iso) { return String(iso).slice(0, 7); }
+  function monthStart(ym) { return ym + '-01'; }
+  function addMonths(ym, n) {
+    const [y, m] = ym.split('-').map(Number);
+    const d = new Date(y, m - 1 + n, 1);
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1);
+  }
+  function addDays(iso, n) {
+    const d = parseISO(iso);
+    d.setDate(d.getDate() + n);
+    return toISO(d);
+  }
+  function fmtDot(iso) {
+    const d = parseISO(iso);
+    return d.getFullYear() + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate());
+  }
+  function fmtYmDot(ym) {
+    const [y, m] = ym.split('-');
+    return y + '.' + m;
+  }
+  function dowName(iso) { return DAYS[parseISO(iso).getDay()]; }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+  function uid(prefix) {
+    return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+  function parseWon(s) {
+    const n = Number(String(s).replace(/[^\d.-]/g, ''));
+    return Number.isFinite(n) ? Math.round(n) : 0;
+  }
+  function fmtWon(n) {
+    const v = Math.round(Number(n) || 0);
+    return v.toLocaleString('ko-KR');
+  }
+  function daysBetween(a, b) {
+    const da = parseISO(a), db = parseISO(b);
+    return Math.round((db - da) / 86400000);
+  }
+  function nextYearlyISO(iso, today) {
+    const src = parseISO(iso);
+    const ty = parseISO(today).getFullYear();
+    function atYear(y) {
+      const m = src.getMonth();
+      const d = src.getDate();
+      const cand = new Date(y, m, d);
+      if (cand.getMonth() !== m) return toISO(new Date(y, m + 1, 0));
+      return toISO(cand);
+    }
+    let next = atYear(ty);
+    if (next < today) next = atYear(ty + 1);
+    return next;
+  }
+
+  window.RecordsUtil = {
+    DAYS, MOODS, CATS, DEFAULT_HABITS,
+    pad, toISO, parseISO, todayISO, ymOf, monthStart, addMonths, addDays,
+    fmtDot, fmtYmDot, dowName, escapeHtml, uid, parseWon, fmtWon, daysBetween, nextYearlyISO
+  };
+
+  /* ----- generic modal ----- */
+  const modal = document.getElementById('appModal');
+  const modalMsg = document.getElementById('appModalMsg');
+  const modalBody = document.getElementById('appModalBody');
+  const modalActs = document.getElementById('appModalActions');
+
+  function closeModal() {
+    if (!modal) return;
+    modal.hidden = true;
+    modalBody.innerHTML = '';
+    modalActs.innerHTML = '';
+  }
+  function openModal(opts) {
+    if (!modal) return Promise.resolve({ act: 'cancel' });
+    modalMsg.textContent = opts.title || '';
+    modalMsg.style.display = opts.title ? '' : 'none';
+    modalBody.innerHTML = opts.body || '';
+    modalActs.innerHTML = '';
+    const actions = opts.actions || [{ act: 'ok', label: '확인' }, { act: 'cancel', label: '취소', className: 'ghost' }];
+    return new Promise(resolve => {
+      function done(act) {
+        const form = {};
+        modalBody.querySelectorAll('input, textarea, select').forEach(el => {
+          if (!el.name) return;
+          form[el.name] = el.type === 'checkbox' ? el.checked : el.value;
+        });
+        closeModal();
+        resolve({ act, form });
+      }
+      actions.forEach(a => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = a.label;
+        if (a.className) b.className = a.className;
+        b.addEventListener('click', () => done(a.act));
+        modalActs.appendChild(b);
+      });
+      modal.hidden = false;
+      const first = modalBody.querySelector('input, textarea, select');
+      if (first) setTimeout(() => first.focus(), 30);
+      modal.onclick = e => { if (e.target === modal) done('cancel'); };
+    });
+  }
+  window.RecordsModal = { open: openModal, close: closeModal };
+
+  /* ----- money store ----- */
+  const MONEY_KEY = 'records-money';
+  let money = emptyMoney();
+  const moneyListeners = [];
+
+  function emptyMoney() {
+    return { v: 1, openingBalance: null, openingMonth: null, entries: [] };
+  }
+  function validEntry(e) {
+    return e && typeof e.id === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.date) &&
+      (e.type === 'in' || e.type === 'out') && typeof e.name === 'string' &&
+      Number.isFinite(Number(e.amount));
+  }
+  function normalizeEntry(e) {
+    if (!validEntry(e)) return null;
+    return {
+      id: e.id,
+      date: e.date,
+      type: e.type,
+      name: e.name,
+      amount: Math.round(Math.abs(Number(e.amount))),
+      cat: e.type === 'in' ? '수입' : (CATS.includes(e.cat) ? e.cat : '기타'),
+      source: e.source === 'ledger' ? 'ledger' : 'daily'
+    };
+  }
+  function loadMoney() {
+    try {
+      const raw = localStorage.getItem(MONEY_KEY);
+      if (!raw) { money = emptyMoney(); return; }
+      money = hydrateMoney(JSON.parse(raw));
+    } catch (e) { money = emptyMoney(); }
+  }
+  function hydrateMoney(data) {
+    const next = emptyMoney();
+    if (!data || typeof data !== 'object') return next;
+    if (Number.isFinite(data.v)) next.v = data.v;
+    if (Number.isFinite(Number(data.openingBalance))) next.openingBalance = Math.round(Number(data.openingBalance));
+    if (data.openingMonth && /^\d{4}-\d{2}$/.test(data.openingMonth)) next.openingMonth = data.openingMonth;
+    next.entries = Array.isArray(data.entries) ? data.entries.map(normalizeEntry).filter(Boolean) : [];
+    return next;
+  }
+  function saveMoney(opts) {
+    try { localStorage.setItem(MONEY_KEY, JSON.stringify(money)); }
+    catch (e) { alert('저장 공간이 부족해요.'); }
+    if ((!opts || !opts.localOnly) && window.RecordsCloud) window.RecordsCloud.onMoneySave(money);
+    moneyListeners.forEach(fn => { try { fn(); } catch (err) {} });
+  }
+  function netBeforeMonth(ym) {
+    const start = monthStart(ym);
+    let inc = 0, exp = 0;
+    money.entries.forEach(e => {
+      if (e.date < start) {
+        if (e.type === 'in') inc += e.amount;
+        else exp += e.amount;
+      }
+    });
+    return inc - exp;
+  }
+  function prevBalance(ym) {
+    const base = netBeforeMonth(ym);
+    if (money.openingMonth && money.openingBalance != null) {
+      if (ym >= money.openingMonth) {
+        return money.openingBalance + base - netBeforeMonth(money.openingMonth);
+      }
+    }
+    return base;
+  }
+  function monthSummary(ym) {
+    const prev = prevBalance(ym);
+    let income = 0, expense = 0;
+    const cats = {};
+    CATS.forEach(c => { cats[c] = 0; });
+    const start = monthStart(ym);
+    const end = monthStart(addMonths(ym, 1));
+    const entries = money.entries
+      .filter(e => e.date >= start && e.date < end)
+      .slice()
+      .sort((a, b) => a.date === b.date ? 0 : (a.date < b.date ? 1 : -1));
+    entries.forEach(e => {
+      if (e.type === 'in') income += e.amount;
+      else {
+        expense += e.amount;
+        cats[CATS.includes(e.cat) ? e.cat : '기타'] += e.amount;
+      }
+    });
+    return {
+      prev, income, expense,
+      balance: prev + income - expense,
+      cats, entries,
+      canEditPrev: !money.openingMonth || money.openingMonth === ym
+    };
+  }
+  function entriesForDate(iso) {
+    return money.entries.filter(e => e.date === iso).slice();
+  }
+  function addEntry(partial) {
+    const e = normalizeEntry(Object.assign({
+      id: uid('m'),
+      date: todayISO(),
+      type: 'out',
+      name: '',
+      amount: 0,
+      cat: '기타',
+      source: 'daily'
+    }, partial, { id: partial.id || uid('m') }));
+    if (!e || !e.name.trim() || e.amount <= 0) return null;
+    e.name = e.name.trim();
+    money.entries.push(e);
+    saveMoney();
+    return e;
+  }
+  function updateEntry(id, patch) {
+    const i = money.entries.findIndex(e => e.id === id);
+    if (i < 0) return null;
+    const e = normalizeEntry(Object.assign({}, money.entries[i], patch, { id: money.entries[i].id }));
+    if (!e) return null;
+    money.entries[i] = e;
+    saveMoney();
+    return e;
+  }
+  function removeEntry(id) {
+    const before = money.entries.length;
+    money.entries = money.entries.filter(e => e.id !== id);
+    if (money.entries.length !== before) saveMoney();
+  }
+  function setOpening(ym, amount) {
+    money.openingMonth = ym;
+    money.openingBalance = Math.round(Number(amount) || 0);
+    saveMoney();
+  }
+  function applyCloudMoney(data) {
+    money = hydrateMoney(data);
+    saveMoney({ localOnly: true });
+  }
+
+  loadMoney();
+  window.RecordsMoney = {
+    getState: () => money,
+    applyCloud: applyCloudMoney,
+    onChange(fn) { moneyListeners.push(fn); },
+    add: addEntry,
+    update: updateEntry,
+    remove: removeEntry,
+    entriesForDate,
+    monthSummary,
+    prevBalance,
+    setOpening,
+    empty: emptyMoney,
+    hydrate: hydrateMoney
+  };
+})();
+
+/* ===== store + panel: daily ===== */
+(function () {
+  const U = window.RecordsUtil;
+  const KEY = 'records-daily';
+  const MOODS = U.MOODS;
+  let state = emptyDaily();
+  let viewYm = U.ymOf(U.todayISO());
+  let viewDate = U.todayISO();
+  let entryOpen = false;
+  let dailyCat = '식비';
+  let dailyType = 'out';
+  let saveTimer = null;
+
+  function emptyDaily() {
+    return { v: 1, habits: U.DEFAULT_HABITS.map(h => ({ id: h.id, name: h.name })), days: {} };
+  }
+  function emptyDay() {
+    return { line: '', mood: 0, thanks: '', habits: {}, photo: null, metBf: false };
+  }
+  function hydrateDaily(data) {
+    const next = emptyDaily();
+    if (!data || typeof data !== 'object') return next;
+    if (Number.isFinite(data.v)) next.v = data.v;
+    if (Array.isArray(data.habits) && data.habits.length) {
+      next.habits = data.habits.filter(h => h && h.id && h.name).map(h => ({ id: String(h.id), name: String(h.name) }));
+    }
+    next.days = {};
+    if (data.days && typeof data.days === 'object') {
+      Object.keys(data.days).forEach(iso => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+        const d = data.days[iso] || {};
+        next.days[iso] = {
+          line: typeof d.line === 'string' ? d.line : '',
+          mood: [1, 2, 3, 4, 5].includes(d.mood) ? d.mood : 0,
+          thanks: typeof d.thanks === 'string' ? d.thanks : '',
+          habits: d.habits && typeof d.habits === 'object' ? Object.assign({}, d.habits) : {},
+          photo: typeof d.photo === 'string' && d.photo.indexOf('data:') === 0 ? d.photo : null,
+          metBf: !!d.metBf
+        };
+      });
+    }
+    return next;
+  }
+  function isDayEmpty(d, iso) {
+    if (!d) return true;
+    const anyHabit = state.habits.some(h => d.habits && d.habits[h.id]);
+    const money = window.RecordsMoney ? window.RecordsMoney.entriesForDate(iso || '') : [];
+    return !d.line && !d.mood && !d.thanks && !d.photo && !d.metBf && !anyHabit && (!iso || !money.length);
+  }
+  function dayHasRecord(iso) {
+    const d = state.days[iso];
+    if (!d) {
+      const money = window.RecordsMoney ? window.RecordsMoney.entriesForDate(iso) : [];
+      return money.length > 0;
+    }
+    return !isDayEmpty(d, iso);
+  }
+  function getDay(iso) {
+    const d = state.days[iso];
+    return d ? {
+      line: d.line, mood: d.mood, thanks: d.thanks,
+      habits: Object.assign({}, d.habits), photo: d.photo, metBf: !!d.metBf
+    } : emptyDay();
+  }
+  function ensureDay(iso) {
+    if (!state.days[iso]) state.days[iso] = emptyDay();
+    return state.days[iso];
+  }
+  function pruneDay(iso) {
+    const d = state.days[iso];
+    if (!d) return;
+    const anyHabit = state.habits.some(h => d.habits && d.habits[h.id]);
+    if (!d.line && !d.mood && !d.thanks && !d.photo && !d.metBf && !anyHabit) delete state.days[iso];
+  }
+  function saveDaily(opts) {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); }
+    catch (e) { alert('저장 공간이 부족해요. 큰 사진을 줄여 주세요.'); }
+    if ((!opts || !opts.localOnly) && window.RecordsCloud) window.RecordsCloud.onDailySave(state);
+  }
+  function loadDaily() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      state = raw ? hydrateDaily(JSON.parse(raw)) : emptyDaily();
+    } catch (e) { state = emptyDaily(); }
+  }
+  function applyCloudDaily(data, photoMap) {
+    const prevPhotos = {};
+    Object.keys(state.days || {}).forEach(iso => {
+      if (state.days[iso] && state.days[iso].photo) prevPhotos[iso] = state.days[iso].photo;
+    });
+    state = hydrateDaily(data);
+    Object.keys(state.days).forEach(iso => {
+      if (photoMap && photoMap[iso]) state.days[iso].photo = photoMap[iso];
+      else if (!state.days[iso].photo && prevPhotos[iso]) state.days[iso].photo = prevPhotos[iso];
+    });
+    if (photoMap) {
+      Object.keys(photoMap).forEach(iso => {
+        if (!state.days[iso]) state.days[iso] = emptyDay();
+        state.days[iso].photo = photoMap[iso];
+      });
+    }
+    saveDaily({ localOnly: true });
+    render();
+  }
+  function applyCloudPhoto(iso, photo) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+    if (photo) {
+      ensureDay(iso).photo = photo;
+    } else if (state.days[iso]) {
+      state.days[iso].photo = null;
+      pruneDay(iso);
+    }
+    saveDaily({ localOnly: true });
+    if (entryOpen && viewDate === iso) renderEntry();
+    if (!entryOpen) renderCal();
+  }
+  function persistDay(opts) {
+    pruneDay(viewDate);
+    saveDaily(opts);
+  }
+
+  /* ----- UI ----- */
+  const calView = document.getElementById('dailyCalView');
+  const entryView = document.getElementById('dailyEntryView');
+  const calNav = document.getElementById('dailyCalNav');
+  const calGrid = document.getElementById('dailyCalGrid');
+  const entryNav = document.getElementById('dailyEntryNav');
+  const lineInput = document.getElementById('dailyLine');
+  const thanksInput = document.getElementById('dailyThanks');
+  const moodsEl = document.getElementById('dailyMoods');
+  const habitsEl = document.getElementById('dailyHabits');
+  const moneyList = document.getElementById('dailyMoneyList');
+  const moneySum = document.getElementById('dailyMoneySum');
+  const moneyForm = document.getElementById('dailyMoneyAdd');
+  const catBtn = document.getElementById('dailyCatBtn');
+  const photoBox = document.getElementById('dailyPhotoBox');
+  const photoFile = document.getElementById('dailyPhotoFile');
+
+  function showCal() {
+    entryOpen = false;
+    calView.hidden = false;
+    entryView.hidden = true;
+    renderCal();
+  }
+  function showEntry(iso) {
+    if (iso) viewDate = iso;
+    viewYm = U.ymOf(viewDate);
+    entryOpen = true;
+    calView.hidden = true;
+    entryView.hidden = false;
+    renderEntry();
+  }
+
+  function navHtml(center, opts) {
+    opts = opts || {};
+    return '<button type="button" class="nav-btn" data-nav="-1" aria-label="이전">‹</button>' +
+      '<div class="date-label">' + center + '</div>' +
+      '<button type="button" class="nav-btn" data-nav="1" aria-label="다음">›</button>' +
+      (opts.today ? '<button type="button" class="jump-today" data-nav="today">오늘</button>' : '');
+  }
+
+  function monthCells(ym) {
+    const [y, m] = ym.split('-').map(Number);
+    const first = new Date(y, m - 1, 1);
+    const start = new Date(first);
+    start.setDate(1 - first.getDay());
+    const last = new Date(y, m, 0);
+    const end = new Date(last);
+    end.setDate(last.getDate() + (6 - last.getDay()));
+    const cells = [];
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      cells.push({
+        iso: U.toISO(d),
+        day: d.getDate(),
+        mute: d.getMonth() !== m - 1
+      });
+    }
+    return cells;
+  }
+
+  function renderCal() {
+    const today = U.todayISO();
+    calNav.innerHTML = navHtml(U.fmtYmDot(viewYm));
+    const dows = U.DAYS.map(d => '<div class="m-dow">' + d + '</div>').join('');
+    const cells = monthCells(viewYm).map(c => {
+      const day = state.days[c.iso];
+      const mood = day && MOODS.find(m => m.n === day.mood);
+      const heart = day && day.metBf ? '<svg class="heart" viewBox="0 0 16 16" aria-hidden="true"><path fill="#e08a96" d="M8 13.6S2.6 10.2 2.6 7.1C2.6 5.4 3.9 4.1 5.6 4.1c.9 0 1.75.45 2.25 1.16C8.35 4.55 9.2 4.1 10.1 4.1c1.7 0 3 1.3 3 3 0 3.1-5.1 6.5-5.1 6.5z"/></svg>' : '';
+      const cls = 'mday' + (c.mute ? ' mute' : '') + (c.iso === today ? ' today' : '');
+      return '<button type="button" class="' + cls + '" data-iso="' + c.iso + '">' +
+        heart +
+        '<span class="num">' + c.day + '</span>' +
+        (mood ? '<span class="face">' + mood.face + '</span>' : '') +
+        '</button>';
+    }).join('');
+    calGrid.innerHTML = dows + cells;
+  }
+
+  function renderEntry() {
+    const today = U.todayISO();
+    const d = getDay(viewDate);
+    const label = U.fmtDot(viewDate) + ' <em>' + U.dowName(viewDate) + '</em>';
+    entryNav.innerHTML = navHtml(label, { today: viewDate !== today });
+    lineInput.value = d.line;
+    thanksInput.value = d.thanks;
+    moodsEl.innerHTML = MOODS.map(m =>
+      '<button type="button" class="mood' + (d.mood === m.n ? ' on' : '') + '" data-mood="' + m.n + '">' +
+      '<span class="face">' + m.face + '</span><span class="cap">' + m.cap + '</span></button>'
+    ).join('');
+    const metBtn = document.getElementById('dailyMetBf');
+    if (metBtn) {
+      metBtn.classList.toggle('on', !!d.metBf);
+      metBtn.setAttribute('aria-pressed', d.metBf ? 'true' : 'false');
+      const ck = metBtn.querySelector('.check');
+      if (ck) ck.textContent = d.metBf ? '✓' : '';
+    }
+    habitsEl.innerHTML = state.habits.map(h => {
+      const on = !!(d.habits && d.habits[h.id]);
+      return '<button type="button" class="habit' + (on ? ' on' : '') + '" data-hid="' + U.escapeHtml(h.id) + '">' +
+        '<span class="check">' + (on ? '✓' : '') + '</span>' +
+        '<span class="txt">' + U.escapeHtml(h.name) + '</span></button>';
+    }).join('') + '<button type="button" class="edit-link" id="dailyHabitEdit">+ 항목 편집</button>';
+    renderDailyMoney();
+    renderPhoto();
+    updateCatBtn();
+  }
+
+  function renderDailyMoney() {
+    const list = window.RecordsMoney.entriesForDate(viewDate);
+    moneyList.innerHTML = list.map(e =>
+      '<div class="spend-row' + (e.type === 'in' ? ' in' : '') + '" data-id="' + U.escapeHtml(e.id) + '">' +
+      '<span class="name">' + U.escapeHtml(e.name) + '</span>' +
+      '<span class="chip">' + U.escapeHtml(e.type === 'in' ? '수입' : e.cat) + '</span>' +
+      '<span class="amt">' + (e.type === 'in' ? '+' : '') + U.fmtWon(e.amount) + '</span>' +
+      '<button type="button" class="row-del" data-del="' + U.escapeHtml(e.id) + '" title="삭제">✕</button>' +
+      '</div>'
+    ).join('');
+    const inc = list.filter(e => e.type === 'in').reduce((s, e) => s + e.amount, 0);
+    const exp = list.filter(e => e.type === 'out').reduce((s, e) => s + e.amount, 0);
+    moneySum.innerHTML = list.length
+      ? '<span><span class="lbl">오늘 수입</span><span class="amt in">+' + U.fmtWon(inc) + '</span></span>' +
+        '<span><span class="lbl">오늘 지출</span><span class="amt">' + U.fmtWon(exp) + '원</span></span>'
+      : '';
+  }
+
+  function renderPhoto() {
+    const d = getDay(viewDate);
+    if (d.photo) {
+      photoBox.classList.add('has');
+      photoBox.innerHTML = '<img alt="첨부한 사진" src="' + d.photo + '">' +
+        '<button type="button" class="ph-del" title="사진 삭제">✕</button>';
+    } else {
+      photoBox.classList.remove('has');
+      photoBox.textContent = '첨부 또는 붙여넣기';
+    }
+  }
+
+  function updateCatBtn() {
+    if (!catBtn) return;
+    catBtn.hidden = dailyType === 'in';
+    catBtn.textContent = dailyCat;
+    const seg = moneyForm.querySelector('.seg');
+    if (seg) {
+      seg.dataset.type = dailyType;
+      seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.type === dailyType));
+    }
+  }
+
+  function currentFields() {
+    ensureDay(viewDate);
+    const d = state.days[viewDate];
+    d.line = lineInput.value;
+    d.thanks = thanksInput.value;
+    persistDay();
+  }
+  function scheduleSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(currentFields, 250);
+  }
+
+  function render() {
+    if (entryOpen) renderEntry();
+    else renderCal();
+  }
+
+  calNav.addEventListener('click', e => {
+    const btn = e.target.closest('[data-nav]');
+    if (!btn) return;
+    if (btn.dataset.nav === '-1') viewYm = U.addMonths(viewYm, -1);
+    else if (btn.dataset.nav === '1') viewYm = U.addMonths(viewYm, 1);
+    renderCal();
+  });
+  calGrid.addEventListener('click', e => {
+    const cell = e.target.closest('[data-iso]');
+    if (!cell) return;
+    showEntry(cell.dataset.iso);
+  });
+  document.getElementById('dailyBack').addEventListener('click', () => {
+    currentFields();
+    viewYm = U.ymOf(viewDate);
+    showCal();
+  });
+  entryNav.addEventListener('click', e => {
+    const btn = e.target.closest('[data-nav]');
+    if (!btn) return;
+    currentFields();
+    if (btn.dataset.nav === '-1') viewDate = U.addDays(viewDate, -1);
+    else if (btn.dataset.nav === '1') viewDate = U.addDays(viewDate, 1);
+    else if (btn.dataset.nav === 'today') viewDate = U.todayISO();
+    viewYm = U.ymOf(viewDate);
+    renderEntry();
+  });
+  lineInput.addEventListener('input', scheduleSave);
+  thanksInput.addEventListener('input', scheduleSave);
+  lineInput.addEventListener('blur', currentFields);
+  thanksInput.addEventListener('blur', currentFields);
+  moodsEl.addEventListener('click', e => {
+    const btn = e.target.closest('[data-mood]');
+    if (!btn) return;
+    const n = Number(btn.dataset.mood);
+    const d = ensureDay(viewDate);
+    d.mood = d.mood === n ? 0 : n;
+    persistDay();
+    renderEntry();
+  });
+  const metBtn = document.getElementById('dailyMetBf');
+  if (metBtn) metBtn.addEventListener('click', () => {
+    const d = ensureDay(viewDate);
+    d.metBf = !d.metBf;
+    persistDay();
+    renderEntry();
+  });
+  habitsEl.addEventListener('click', e => {
+    if (e.target.closest('#dailyHabitEdit')) { openHabitEditor(); return; }
+    const btn = e.target.closest('[data-hid]');
+    if (!btn) return;
+    const d = ensureDay(viewDate);
+    d.habits = d.habits || {};
+    d.habits[btn.dataset.hid] = !d.habits[btn.dataset.hid];
+    persistDay();
+    renderEntry();
+  });
+
+  function openHabitEditor() {
+    const rows = state.habits.map((h, i) =>
+      '<div class="habit-edit-row">' +
+      '<input type="text" name="h' + i + '" data-id="' + U.escapeHtml(h.id) + '" value="' + U.escapeHtml(h.name) + '">' +
+      '<button type="button" class="ghost row-del" data-rm="' + i + '">✕</button></div>'
+    ).join('') + '<div class="habit-edit-row"><input type="text" name="new" placeholder="새 항목 이름"></div>';
+    window.RecordsModal.open({
+      title: '습관 항목 편집',
+      body: rows,
+      actions: [
+        { act: 'ok', label: '저장' },
+        { act: 'cancel', label: '취소', className: 'ghost' }
+      ]
+    }).then(res => {
+      if (res.act !== 'ok') return;
+      const next = [];
+      state.habits.forEach((h, i) => {
+        const name = (res.form['h' + i] || '').trim();
+        if (name) next.push({ id: h.id, name });
+      });
+      const neu = (res.form.new || '').trim();
+      if (neu) next.push({ id: U.uid('h'), name: neu });
+      if (!next.length) next.push.apply(next, U.DEFAULT_HABITS.map(h => ({ id: h.id, name: h.name })));
+      state.habits = next;
+      saveDaily();
+      renderEntry();
+    });
+    const body = document.getElementById('appModalBody');
+    body.addEventListener('click', ev => {
+      const rm = ev.target.closest('[data-rm]');
+      if (!rm) return;
+      const row = rm.closest('.habit-edit-row');
+      if (row) row.remove();
+    });
+  }
+
+  moneyForm.addEventListener('click', e => {
+    const typ = e.target.closest('.seg [data-type]');
+    if (typ) {
+      dailyType = typ.dataset.type;
+      updateCatBtn();
+      return;
+    }
+    if (e.target.closest('#dailyCatBtn')) {
+      window.RecordsCatMenu(catBtn, v => { dailyCat = v; updateCatBtn(); });
+    }
+  });
+  moneyForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = moneyForm.name.value.trim();
+    const amount = U.parseWon(moneyForm.amount.value);
+    if (!name || amount <= 0) return;
+    window.RecordsMoney.add({
+      date: viewDate, type: dailyType, name, amount,
+      cat: dailyType === 'in' ? '수입' : dailyCat,
+      source: 'daily'
+    });
+    moneyForm.name.value = '';
+    moneyForm.amount.value = '';
+    moneyForm.name.focus();
+  });
+  moneyList.addEventListener('click', e => {
+    const del = e.target.closest('[data-del]');
+    if (del) {
+      if (confirm('이 항목을 지울까요?')) window.RecordsMoney.remove(del.dataset.del);
+      return;
+    }
+    const row = e.target.closest('.spend-row[data-id]');
+    if (row) window.RecordsMoneyEdit(row.dataset.id);
+  });
+
+  function resizeImage(src, cb) {
+    const img = new Image();
+    img.onload = () => {
+      const max = 600, s = Math.min(1, max / (img.width || max));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(img.width * s));
+      c.height = Math.max(1, Math.round(img.height * s));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      try { cb(c.toDataURL('image/jpeg', 0.85)); }
+      catch (err) { cb(src); }
+    };
+    img.onerror = () => cb(src);
+    img.src = src;
+  }
+  function setPhoto(dataUrl) {
+    ensureDay(viewDate).photo = dataUrl;
+    persistDay();
+    if (window.RecordsCloud) window.RecordsCloud.onDailyPhotoSave(viewDate, dataUrl);
+    renderPhoto();
+  }
+  function clearPhoto(ev) {
+    if (ev) ev.stopPropagation();
+    if (state.days[viewDate]) state.days[viewDate].photo = null;
+    persistDay();
+    if (window.RecordsCloud) window.RecordsCloud.onDailyPhotoSave(viewDate, null);
+    renderPhoto();
+  }
+  photoBox.addEventListener('click', e => {
+    if (e.target.closest('.ph-del')) { clearPhoto(e); return; }
+    photoFile.click();
+  });
+  photoBox.addEventListener('paste', e => {
+    const items = [...(e.clipboardData && e.clipboardData.items || [])];
+    const imgItem = items.find(i => i.type.startsWith('image/'));
+    if (!imgItem) return;
+    e.preventDefault();
+    const reader = new FileReader();
+    reader.onload = () => resizeImage(reader.result, setPhoto);
+    reader.readAsDataURL(imgItem.getAsFile());
+  });
+  photoFile.addEventListener('change', () => {
+    const f = photoFile.files && photoFile.files[0];
+    photoFile.value = '';
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => resizeImage(reader.result, setPhoto);
+    reader.readAsDataURL(f);
+  });
+
+  document.addEventListener('records-panel', ev => {
+    if (ev.detail === 'daily') render();
+  });
+  if (window.RecordsMoney) window.RecordsMoney.onChange(() => {
+    if (document.getElementById('daily').hidden) return;
+    if (entryOpen) renderDailyMoney();
+  });
+
+  loadDaily();
+  window.RecordsDaily = {
+    getState: () => state,
+    applyCloud: applyCloudDaily,
+    applyCloudPhoto,
+    getDay, dayHasRecord, monthCells,
+    showCal, showEntry,
+    empty: emptyDaily,
+    hydrate: hydrateDaily,
+    _setViewDate(iso) { viewDate = iso; viewYm = U.ymOf(iso); }
+  };
+})();
+
+/* ===== shared money UI helpers + ledger + dday ===== */
+(function () {
+  const U = window.RecordsUtil;
+
+  function closeMenus() {
+    document.querySelectorAll('.cat-menu').forEach(el => el.remove());
+  }
+  document.addEventListener('click', ev => {
+    if (!ev.target.closest('.cat-btn, .cat-menu')) closeMenus();
+  });
+
+  function openCatMenu(anchor, onPick) {
+    closeMenus();
+    const menu = document.createElement('div');
+    menu.className = 'cat-menu';
+    menu.innerHTML = U.CATS.map(c => '<button type="button" data-cat="' + c + '">' + c + '</button>').join('');
+    const host = anchor.closest('.add-bar') || anchor.parentElement;
+    host.appendChild(menu);
+    menu.addEventListener('click', e => {
+      const b = e.target.closest('[data-cat]');
+      if (!b) return;
+      onPick(b.dataset.cat);
+      closeMenus();
+    });
+  }
+  window.RecordsCatMenu = openCatMenu;
+
+  function editMoney(id) {
+    const state = window.RecordsMoney.getState();
+    const e = (state.entries || []).find(x => x.id === id);
+    if (!e) return;
+    const catOpts = U.CATS.map(c => '<option value="' + c + '"' + (e.cat === c ? ' selected' : '') + '>' + c + '</option>').join('');
+    window.RecordsModal.open({
+      title: '항목 수정',
+      body:
+        '<input type="text" name="name" value="' + U.escapeHtml(e.name) + '" placeholder="항목">' +
+        '<input type="number" name="amount" value="' + e.amount + '" min="1" step="1">' +
+        '<input type="date" name="date" value="' + U.escapeHtml(e.date) + '">' +
+        '<label class="modal-check"><input type="checkbox" name="isIn"' + (e.type === 'in' ? ' checked' : '') + '> 수입</label>' +
+        '<select name="cat">' + catOpts + '</select>',
+      actions: [
+        { act: 'ok', label: '저장' },
+        { act: 'delete', label: '삭제', className: 'danger' },
+        { act: 'cancel', label: '취소', className: 'ghost' }
+      ]
+    }).then(res => {
+      if (res.act === 'delete') {
+        if (confirm('이 항목을 지울까요?')) window.RecordsMoney.remove(id);
+        return;
+      }
+      if (res.act !== 'ok') return;
+      const name = (res.form.name || '').trim();
+      const amount = U.parseWon(res.form.amount);
+      const date = res.form.date;
+      if (!name || amount <= 0 || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+      const typ = res.form.isIn ? 'in' : 'out';
+      window.RecordsMoney.update(id, {
+        name, amount, date, type: typ,
+        cat: typ === 'in' ? '수입' : (res.form.cat || e.cat)
+      });
+    });
+  }
+  window.RecordsMoneyEdit = editMoney;
+
+  /* ----- ledger ----- */
+  const nav = document.getElementById('ledgerNav');
+  const side = document.getElementById('ledgerSide');
+  const listEl = document.getElementById('ledgerList');
+  const form = document.getElementById('ledgerMoneyAdd');
+  const catBtn = document.getElementById('ledgerCatBtn');
+  let ledgerYm = U.ymOf(U.todayISO());
+  let ledgerType = 'out';
+  let ledgerCat = '식비';
+
+  function updateLedgerCatBtn() {
+    if (!catBtn) return;
+    catBtn.hidden = ledgerType === 'in';
+    catBtn.textContent = ledgerCat;
+    const seg = form.querySelector('.seg');
+    if (seg) {
+      seg.dataset.type = ledgerType;
+      seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.type === ledgerType));
+    }
+  }
+
+  function renderLedger() {
+    const today = U.todayISO();
+    const sum = window.RecordsMoney.monthSummary(ledgerYm);
+    nav.innerHTML =
+      '<button type="button" class="nav-btn" data-nav="-1" aria-label="이전 달">‹</button>' +
+      '<div class="date-label">' + U.fmtYmDot(ledgerYm) + '</div>' +
+      '<button type="button" class="nav-btn" data-nav="1" aria-label="다음 달">›</button>';
+    const prevCls = sum.canEditPrev ? 'amt' : 'amt';
+    const prevTag = sum.canEditPrev
+      ? '<button type="button" class="amt" id="ledgerPrevEdit" title="시작 잔액 수정">' + U.fmtWon(sum.prev) + '</button>'
+      : '<span class="amt">' + U.fmtWon(sum.prev) + '</span>';
+    const maxCat = Math.max.apply(null, U.CATS.map(c => sum.cats[c] || 0).concat([0]));
+    const catHtml = U.CATS
+      .map(c => ({ c, n: sum.cats[c] || 0 }))
+      .filter(x => x.n > 0)
+      .sort((a, b) => b.n - a.n)
+      .map(x =>
+        '<div class="cat"><div class="cat-row"><span class="cat-name">' + x.c + '</span><span class="cat-amt">' + U.fmtWon(x.n) + '</span></div>' +
+        '<div class="bar"><i style="width:' + (maxCat ? Math.round(x.n / maxCat * 100) : 0) + '%"></i></div></div>'
+      ).join('');
+    side.innerHTML =
+      '<div class="prev-bal"><span class="lbl">전월 잔액</span>' + prevTag + '</div>' +
+      '<div class="flow">' +
+      '<div class="flow-row"><span class="lbl">이번 달 수입</span><span class="amt in">+' + U.fmtWon(sum.income) + '</span></div>' +
+      '<div class="flow-row"><span class="lbl">이번 달 지출</span><span class="amt">' + U.fmtWon(sum.expense) + '</span></div>' +
+      '</div>' +
+      '<div class="month-total"><p class="lbl">잔액</p><div class="num">' + U.fmtWon(sum.balance) + '<span class="won">원</span></div></div>' +
+      (catHtml ? '<p class="cats-label">지출 분류</p><div class="cats">' + catHtml + '</div>' : '');
+
+    const groups = [];
+    const byDate = {};
+    sum.entries.forEach(e => {
+      if (!byDate[e.date]) { byDate[e.date] = []; groups.push(e.date); }
+      byDate[e.date].push(e);
+    });
+    if (!groups.length) {
+      listEl.innerHTML = '<p class="empty-msg">아직 수입·지출 기록이 없어요.</p>';
+    } else {
+      listEl.innerHTML = groups.map(iso => {
+        const rows = byDate[iso];
+        const inc = rows.filter(e => e.type === 'in').reduce((s, e) => s + e.amount, 0);
+        const exp = rows.filter(e => e.type === 'out').reduce((s, e) => s + e.amount, 0);
+        const sums = (inc ? '<span class="in">+' + U.fmtWon(inc) + '</span>' : '') +
+          (exp ? '<span>' + U.fmtWon(exp) + '</span>' : '');
+        const todayMark = iso === today ? ' <em>오늘</em>' : '';
+        return '<div class="day-group">' +
+          '<div class="day-head"><div class="day-name">' + U.fmtDot(iso).slice(5) + ' ' + U.dowName(iso) + todayMark + '</div>' +
+          '<div class="day-sum">' + sums + '</div></div>' +
+          rows.map(e =>
+            '<div class="spend-row' + (e.type === 'in' ? ' in' : '') + '" data-id="' + U.escapeHtml(e.id) + '">' +
+            '<span class="name">' + U.escapeHtml(e.name) + '</span>' +
+            '<span class="chip">' + U.escapeHtml(e.type === 'in' ? '수입' : e.cat) + '</span>' +
+            (e.source === 'daily' ? '<span class="chip ghost">매일 기록</span>' : '') +
+            '<span class="amt">' + (e.type === 'in' ? '+' : '') + U.fmtWon(e.amount) + '</span>' +
+            '<button type="button" class="row-del" data-del="' + U.escapeHtml(e.id) + '" title="삭제">✕</button>' +
+            '</div>'
+          ).join('') +
+          '</div>';
+      }).join('');
+    }
+    updateLedgerCatBtn();
+  }
+
+  nav.addEventListener('click', e => {
+    const btn = e.target.closest('[data-nav]');
+    if (!btn) return;
+    ledgerYm = U.addMonths(ledgerYm, Number(btn.dataset.nav));
+    renderLedger();
+  });
+  side.addEventListener('click', e => {
+    if (!e.target.closest('#ledgerPrevEdit')) return;
+    const sum = window.RecordsMoney.monthSummary(ledgerYm);
+    window.RecordsModal.open({
+      title: '전월 잔액 (시작 잔액)',
+      body: '<input type="number" name="amount" value="' + sum.prev + '" min="0" step="1" placeholder="금액">',
+      actions: [
+        { act: 'ok', label: '저장' },
+        { act: 'cancel', label: '취소', className: 'ghost' }
+      ]
+    }).then(res => {
+      if (res.act !== 'ok') return;
+      window.RecordsMoney.setOpening(ledgerYm, U.parseWon(res.form.amount));
+    });
+  });
+  form.addEventListener('click', e => {
+    const typ = e.target.closest('.seg [data-type]');
+    if (typ) { ledgerType = typ.dataset.type; updateLedgerCatBtn(); return; }
+    if (e.target.closest('#ledgerCatBtn')) {
+      openCatMenu(catBtn, v => { ledgerCat = v; updateLedgerCatBtn(); });
+    }
+  });
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = form.name.value.trim();
+    const amount = U.parseWon(form.amount.value);
+    if (!name || amount <= 0) return;
+    window.RecordsMoney.add({
+      date: U.todayISO(), type: ledgerType, name, amount,
+      cat: ledgerType === 'in' ? '수입' : ledgerCat,
+      source: 'ledger'
+    });
+    form.name.value = '';
+    form.amount.value = '';
+    form.name.focus();
+  });
+  listEl.addEventListener('click', e => {
+    const del = e.target.closest('[data-del]');
+    if (del) {
+      if (confirm('이 항목을 지울까요?')) window.RecordsMoney.remove(del.dataset.del);
+      return;
+    }
+    const row = e.target.closest('.spend-row[data-id]');
+    if (row) editMoney(row.dataset.id);
+  });
+  document.addEventListener('records-panel', ev => {
+    if (ev.detail === 'ledger') renderLedger();
+  });
+  window.RecordsMoney.onChange(() => {
+    if (!document.getElementById('ledger').hidden) renderLedger();
+  });
+
+  window.RecordsLedger = { render: renderLedger, _setYm(ym) { ledgerYm = ym; } };
+
+  /* ----- dday ----- */
+  const DDAY_KEY = 'records-dday';
+  const listWrap = document.getElementById('ddayList');
+  const addForm = document.getElementById('ddayAdd');
+  const yearlyBtn = document.getElementById('ddayYearly');
+  const fromOneBtn = document.getElementById('ddayFromOne');
+  let dday = emptyDday();
+
+  function emptyDday() { return { v: 1, items: [] }; }
+  function validItem(it) {
+    return it && typeof it.id === 'string' && typeof it.title === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(it.date);
+  }
+  function normalizeItem(it) {
+    if (!validItem(it)) return null;
+    return {
+      id: it.id,
+      title: it.title,
+      date: it.date,
+      yearly: !!it.yearly,
+      fromOne: !!it.fromOne,
+      pinned: !!it.pinned
+    };
+  }
+  function hydrateDday(data) {
+    const next = emptyDday();
+    if (!data || typeof data !== 'object') return next;
+    if (Number.isFinite(data.v)) next.v = data.v;
+    next.items = Array.isArray(data.items) ? data.items.map(normalizeItem).filter(Boolean) : [];
+    return next;
+  }
+  function loadDday() {
+    try {
+      const raw = localStorage.getItem(DDAY_KEY);
+      dday = raw ? hydrateDday(JSON.parse(raw)) : emptyDday();
+    } catch (e) { dday = emptyDday(); }
+  }
+  function saveDday(opts) {
+    try { localStorage.setItem(DDAY_KEY, JSON.stringify(dday)); }
+    catch (e) { alert('저장 공간이 부족해요.'); }
+    if ((!opts || !opts.localOnly) && window.RecordsCloud) window.RecordsCloud.onDdaySave(dday);
+  }
+  function applyCloudDday(data) {
+    dday = hydrateDday(data);
+    saveDday({ localOnly: true });
+    renderDday();
+  }
+
+  function compute(item, today) {
+    today = today || U.todayISO();
+    let target = item.date;
+    let group, n, label, sort;
+    if (item.yearly) {
+      target = U.nextYearlyISO(item.date, today);
+    }
+    if (!item.yearly && item.fromOne && item.date <= today) {
+      n = U.daysBetween(item.date, today) + 1;
+      group = 'past';
+      label = 'D+' + n;
+      sort = n;
+      return { target: item.date, group, n, label, sort };
+    }
+    if (target === today) {
+      return { target, group: 'up', n: 0, label: 'D-Day', sort: 0 };
+    }
+    if (target > today) {
+      n = U.daysBetween(today, target);
+      return { target, group: 'up', n, label: 'D-' + n, sort: n };
+    }
+    n = U.daysBetween(target, today);
+    return { target, group: 'past', n, label: 'D+' + n, sort: n };
+  }
+
+  function renderDday() {
+    const today = U.todayISO();
+    const rows = dday.items.map(it => ({ it, c: compute(it, today) }));
+    const up = rows.filter(r => r.c.group === 'up');
+    const past = rows.filter(r => r.c.group === 'past');
+    const pinned = up.filter(r => r.it.pinned);
+    const rest = up.filter(r => !r.it.pinned).sort((a, b) => a.c.sort - b.c.sort || a.it.title.localeCompare(b.it.title, 'ko'));
+    past.sort((a, b) => a.c.sort - b.c.sort || a.it.title.localeCompare(b.it.title, 'ko'));
+    const upcoming = pinned.concat(rest);
+
+    function card(r) {
+      const chips = (r.it.pinned ? '<span class="pin-mark">고정</span>' : '') +
+        (r.it.yearly ? '<span class="chip">매년</span>' : '') +
+        (r.it.fromOne ? '<span class="chip">1일부터 세기</span>' : '');
+      const cls = 'dday-card' + (r.it.pinned && r.c.group === 'up' ? ' pinned' : '') + (r.c.group === 'past' ? ' past' : '');
+      return '<div class="' + cls + '" data-id="' + U.escapeHtml(r.it.id) + '">' +
+        '<div class="dday-body"><div class="dday-title">' + U.escapeHtml(r.it.title) + ' ' + chips + '</div>' +
+        '<div class="dday-date">' + U.fmtDot(r.c.target) + ' ' + U.dowName(r.c.target) + '</div></div>' +
+        '<div class="dday-count">' + r.c.label + '</div></div>';
+    }
+
+    if (!rows.length) {
+      listWrap.innerHTML = '<p class="empty-msg">디데이를 추가해 보세요.</p>';
+      return;
+    }
+    let html = '<div class="dday-list">' + upcoming.map(card).join('') + '</div>';
+    if (past.length) {
+      html += '<p class="sec-label">지난 디데이</p><div class="dday-list">' + past.map(card).join('') + '</div>';
+    }
+    listWrap.innerHTML = html;
+  }
+
+  function setOpt(btn, on) {
+    btn.dataset.on = on ? '1' : '0';
+    btn.classList.toggle('on', !!on);
+  }
+  yearlyBtn.addEventListener('click', () => setOpt(yearlyBtn, yearlyBtn.dataset.on !== '1'));
+  fromOneBtn.addEventListener('click', () => setOpt(fromOneBtn, fromOneBtn.dataset.on !== '1'));
+
+  addForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const title = addForm.title.value.trim();
+    const date = addForm.date.value;
+    if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+    dday.items.push(normalizeItem({
+      id: U.uid('d'),
+      title, date,
+      yearly: yearlyBtn.dataset.on === '1',
+      fromOne: fromOneBtn.dataset.on === '1',
+      pinned: false
+    }));
+    saveDday();
+    addForm.title.value = '';
+    addForm.date.value = '';
+    setOpt(yearlyBtn, false);
+    setOpt(fromOneBtn, false);
+    renderDday();
+    addForm.title.focus();
+  });
+
+  listWrap.addEventListener('click', e => {
+    const card = e.target.closest('.dday-card[data-id]');
+    if (!card) return;
+    const it = dday.items.find(x => x.id === card.dataset.id);
+    if (!it) return;
+    window.RecordsModal.open({
+      title: '디데이 수정',
+      body:
+        '<input type="text" name="title" value="' + U.escapeHtml(it.title) + '" placeholder="제목">' +
+        '<input type="date" name="date" value="' + U.escapeHtml(it.date) + '">' +
+        '<label class="modal-check"><input type="checkbox" name="yearly"' + (it.yearly ? ' checked' : '') + '> 매년 반복</label>' +
+        '<label class="modal-check"><input type="checkbox" name="fromOne"' + (it.fromOne ? ' checked' : '') + '> 1일부터 세기</label>' +
+        '<label class="modal-check"><input type="checkbox" name="pinned"' + (it.pinned ? ' checked' : '') + '> 맨 위에 고정</label>',
+      actions: [
+        { act: 'ok', label: '저장' },
+        { act: 'delete', label: '삭제', className: 'danger' },
+        { act: 'cancel', label: '취소', className: 'ghost' }
+      ]
+    }).then(res => {
+      if (res.act === 'delete') {
+        if (!confirm('이 디데이를 지울까요?')) return;
+        dday.items = dday.items.filter(x => x.id !== it.id);
+        saveDday();
+        renderDday();
+        return;
+      }
+      if (res.act !== 'ok') return;
+      const title = (res.form.title || '').trim();
+      const date = res.form.date;
+      if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+      it.title = title;
+      it.date = date;
+      it.yearly = !!res.form.yearly;
+      it.fromOne = !!res.form.fromOne;
+      it.pinned = !!res.form.pinned;
+      saveDday();
+      renderDday();
+    });
+  });
+
+  document.addEventListener('records-panel', ev => {
+    if (ev.detail === 'dday') renderDday();
+  });
+
+  loadDday();
+  window.RecordsDday = {
+    getState: () => dday,
+    applyCloud: applyCloudDday,
+    compute,
+    render: renderDday,
+    empty: emptyDday,
+    hydrate: hydrateDday
+  };
+})();
+
 </script>
 <script type="module">
 /* ===== cloud: Firebase Google login + Firestore sync ===== */
@@ -1617,9 +3483,20 @@ let currentUser = null;
 let applyingCloud = false;
 let notesUnsub = null;
 let todosUnsub = null;
+let moneyUnsub = null;
+let dailyUnsub = null;
+let ddayUnsub = null;
+let photosUnsub = null;
 let todosTimer = null;
+let moneyTimer = null;
+let dailyTimer = null;
+let ddayTimer = null;
 let lastNotesJson = "";
 let lastTodosJson = "";
+let lastMoneyJson = "";
+let lastDailyJson = "";
+let lastDdayJson = "";
+let lastPhotoJson = "";
 let toastTimer = null;
 
 try {
@@ -1972,35 +3849,382 @@ async function markInitialized(uid) {
   }, { merge: true });
 }
 
-async function maybeMigrate(uid, cloudNotes, cloudTodos, cloudNoteIds) {
+
+function moneyRef(uid) { return doc(fbDb, "users", uid, "data", "money"); }
+function dailyRef(uid) { return doc(fbDb, "users", uid, "data", "daily"); }
+function ddayRef(uid) { return doc(fbDb, "users", uid, "data", "dday"); }
+function dailyCol(uid) { return collection(fbDb, "users", uid, "daily"); }
+function dailyDayRef(uid, date) { return doc(fbDb, "users", uid, "daily", String(date)); }
+
+function emptyMoney() { return { v: 1, openingBalance: null, openingMonth: null, entries: [] }; }
+function emptyDaily() {
+  return { v: 1, habits: [
+    { id: "qt", name: "큐티/묵상" },
+    { id: "stretch", name: "스트레칭" },
+    { id: "pray", name: "기도" }
+  ], days: {} };
+}
+function emptyDday() { return { v: 1, items: [] }; }
+
+function moneyPayload(state) {
+  const s = state || emptyMoney();
+  return clean({
+    v: s.v || 1,
+    openingBalance: Number.isFinite(Number(s.openingBalance)) ? Number(s.openingBalance) : null,
+    openingMonth: s.openingMonth || null,
+    entries: Array.isArray(s.entries) ? s.entries : [],
+    updatedAt: new Date().toISOString()
+  });
+}
+function moneySignature(state) {
+  const s = moneyPayload(state);
+  delete s.updatedAt;
+  return JSON.stringify(s);
+}
+function dailyMetaPayload(state) {
+  const s = state || emptyDaily();
+  const days = {};
+  Object.keys(s.days || {}).forEach(iso => {
+    const d = s.days[iso] || {};
+    days[iso] = {
+      line: d.line || "",
+      mood: d.mood || 0,
+      thanks: d.thanks || "",
+      habits: d.habits || {},
+      hasPhoto: !!(d.photo),
+      metBf: !!d.metBf
+    };
+  });
+  return clean({
+    v: s.v || 1,
+    habits: Array.isArray(s.habits) ? s.habits : [],
+    days,
+    updatedAt: new Date().toISOString()
+  });
+}
+function dailySignature(state) {
+  const s = dailyMetaPayload(state);
+  delete s.updatedAt;
+  return JSON.stringify(s);
+}
+function ddayPayload(state) {
+  const s = state || emptyDday();
+  return clean({
+    v: s.v || 1,
+    items: Array.isArray(s.items) ? s.items : [],
+    updatedAt: new Date().toISOString()
+  });
+}
+function ddaySignature(state) {
+  const s = ddayPayload(state);
+  delete s.updatedAt;
+  return JSON.stringify(s);
+}
+
+function localMoney() {
+  if (window.RecordsMoney && typeof window.RecordsMoney.getState === "function") return window.RecordsMoney.getState();
+  try { return JSON.parse(localStorage.getItem("records-money") || "null") || emptyMoney(); }
+  catch (e) { return emptyMoney(); }
+}
+function localDaily() {
+  if (window.RecordsDaily && typeof window.RecordsDaily.getState === "function") return window.RecordsDaily.getState();
+  try { return JSON.parse(localStorage.getItem("records-daily") || "null") || emptyDaily(); }
+  catch (e) { return emptyDaily(); }
+}
+function localDday() {
+  if (window.RecordsDday && typeof window.RecordsDday.getState === "function") return window.RecordsDday.getState();
+  try { return JSON.parse(localStorage.getItem("records-dday") || "null") || emptyDday(); }
+  catch (e) { return emptyDday(); }
+}
+
+function moneyHasData(s) {
+  return !!(s && ((s.entries && s.entries.length) || (s.openingMonth && s.openingBalance != null)));
+}
+function dailyHasData(s) {
+  if (!s) return false;
+  if (s.days && Object.keys(s.days).length) return true;
+  const defs = ["큐티/묵상", "스트레칭", "기도"].join("|");
+  const names = (s.habits || []).map(h => h && h.name).join("|");
+  return !!(s.habits && s.habits.length && names !== defs && (s.habits.length !== 3));
+}
+function ddayHasData(s) { return !!(s && s.items && s.items.length); }
+
+function photosFromSnapshot(snap) {
+  const map = {};
+  (snap.docs || []).forEach(d => {
+    const data = d.data() || {};
+    if (typeof data.photo === "string" && data.photo.indexOf("data:") === 0) map[d.id] = data.photo;
+  });
+  return map;
+}
+function photoSignature(map) {
+  const keys = Object.keys(map || {}).sort();
+  return JSON.stringify(keys.map(k => [k, (map[k] || "").length]));
+}
+
+function applyMoney(state) {
+  applyingCloud = true;
+  lastMoneyJson = moneySignature(state);
+  if (window.RecordsMoney) window.RecordsMoney.applyCloud(state);
+  applyingCloud = false;
+}
+function applyDaily(state, photoMap) {
+  applyingCloud = true;
+  lastDailyJson = dailySignature(state);
+  if (photoMap) lastPhotoJson = photoSignature(photoMap);
+  if (window.RecordsDaily) window.RecordsDaily.applyCloud(state, photoMap || {});
+  applyingCloud = false;
+}
+function applyDday(state) {
+  applyingCloud = true;
+  lastDdayJson = ddaySignature(state);
+  if (window.RecordsDday) window.RecordsDday.applyCloud(state);
+  applyingCloud = false;
+}
+
+function mergeMoney(cloud, local) {
+  const c = (window.RecordsMoney && window.RecordsMoney.hydrate) ? window.RecordsMoney.hydrate(cloud) : (cloud || emptyMoney());
+  const l = (window.RecordsMoney && window.RecordsMoney.hydrate) ? window.RecordsMoney.hydrate(local) : (local || emptyMoney());
+  const byId = new Map();
+  const keys = new Set();
+  const keyOf = e => (e.date || "") + "\0" + (e.type || "") + "\0" + (e.name || "") + "\0" + String(e.amount);
+  function take(e) {
+    if (!e || !e.id) return;
+    if (byId.has(e.id) || keys.has(keyOf(e))) return;
+    byId.set(e.id, e);
+    keys.add(keyOf(e));
+  }
+  (c.entries || []).forEach(take);
+  (l.entries || []).forEach(take);
+  let openingBalance = null, openingMonth = null;
+  if (l.openingMonth && l.openingBalance != null) {
+    openingMonth = l.openingMonth; openingBalance = l.openingBalance;
+  } else if (c.openingMonth && c.openingBalance != null) {
+    openingMonth = c.openingMonth; openingBalance = c.openingBalance;
+  }
+  return { v: Math.max(c.v || 1, l.v || 1), openingBalance, openingMonth, entries: Array.from(byId.values()) };
+}
+
+function mergeDaily(cloud, local) {
+  const hyd = window.RecordsDaily && window.RecordsDaily.hydrate;
+  const c = hyd ? hyd(cloud) : (cloud || emptyDaily());
+  const l = hyd ? hyd(local) : (local || emptyDaily());
+  const habits = [];
+  const ids = new Set();
+  const names = new Set();
+  function takeH(h) {
+    if (!h || !h.id || !h.name) return;
+    if (ids.has(h.id) || names.has(h.name)) return;
+    ids.add(h.id); names.add(h.name);
+    habits.push({ id: String(h.id), name: String(h.name) });
+  }
+  (c.habits || []).forEach(takeH);
+  (l.habits || []).forEach(takeH);
+  if (!habits.length) {
+    emptyDaily().habits.forEach(takeH);
+  }
+  const days = {};
+  const isos = new Set([].concat(Object.keys(c.days || {}), Object.keys(l.days || {})));
+  isos.forEach(iso => {
+    const a = (c.days || {})[iso] || {};
+    const b = (l.days || {})[iso] || {};
+    const hm = Object.assign({}, a.habits || {});
+    Object.keys(b.habits || {}).forEach(k => { if (b.habits[k]) hm[k] = true; else if (!(k in hm)) hm[k] = b.habits[k]; });
+    days[iso] = {
+      line: (b.line && b.line.trim()) ? b.line : (a.line || ""),
+      mood: b.mood || a.mood || 0,
+      thanks: (b.thanks && b.thanks.trim()) ? b.thanks : (a.thanks || ""),
+      habits: hm,
+      photo: b.photo || a.photo || null,
+      metBf: !!(b.metBf || a.metBf)
+    };
+  });
+  return { v: Math.max(c.v || 1, l.v || 1), habits, days };
+}
+
+function mergeDday(cloud, local) {
+  const hyd = window.RecordsDday && window.RecordsDday.hydrate;
+  const c = hyd ? hyd(cloud) : (cloud || emptyDday());
+  const l = hyd ? hyd(local) : (local || emptyDday());
+  const byId = new Map();
+  const keys = new Set();
+  const keyOf = it => (it.title || "") + "\0" + (it.date || "");
+  (c.items || []).forEach(it => { if (it && it.id) { byId.set(it.id, Object.assign({}, it)); keys.add(keyOf(it)); } });
+  (l.items || []).forEach(it => {
+    if (!it || !it.id) return;
+    if (byId.has(it.id)) {
+      byId.set(it.id, Object.assign({}, byId.get(it.id), it));
+    } else if (!keys.has(keyOf(it))) {
+      byId.set(it.id, Object.assign({}, it));
+      keys.add(keyOf(it));
+    }
+  });
+  return { v: Math.max(c.v || 1, l.v || 1), items: Array.from(byId.values()) };
+}
+
+async function shrinkPhoto(src) {
+  let out = src;
+  const steps = [[800, 0.8], [600, 0.72], [400, 0.6], [300, 0.5], [240, 0.42]];
+  for (let i = 0; i < steps.length; i++) {
+    const data = clean({ date: "x", photo: out });
+    if (byteSize(data) <= DOC_LIMIT) return out;
+    out = await recompressDataUrl(out, steps[i][0], steps[i][1]);
+  }
+  return out;
+}
+
+async function uploadMoney(uid, state) {
+  const data = moneyPayload(state);
+  if (byteSize(data) > DOC_LIMIT) {
+    toast("가계부 데이터가 너무 커서 계정에 올리지 못했어요.");
+    return;
+  }
+  await setDoc(moneyRef(uid), data, { merge: true });
+}
+async function uploadDaily(uid, state) {
+  const data = dailyMetaPayload(state);
+  if (byteSize(data) > DOC_LIMIT) {
+    toast("매일 기록 데이터가 너무 커서 계정에 올리지 못했어요.");
+    return;
+  }
+  await setDoc(dailyRef(uid), data, { merge: true });
+}
+async function uploadDday(uid, state) {
+  const data = ddayPayload(state);
+  if (byteSize(data) > DOC_LIMIT) {
+    toast("디데이 데이터가 너무 커서 계정에 올리지 못했어요.");
+    return;
+  }
+  await setDoc(ddayRef(uid), data, { merge: true });
+}
+async function uploadPhoto(uid, date, photo) {
+  if (!photo) {
+    try { await deleteDoc(dailyDayRef(uid, date)); } catch (e) {}
+    return true;
+  }
+  const src = await shrinkPhoto(photo);
+  const data = clean({ date, photo: src, updatedAt: new Date().toISOString() });
+  if (byteSize(data) > DOC_LIMIT) {
+    toast("사진이 너무 커서 계정에 올리지 못했어요. 이 브라우저에는 그대로 남아 있어요.");
+    return false;
+  }
+  await setDoc(dailyDayRef(uid, date), data);
+  return true;
+}
+async function uploadDailyPhotos(uid, state, existingIds) {
+  const days = (state && state.days) || {};
+  const keep = new Set();
+  for (const iso of Object.keys(days)) {
+    if (days[iso] && days[iso].photo) {
+      const ok = await uploadPhoto(uid, iso, days[iso].photo);
+      if (ok) keep.add(iso);
+    }
+  }
+  const toDelete = (existingIds || []).filter(id => !keep.has(id));
+  for (const id of toDelete) {
+    try { await deleteDoc(dailyDayRef(uid, id)); } catch (e) {}
+  }
+}
+
+async function pushMoneyNow(state) {
+  if (!currentUser || !fbDb || applyingCloud) return;
+  const sig = moneySignature(state);
+  if (sig === lastMoneyJson) return;
+  try {
+    await uploadMoney(currentUser.uid, state);
+    lastMoneyJson = sig;
+  } catch (err) { toast(friendlyError(err)); }
+}
+async function pushDailyNow(state) {
+  if (!currentUser || !fbDb || applyingCloud) return;
+  const sig = dailySignature(state);
+  if (sig === lastDailyJson) return;
+  try {
+    await uploadDaily(currentUser.uid, state);
+    lastDailyJson = sig;
+  } catch (err) { toast(friendlyError(err)); }
+}
+async function pushDdayNow(state) {
+  if (!currentUser || !fbDb || applyingCloud) return;
+  const sig = ddaySignature(state);
+  if (sig === lastDdayJson) return;
+  try {
+    await uploadDday(currentUser.uid, state);
+    lastDdayJson = sig;
+  } catch (err) { toast(friendlyError(err)); }
+}
+async function pushPhotoNow(date, photo) {
+  if (!currentUser || !fbDb || applyingCloud) return;
+  try { await uploadPhoto(currentUser.uid, date, photo); }
+  catch (err) { toast(friendlyError(err)); }
+}
+
+
+async function maybeMigrate(uid, bag) {
+  bag = bag || {};
+  const cloudNotes = bag.cloudNotes || [];
+  const cloudTodos = bag.cloudTodos || emptyTodos();
+  const cloudNoteIds = bag.cloudNoteIds || [];
+  const cloudMoney = bag.cloudMoney || emptyMoney();
+  const cloudDaily = bag.cloudDaily || emptyDaily();
+  const cloudDday = bag.cloudDday || emptyDday();
+  const cloudPhotos = bag.cloudPhotos || {};
+  const cloudPhotoIds = bag.cloudPhotoIds || [];
+
   const locN = localNotes();
   const locT = localTodos();
-  const localHas = locN.length > 0 || todosHasData(locT);
-  const cloudHas = (cloudNotes || []).length > 0 || todosHasData(cloudTodos);
+  const locM = localMoney();
+  const locD = localDaily();
+  const locDd = localDday();
+  const localHas = locN.length > 0 || todosHasData(locT) || moneyHasData(locM) || dailyHasData(locD) || ddayHasData(locDd);
+  const cloudHas = (cloudNotes || []).length > 0 || todosHasData(cloudTodos) || moneyHasData(cloudMoney) || dailyHasData(cloudDaily) || ddayHasData(cloudDday);
   const notesDiff = notesSignature(locN) !== notesSignature(cloudNotes || []);
   const todosDiff = todosSignature(locT) !== todosSignature(cloudTodos || emptyTodos());
-  const different = notesDiff || todosDiff;
+  const moneyDiff = moneySignature(locM) !== moneySignature(cloudMoney);
+  const dailyDiff = dailySignature(locD) !== dailySignature(cloudDaily);
+  const ddayDiff = ddaySignature(locDd) !== ddaySignature(cloudDday);
+  const different = notesDiff || todosDiff || moneyDiff || dailyDiff || ddayDiff;
 
   if (localHas && (!cloudHas || different)) {
     const skipKey = "records-migrate-skip:" + uid;
     if (!sessionStorage.getItem(skipKey)) {
       const nCount = locN.length;
       const tCount = (locT.oneoffs || []).length + (locT.routines || []).length;
+      const mCount = (locM.entries || []).length;
+      const dCount = locD.days ? Object.keys(locD.days).length : 0;
+      const ddCount = (locDd.items || []).length;
       const parts = [];
       if (nCount) parts.push("메모 " + nCount + "개");
       if (tCount) parts.push("할 일 " + tCount + "개");
-      const label = parts.length ? parts.join("와 ") + "를" : "기록을";
+      if (dCount) parts.push("매일 기록 " + dCount + "일");
+      if (mCount) parts.push("수입·지출 " + mCount + "개");
+      if (ddCount) parts.push("디데이 " + ddCount + "개");
+      const label = parts.length ? parts.join(", ") + "를" : "기록을";
       const msg = "이 브라우저에 저장된 " + label +
         " 구글 계정으로 옮길까요? 이미 계정에 있는 같은 항목은 하나로 합쳐져요.";
       if (window.confirm(msg)) {
         try {
           const mergedNotes = mergeNotes(cloudNotes, locN);
           const mergedTodos = mergeTodos(cloudTodos, locT);
+          const mergedMoney = mergeMoney(cloudMoney, locM);
+          const mergedDaily = mergeDaily(cloudDaily, locD);
+          const mergedDday = mergeDday(cloudDday, locDd);
           const uploaded = await uploadNotes(uid, mergedNotes);
           await deleteMissingNotes(uid, uploaded, cloudNoteIds);
           await uploadTodos(uid, mergedTodos);
+          await uploadMoney(uid, mergedMoney);
+          await uploadDaily(uid, mergedDaily);
+          await uploadDailyPhotos(uid, mergedDaily, cloudPhotoIds);
+          await uploadDday(uid, mergedDday);
           applyNotes(uploaded.length ? uploaded : mergedNotes);
           applyTodos(mergedTodos);
+          applyMoney(mergedMoney);
+          const photoMap = {};
+          Object.keys((mergedDaily.days || {})).forEach(iso => {
+            if (mergedDaily.days[iso] && mergedDaily.days[iso].photo) photoMap[iso] = mergedDaily.days[iso].photo;
+          });
+          applyDaily(mergedDaily, photoMap);
+          applyDday(mergedDday);
           await markInitialized(uid);
           return true;
         } catch (err) {
@@ -2046,7 +4270,14 @@ async function pushTodosNow(state) {
 function stopCloudSync() {
   if (notesUnsub) { notesUnsub(); notesUnsub = null; }
   if (todosUnsub) { todosUnsub(); todosUnsub = null; }
+  if (moneyUnsub) { moneyUnsub(); moneyUnsub = null; }
+  if (dailyUnsub) { dailyUnsub(); dailyUnsub = null; }
+  if (ddayUnsub) { ddayUnsub(); ddayUnsub = null; }
+  if (photosUnsub) { photosUnsub(); photosUnsub = null; }
   if (todosTimer) { clearTimeout(todosTimer); todosTimer = null; }
+  if (moneyTimer) { clearTimeout(moneyTimer); moneyTimer = null; }
+  if (dailyTimer) { clearTimeout(dailyTimer); dailyTimer = null; }
+  if (ddayTimer) { clearTimeout(ddayTimer); ddayTimer = null; }
 }
 
 function startCloudSync(uid) {
@@ -2066,6 +4297,41 @@ function startCloudSync(uid) {
     if (sig === lastTodosJson) return;
     applyTodos(data);
   }, err => toast(friendlyError(err)));
+
+  moneyUnsub = onSnapshot(moneyRef(uid), snap => {
+    if (applyingCloud) return;
+    const data = snap.exists() ? snap.data() : emptyMoney();
+    const sig = moneySignature(data);
+    if (sig === lastMoneyJson) return;
+    applyMoney(data);
+  }, err => toast(friendlyError(err)));
+
+  dailyUnsub = onSnapshot(dailyRef(uid), snap => {
+    if (applyingCloud) return;
+    const data = snap.exists() ? snap.data() : emptyDaily();
+    const sig = dailySignature(data);
+    if (sig === lastDailyJson) return;
+    applyDaily(data);
+  }, err => toast(friendlyError(err)));
+
+  ddayUnsub = onSnapshot(ddayRef(uid), snap => {
+    if (applyingCloud) return;
+    const data = snap.exists() ? snap.data() : emptyDday();
+    const sig = ddaySignature(data);
+    if (sig === lastDdayJson) return;
+    applyDday(data);
+  }, err => toast(friendlyError(err)));
+
+  photosUnsub = onSnapshot(dailyCol(uid), snap => {
+    if (applyingCloud) return;
+    const map = photosFromSnapshot(snap);
+    const sig = photoSignature(map);
+    if (sig === lastPhotoJson) return;
+    lastPhotoJson = sig;
+    Object.keys(map).forEach(iso => {
+      if (window.RecordsDaily) window.RecordsDaily.applyCloudPhoto(iso, map[iso]);
+    });
+  }, err => toast(friendlyError(err)));
 }
 
 async function enterSignedIn(user) {
@@ -2076,16 +4342,30 @@ async function enterSignedIn(user) {
     return;
   }
   try {
-    const [nSnap, tSnap] = await Promise.all([
+    const [nSnap, tSnap, mSnap, dSnap, ddSnap, pSnap] = await Promise.all([
       getDocs(notesCol(user.uid)),
-      getDoc(todosRef(user.uid))
+      getDoc(todosRef(user.uid)),
+      getDoc(moneyRef(user.uid)),
+      getDoc(dailyRef(user.uid)),
+      getDoc(ddayRef(user.uid)),
+      getDocs(dailyCol(user.uid))
     ]);
     const cloudNotes = notesFromSnapshot(nSnap);
     const cloudTodos = tSnap.exists() ? tSnap.data() : emptyTodos();
-    const wrote = await maybeMigrate(user.uid, cloudNotes, cloudTodos, nSnap.docs.map(d => d.id));
+    const cloudMoney = mSnap.exists() ? mSnap.data() : emptyMoney();
+    const cloudDaily = dSnap.exists() ? dSnap.data() : emptyDaily();
+    const cloudDday = ddSnap.exists() ? ddSnap.data() : emptyDday();
+    const cloudPhotos = photosFromSnapshot(pSnap);
+    const wrote = await maybeMigrate(user.uid, {
+      cloudNotes, cloudTodos, cloudNoteIds: nSnap.docs.map(d => d.id),
+      cloudMoney, cloudDaily, cloudDday, cloudPhotos, cloudPhotoIds: pSnap.docs.map(d => d.id)
+    });
     if (!wrote) {
       applyNotes(cloudNotes);
       applyTodos(cloudTodos);
+      applyMoney(cloudMoney);
+      applyDaily(cloudDaily, cloudPhotos);
+      applyDday(cloudDday);
     }
     startCloudSync(user.uid);
   } catch (err) {
@@ -2099,6 +4379,10 @@ function enterSignedOut() {
   currentUser = null;
   lastNotesJson = "";
   lastTodosJson = "";
+  lastMoneyJson = "";
+  lastDailyJson = "";
+  lastDdayJson = "";
+  lastPhotoJson = "";
   updateAuthUi();
   // localStorage still holds the last cache (or unsynced local data)
   try {
@@ -2108,6 +4392,18 @@ function enterSignedOut() {
   try {
     const todos = JSON.parse(localStorage.getItem("records-todos") || "null");
     if (window.RecordsTodo) window.RecordsTodo.applyCloud(todos || emptyTodos());
+  } catch (e) {}
+  try {
+    const money = JSON.parse(localStorage.getItem("records-money") || "null");
+    if (window.RecordsMoney) window.RecordsMoney.applyCloud(money || emptyMoney());
+  } catch (e) {}
+  try {
+    const daily = JSON.parse(localStorage.getItem("records-daily") || "null");
+    if (window.RecordsDaily) window.RecordsDaily.applyCloud(daily || emptyDaily());
+  } catch (e) {}
+  try {
+    const dday = JSON.parse(localStorage.getItem("records-dday") || "null");
+    if (window.RecordsDday) window.RecordsDday.applyCloud(dday || emptyDday());
   } catch (e) {}
 }
 
@@ -2177,8 +4473,14 @@ async function loginGoogle() {
 async function logoutGoogle() {
   try {
     if (todosTimer) { clearTimeout(todosTimer); todosTimer = null; }
+    if (moneyTimer) { clearTimeout(moneyTimer); moneyTimer = null; }
+    if (dailyTimer) { clearTimeout(dailyTimer); dailyTimer = null; }
+    if (ddayTimer) { clearTimeout(ddayTimer); ddayTimer = null; }
     if (currentUser && fbDb) {
       try { await pushTodosNow(localTodos()); } catch (e) {}
+      try { await pushMoneyNow(localMoney()); } catch (e) {}
+      try { await pushDailyNow(localDaily()); } catch (e) {}
+      try { await pushDdayNow(localDday()); } catch (e) {}
     }
     stopCloudSync();
     if (fbAuth) await signOut(fbAuth);
@@ -2198,6 +4500,25 @@ window.RecordsCloud = {
     if (!currentUser || applyingCloud) return;
     clearTimeout(todosTimer);
     todosTimer = setTimeout(() => { todosTimer = null; pushTodosNow(state); }, 250);
+  },
+  onMoneySave(state) {
+    if (!currentUser || applyingCloud) return;
+    clearTimeout(moneyTimer);
+    moneyTimer = setTimeout(() => { moneyTimer = null; pushMoneyNow(state); }, 250);
+  },
+  onDailySave(state) {
+    if (!currentUser || applyingCloud) return;
+    clearTimeout(dailyTimer);
+    dailyTimer = setTimeout(() => { dailyTimer = null; pushDailyNow(state); }, 250);
+  },
+  onDailyPhotoSave(date, photo) {
+    if (!currentUser || applyingCloud) return;
+    pushPhotoNow(date, photo);
+  },
+  onDdaySave(state) {
+    if (!currentUser || applyingCloud) return;
+    clearTimeout(ddayTimer);
+    ddayTimer = setTimeout(() => { ddayTimer = null; pushDdayNow(state); }, 250);
   }
 };
 
