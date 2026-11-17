@@ -83,9 +83,24 @@
   .content { font-size: 20px; line-height: 1.35; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; text-align: center;
     -webkit-text-stroke: calc(1.5px * 20 / 44) #fdfdfd; }
   .content img { max-width: 100%; display: block; margin: 4px auto; border-radius: 3px; }
+  .content .txt { display: block; }
+  .note { touch-action: manipulation; user-select: none; }
+  .note.editing {
+    transform: rotate(0deg);
+    z-index: 5;
+    box-shadow: 0 3px 8px rgba(0,0,0,.13), 0 0 0 1.5px #d0d0d0;
+    user-select: text;
+  }
+  .note.editing:hover { transform: rotate(0deg); }
+  .note.editing .txt {
+    outline: none; cursor: text; min-height: 1.2em;
+    -webkit-user-select: text; user-select: text;
+  }
+  .note.editing .del { display: none; }
   .del { position: absolute; top: 4px; right: 6px; border: none; background: none; color: #bbb;
-    cursor: pointer; font-size: 16px; display: none; }
+    cursor: pointer; font-size: 16px; display: none; z-index: 3; }
   .note:hover .del { display: block; }
+  .note.editing:hover .del { display: none; }
   .del:hover { color: #e55; }
   .empty { color: #aaa; font-size: 22px; padding: 40px 50px; }
   @media (max-width: 860px) {
@@ -1432,7 +1447,181 @@ function sizeWall() {
   packWall();
 }
 
+function contentHtml(parts) {
+  return parts.map(p => p.t === 'img' ? `<img src="${p.v}">` : `<span class="txt">${escapeHtml(p.v)}</span>`).join('');
+}
+
+let activeEdit = null;
+let lastTap = { id: null, t: 0 };
+let packEditTimer = 0;
+
+function collectParts(el) {
+  const parts = [];
+  const box = el.querySelector('.content');
+  if (!box) return parts;
+  box.childNodes.forEach(node => {
+    if (node.nodeName === 'IMG') {
+      const src = node.getAttribute('src') || node.src;
+      if (src) parts.push({ t: 'img', v: src });
+    } else if (node.nodeType === 1 && node.classList.contains('txt')) {
+      const v = (node.innerText || '').replace(/\u00a0/g, ' ').replace(/^\n+|\n+$/g, '');
+      if (v.trim()) parts.push({ t: 'text', v });
+    }
+  });
+  return parts;
+}
+
+function endEditChrome(el) {
+  el.classList.remove('editing');
+  el.querySelectorAll('.txt').forEach(t => {
+    t.removeAttribute('contenteditable');
+    t.removeAttribute('spellcheck');
+  });
+}
+
+function startEdit(el, n) {
+  if (activeEdit && activeEdit.el === el) return;
+  if (activeEdit) commitEdit();
+  const box = el.querySelector('.content');
+  if (!box) return;
+  let texts = [...box.querySelectorAll('.txt')];
+  if (!texts.length) {
+    const cap = document.createElement('span');
+    cap.className = 'txt';
+    box.appendChild(cap);
+    texts = [cap];
+  }
+  el.classList.add('editing');
+  texts.forEach(t => { t.contentEditable = 'true'; t.spellcheck = false; });
+  const state = { el, n, original: JSON.stringify(n.parts), busy: false };
+  const onInput = () => {
+    clearTimeout(packEditTimer);
+    packEditTimer = setTimeout(() => { fitNote(el); packWall(); }, 50);
+  };
+  const onPaste = e => {
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData('text/plain') || '';
+    document.execCommand('insertText', false, text);
+  };
+  const onKey = e => {
+    if ((e.ctrlKey || e.metaKey) && ['b','i','u'].includes(e.key.toLowerCase())) e.preventDefault();
+    if (e.key === 'Escape') { e.preventDefault(); cancelEdit(); }
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); commitEdit(); }
+  };
+  const onFocusOut = e => {
+    if (el.contains(e.relatedTarget)) return;
+    setTimeout(() => {
+      if (activeEdit && activeEdit.el === el && !activeEdit.busy && !el.contains(document.activeElement)) commitEdit();
+    }, 0);
+  };
+  texts.forEach(t => {
+    t.addEventListener('input', onInput);
+    t.addEventListener('paste', onPaste);
+    t.addEventListener('keydown', onKey);
+  });
+  el.addEventListener('focusout', onFocusOut);
+  state.cleanup = () => {
+    texts.forEach(t => {
+      t.removeEventListener('input', onInput);
+      t.removeEventListener('paste', onPaste);
+      t.removeEventListener('keydown', onKey);
+    });
+    el.removeEventListener('focusout', onFocusOut);
+    clearTimeout(packEditTimer);
+  };
+  activeEdit = state;
+  const last = texts[texts.length - 1];
+  last.focus();
+  const range = document.createRange();
+  range.selectNodeContents(last);
+  range.collapse(false);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  fitNote(el); packWall();
+}
+
+function cancelEdit() {
+  if (!activeEdit || activeEdit.busy) return;
+  activeEdit.busy = true;
+  const { el, n, cleanup } = activeEdit;
+  cleanup();
+  el.querySelector('.content').innerHTML = contentHtml(n.parts);
+  endEditChrome(el);
+  activeEdit = null;
+  sizeWall();
+}
+
+function commitEdit() {
+  if (!activeEdit || activeEdit.busy) return;
+  activeEdit.busy = true;
+  const { el, n, original, cleanup } = activeEdit;
+  const parts = collectParts(el);
+  const hasImg = parts.some(p => p.t === 'img');
+  const hasText = parts.some(p => p.t === 'text');
+  if (!hasImg && !hasText) {
+    const ok = confirm('내용이 비어 있어요. 이 메모를 지울까요?');
+    if (!ok) {
+      cleanup();
+      el.querySelector('.content').innerHTML = contentHtml(JSON.parse(original));
+      endEditChrome(el);
+      activeEdit = null;
+      startEdit(el, n);
+      return;
+    }
+    cleanup();
+    endEditChrome(el);
+    activeEdit = null;
+    notes = notes.filter(x => x.id !== n.id);
+    save();
+    render();
+    return;
+  }
+  cleanup();
+  if (JSON.stringify(parts) !== original) {
+    n.parts = parts;
+    n.editedAt = Date.now();
+    save();
+  }
+  el.querySelector('.content').innerHTML = contentHtml(n.parts);
+  endEditChrome(el);
+  activeEdit = null;
+  sizeWall();
+}
+
+function bindEdit(el, n) {
+  el.addEventListener('dblclick', e => {
+    if (e.target.closest('.del')) return;
+    e.preventDefault();
+    startEdit(el, n);
+  });
+  let tapGuard = 0;
+  function onTap(e) {
+    if (e.target.closest && e.target.closest('.del')) return;
+    if (el.classList.contains('editing')) return;
+    const now = Date.now();
+    if (now - tapGuard < 40) return;
+    tapGuard = now;
+    if (lastTap.id === n.id && now - lastTap.t < 380) {
+      e.preventDefault();
+      lastTap = { id: null, t: 0 };
+      startEdit(el, n);
+    } else {
+      lastTap = { id: n.id, t: now };
+    }
+  }
+  el.addEventListener('pointerup', e => {
+    if (e.pointerType === 'mouse' || e.pointerType === '') return;
+    onTap(e);
+  });
+  el.addEventListener('touchend', e => {
+    if (e.touches && e.touches.length) return;
+    onTap(e);
+  });
+}
+
 function render() {
+  if (activeEdit && !activeEdit.busy) commitEdit();
   const q = searchBox.value.trim().toLowerCase();
   const list = notes.filter(n => !q || n.parts.some(p => p.t === 'text' && p.v.toLowerCase().includes(q)) || stamp(n.time).includes(q));
   wall.innerHTML = '';
@@ -1440,12 +1629,14 @@ function render() {
   list.forEach(n => {
     const el = document.createElement('div');
     el.className = 'note';
+    el.dataset.id = String(n.id);
     el.style.setProperty('--r', n.rot + 'deg');
-    el.innerHTML = `<button class="del" title="삭제">✕</button><div class="stamp">${stamp(n.time)}</div><div class="content">${
-      n.parts.map(p => p.t === 'img' ? `<img src="${p.v}">` : escapeHtml(p.v)).join('')}</div>`;
-    el.querySelector('.del').onclick = () => {
+    el.innerHTML = `<button class="del" title="삭제">✕</button><div class="stamp">${stamp(n.time)}</div><div class="content">${contentHtml(n.parts)}</div>`;
+    el.querySelector('.del').onclick = ev => {
+      ev.stopPropagation();
       if (confirm('이 메모를 지울까요?')) { notes = notes.filter(x => x.id !== n.id); save(); render(); }
     };
+    bindEdit(el, n);
     wall.appendChild(el);
     el.querySelectorAll('img').forEach(img => {
       if (!img.complete) img.addEventListener('load', () => { fitNote(el); packWall(); }, { once: true });
@@ -3665,16 +3856,19 @@ function normalizeNote(raw) {
   if (!raw) return null;
   const parts = Array.isArray(raw.parts) ? raw.parts.filter(p => p && (p.t === "text" || p.t === "img") && typeof p.v === "string") : [];
   if (!parts.length) return null;
-  return {
+  const out = {
     id: normalizeNoteId(raw.id),
     time: typeof raw.time === "number" ? raw.time : (Number(raw.time) || Date.now()),
     rot: typeof raw.rot === "number" ? raw.rot : 0,
     parts
   };
+  const edited = typeof raw.editedAt === "number" ? raw.editedAt : Number(raw.editedAt);
+  if (Number.isFinite(edited) && edited > 0) out.editedAt = edited;
+  return out;
 }
 
 function notesSignature(list) {
-  const rows = (list || []).map(n => [n.id, n.time, n.rot, n.parts]);
+  const rows = (list || []).map(n => [n.id, n.time, n.rot, n.editedAt || 0, n.parts]);
   rows.sort((a, b) => String(a[0]).localeCompare(String(b[0])));
   return JSON.stringify(rows);
 }
@@ -3707,6 +3901,7 @@ function recompressDataUrl(src, max, quality) {
 
 async function shrinkNote(note) {
   let n = { id: note.id, time: note.time, rot: note.rot, parts: note.parts.slice() };
+  if (note.editedAt) n.editedAt = note.editedAt;
   const steps = [[600, 0.75], [400, 0.62], [300, 0.52], [240, 0.45]];
   for (let i = 0; i < steps.length; i++) {
     if (byteSize(noteToDoc(n)) <= DOC_LIMIT) return n;
@@ -3717,18 +3912,21 @@ async function shrinkNote(note) {
       else parts.push(p);
     }
     n = { id: n.id, time: n.time, rot: n.rot, parts };
+    if (note.editedAt) n.editedAt = note.editedAt;
   }
   return n;
 }
 
 function noteToDoc(n) {
-  return clean({
+  const doc = {
     id: String(n.id),
     time: n.time,
     rot: n.rot,
     parts: n.parts,
     updatedAt: new Date().toISOString()
-  });
+  };
+  if (n.editedAt) doc.editedAt = n.editedAt;
+  return clean(doc);
 }
 
 function todosPayload(state) {
