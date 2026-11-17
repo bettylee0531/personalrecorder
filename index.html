@@ -1276,6 +1276,37 @@
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
+window.RecordsIme = (function () {
+  const composing = new WeakSet();
+  function nfc(s) {
+    if (s == null) return '';
+    s = String(s);
+    try { return s.normalize('NFC'); } catch (e) { return s; }
+  }
+  function isElComposing(el) {
+    return !!(el && composing.has(el));
+  }
+  function isEventComposing(e) {
+    if (!e) return false;
+    if (e.isComposing) return true;
+    if (e.keyCode === 229 || e.key === 'Process') return true;
+    if (e.target && composing.has(e.target)) return true;
+    return false;
+  }
+  function isActiveComposing() {
+    return isElComposing(document.activeElement);
+  }
+  function fillIfIdle(el, value) {
+    if (!el) return;
+    if (document.activeElement === el || isElComposing(el)) return;
+    const v = nfc(value == null ? '' : value);
+    if ('value' in el && el.value !== v) el.value = v;
+  }
+  document.addEventListener('compositionstart', e => { if (e.target) composing.add(e.target); }, true);
+  document.addEventListener('compositionend', e => { if (e.target) composing.delete(e.target); }, true);
+  return { nfc: nfc, isElComposing: isElComposing, isEventComposing: isEventComposing, isActiveComposing: isActiveComposing, fillIfIdle: fillIfIdle };
+})();
+
 /* ===== app shell: tab switching (more panels can be registered later) ===== */
 (function () {
   const TAB_KEY = 'records-tab';
@@ -1366,7 +1397,7 @@ function readInput() {
   }
   walk(input);
   if (buf) parts.push({t:'text', v:buf});
-  return parts.map(p => p.t === 'text' ? {t:'text', v:p.v.replace(/^\n+|\n+$/g,'')} : p)
+  return parts.map(p => p.t === 'text' ? {t:'text', v:window.RecordsIme.nfc(p.v.replace(/^\n+|\n+$/g,''))} : p)
               .filter(p => p.t === 'img' || p.v.trim());
 }
 
@@ -1464,7 +1495,7 @@ function collectParts(el) {
       const src = node.getAttribute('src') || node.src;
       if (src) parts.push({ t: 'img', v: src });
     } else if (node.nodeType === 1 && node.classList.contains('txt')) {
-      const v = (node.innerText || '').replace(/\u00a0/g, ' ').replace(/^\n+|\n+$/g, '');
+      const v = window.RecordsIme.nfc((node.innerText || '').replace(/\u00a0/g, ' ').replace(/^\n+|\n+$/g, ''));
       if (v.trim()) parts.push({ t: 'text', v });
     }
   });
@@ -1494,10 +1525,12 @@ function startEdit(el, n) {
   el.classList.add('editing');
   texts.forEach(t => { t.contentEditable = 'true'; t.spellcheck = false; });
   const state = { el, n, original: JSON.stringify(n.parts), busy: false };
-  const onInput = () => {
+  const onInput = ev => {
+    if (window.RecordsIme.isEventComposing(ev)) return;
     clearTimeout(packEditTimer);
     packEditTimer = setTimeout(() => { fitNote(el); packWall(); }, 50);
   };
+  const onCompEnd = () => { fitNote(el); packWall(); };
   const onPaste = e => {
     e.preventDefault();
     const text = (e.clipboardData || window.clipboardData).getData('text/plain') || '';
@@ -1506,16 +1539,17 @@ function startEdit(el, n) {
   const onKey = e => {
     if ((e.ctrlKey || e.metaKey) && ['b','i','u'].includes(e.key.toLowerCase())) e.preventDefault();
     if (e.key === 'Escape') { e.preventDefault(); cancelEdit(); }
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); commitEdit(); }
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !window.RecordsIme.isEventComposing(e)) { e.preventDefault(); commitEdit(); }
   };
   const onFocusOut = e => {
     if (el.contains(e.relatedTarget)) return;
     setTimeout(() => {
-      if (activeEdit && activeEdit.el === el && !activeEdit.busy && !el.contains(document.activeElement)) commitEdit();
+      if (activeEdit && activeEdit.el === el && !activeEdit.busy && !el.contains(document.activeElement) && !window.RecordsIme.isActiveComposing()) commitEdit();
     }, 0);
   };
   texts.forEach(t => {
     t.addEventListener('input', onInput);
+    t.addEventListener('compositionend', onCompEnd);
     t.addEventListener('paste', onPaste);
     t.addEventListener('keydown', onKey);
   });
@@ -1523,6 +1557,7 @@ function startEdit(el, n) {
   state.cleanup = () => {
     texts.forEach(t => {
       t.removeEventListener('input', onInput);
+      t.removeEventListener('compositionend', onCompEnd);
       t.removeEventListener('paste', onPaste);
       t.removeEventListener('keydown', onKey);
     });
@@ -1621,6 +1656,7 @@ function bindEdit(el, n) {
 }
 
 function render() {
+  if (activeEdit && !activeEdit.busy && window.RecordsIme.isActiveComposing()) return;
   if (activeEdit && !activeEdit.busy) commitEdit();
   const q = searchBox.value.trim().toLowerCase();
   const list = notes.filter(n => !q || n.parts.some(p => p.t === 'text' && p.v.toLowerCase().includes(q)) || stamp(n.time).includes(q));
@@ -1681,7 +1717,7 @@ function resizeImage(src, cb) {
 // 굵게/기울임 단축키 막기
 input.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && ['b','i','u'].includes(e.key.toLowerCase())) e.preventDefault();
-  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); addNote(); }
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !window.RecordsIme.isEventComposing(e)) { e.preventDefault(); addNote(); }
 });
 input.addEventListener('drop', e => e.preventDefault());
 
@@ -1690,7 +1726,8 @@ document.getElementById('searchBtn').onclick = () => {
   searchBox.classList.toggle('open');
   if (searchBox.classList.contains('open')) searchBox.focus(); else { searchBox.value = ''; render(); }
 };
-searchBox.addEventListener('input', render);
+searchBox.addEventListener('input', e => { if (!window.RecordsIme.isEventComposing(e)) render(); });
+searchBox.addEventListener('compositionend', render);
 let sizeTimer = 0;
 window.addEventListener('resize', () => {
   clearTimeout(sizeTimer);
@@ -1889,6 +1926,7 @@ window.RecordsMemo = {
   function withInputPreserved(scope, fn) {
     const sel = scope === 'week' ? '.week-add input' : '#addInput';
     const inp = $(sel);
+    if (inp && window.RecordsIme.isElComposing(inp)) { fn(); return; }
     const val = inp ? inp.value : '';
     const start = inp ? inp.selectionStart : null;
     const end = inp ? inp.selectionEnd : null;
@@ -1992,7 +2030,7 @@ window.RecordsMemo = {
   }
 
   function addTask(dateStr, text, spec) {
-    const trimmed = text.replace(/\s+/g, ' ').trim();
+    const trimmed = window.RecordsIme.nfc(text).replace(/\s+/g, ' ').trim();
     if (!trimmed) return false;
     if (spec === false) return false;
     const order = nextOrder(dateStr);
@@ -2020,7 +2058,7 @@ window.RecordsMemo = {
   }
 
   function editText(kind, id, text) {
-    const trimmed = text.replace(/\s+/g, ' ').trim();
+    const trimmed = window.RecordsIme.nfc(text).replace(/\s+/g, ' ').trim();
     if (!trimmed) return false;
     if (kind === 'oneoff') {
       const t = findOneoff(id);
@@ -2071,6 +2109,16 @@ window.RecordsMemo = {
 
   /* ---------- render ---------- */
   function render() {
+    const active = document.activeElement;
+    const card = $('#card');
+    if (window.RecordsIme && card && active && card.contains(active) && window.RecordsIme.isElComposing(active)) {
+      if (!active._imeResume) {
+        const resume = () => { active.removeEventListener('compositionend', resume); active._imeResume = false; render(); };
+        active._imeResume = true;
+        active.addEventListener('compositionend', resume);
+      }
+      return;
+    }
     const today = todayISO();
     const isTodayView = state.view === 'today';
     $$('#viewToggle button').forEach(b => {
@@ -2159,7 +2207,7 @@ window.RecordsMemo = {
 
     const inp = $('#addInput');
     if (inp) inp.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !window.RecordsIme.isEventComposing(e)) {
         e.preventDefault();
         if (addTask(viewDate, inp.value, repeatSpec('today'))) inp.value = '';
       }
@@ -2329,7 +2377,7 @@ window.RecordsMemo = {
   $('#card').addEventListener('keydown', e => {
     const weekInp = e.target.closest('.week-add input');
     if (weekInp) {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !window.RecordsIme.isEventComposing(e)) {
         e.preventDefault();
         if (addTask(weekAddDate, weekInp.value, repeatSpec('week'))) {
           weekAddDate = null;
@@ -2393,8 +2441,8 @@ window.RecordsMemo = {
       else render();
     };
     input.addEventListener('keydown', ev => {
-      if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
-      if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
+      if (ev.key === 'Enter' && !window.RecordsIme.isEventComposing(ev)) { ev.preventDefault(); finish(true); }
+      if (ev.key === 'Escape' && !window.RecordsIme.isEventComposing(ev)) { ev.preventDefault(); finish(false); }
     });
     input.addEventListener('blur', () => finish(true));
   }
@@ -2669,7 +2717,7 @@ window.RecordsMemo = {
         const form = {};
         modalBody.querySelectorAll('input, textarea, select').forEach(el => {
           if (!el.name) return;
-          form[el.name] = el.type === 'checkbox' ? el.checked : el.value;
+          form[el.name] = el.type === 'checkbox' ? el.checked : (typeof el.value === 'string' ? window.RecordsIme.nfc(el.value) : el.value);
         });
         closeModal();
         resolve({ act, form });
@@ -2874,9 +2922,9 @@ window.RecordsMemo = {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
         const d = data.days[iso] || {};
         next.days[iso] = {
-          line: typeof d.line === 'string' ? d.line : '',
+          line: typeof d.line === 'string' ? window.RecordsIme.nfc(d.line) : '',
           mood: [1, 2, 3, 4, 5].includes(d.mood) ? d.mood : 0,
-          thanks: typeof d.thanks === 'string' ? d.thanks : '',
+          thanks: typeof d.thanks === 'string' ? window.RecordsIme.nfc(d.thanks) : '',
           habits: d.habits && typeof d.habits === 'object' ? Object.assign({}, d.habits) : {},
           photo: typeof d.photo === 'string' && d.photo.indexOf('data:') === 0 ? d.photo : null,
           metBf: !!d.metBf
@@ -2942,6 +2990,14 @@ window.RecordsMemo = {
         if (!state.days[iso]) state.days[iso] = emptyDay();
         state.days[iso].photo = photoMap[iso];
       });
+    }
+    if (entryOpen && viewDate) {
+      if (document.activeElement === lineInput || window.RecordsIme.isElComposing(lineInput)) {
+        ensureDay(viewDate).line = window.RecordsIme.nfc(lineInput.value);
+      }
+      if (document.activeElement === thanksInput || window.RecordsIme.isElComposing(thanksInput)) {
+        ensureDay(viewDate).thanks = window.RecordsIme.nfc(thanksInput.value);
+      }
     }
     saveDaily({ localOnly: true });
     render();
@@ -3045,8 +3101,8 @@ window.RecordsMemo = {
     const d = getDay(viewDate);
     const label = U.fmtDot(viewDate) + ' <em>' + U.dowName(viewDate) + '</em>';
     entryNav.innerHTML = navHtml(label, { today: viewDate !== today });
-    lineInput.value = d.line;
-    thanksInput.value = d.thanks;
+    window.RecordsIme.fillIfIdle(lineInput, d.line);
+    window.RecordsIme.fillIfIdle(thanksInput, d.thanks);
     moodsEl.innerHTML = MOODS.map(m =>
       '<button type="button" class="mood' + (d.mood === m.n ? ' on' : '') + '" data-mood="' + m.n + '">' +
       '<span class="face">' + m.face + '</span><span class="cap">' + m.cap + '</span></button>'
@@ -3113,13 +3169,17 @@ window.RecordsMemo = {
   function currentFields() {
     ensureDay(viewDate);
     const d = state.days[viewDate];
-    d.line = lineInput.value;
-    d.thanks = thanksInput.value;
+    d.line = window.RecordsIme.nfc(lineInput.value);
+    d.thanks = window.RecordsIme.nfc(thanksInput.value);
     persistDay();
   }
   function scheduleSave() {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(currentFields, 250);
+  }
+  function onDailyTextInput(e) {
+    if (window.RecordsIme.isEventComposing(e)) return;
+    scheduleSave();
   }
 
   function render() {
@@ -3154,14 +3214,17 @@ window.RecordsMemo = {
     viewYm = U.ymOf(viewDate);
     renderEntry();
   });
-  lineInput.addEventListener('input', scheduleSave);
-  thanksInput.addEventListener('input', scheduleSave);
+  lineInput.addEventListener('input', onDailyTextInput);
+  thanksInput.addEventListener('input', onDailyTextInput);
+  lineInput.addEventListener('compositionend', currentFields);
+  thanksInput.addEventListener('compositionend', currentFields);
   lineInput.addEventListener('blur', currentFields);
   thanksInput.addEventListener('blur', currentFields);
   moodsEl.addEventListener('click', e => {
     const btn = e.target.closest('[data-mood]');
     if (!btn) return;
     const n = Number(btn.dataset.mood);
+    if (!window.RecordsIme.isActiveComposing()) currentFields();
     const d = ensureDay(viewDate);
     d.mood = d.mood === n ? 0 : n;
     persistDay();
@@ -3169,6 +3232,7 @@ window.RecordsMemo = {
   });
   const metBtn = document.getElementById('dailyMetBf');
   if (metBtn) metBtn.addEventListener('click', () => {
+    if (!window.RecordsIme.isActiveComposing()) currentFields();
     const d = ensureDay(viewDate);
     d.metBf = !d.metBf;
     persistDay();
@@ -3178,6 +3242,7 @@ window.RecordsMemo = {
     if (e.target.closest('#dailyHabitEdit')) { openHabitEditor(); return; }
     const btn = e.target.closest('[data-hid]');
     if (!btn) return;
+    if (!window.RecordsIme.isActiveComposing()) currentFields();
     const d = ensureDay(viewDate);
     d.habits = d.habits || {};
     d.habits[btn.dataset.hid] = !d.habits[btn.dataset.hid];
@@ -3202,10 +3267,10 @@ window.RecordsMemo = {
       if (res.act !== 'ok') return;
       const next = [];
       state.habits.forEach((h, i) => {
-        const name = (res.form['h' + i] || '').trim();
+        const name = window.RecordsIme.nfc(res.form['h' + i] || '').trim();
         if (name) next.push({ id: h.id, name });
       });
-      const neu = (res.form.new || '').trim();
+      const neu = window.RecordsIme.nfc(res.form.new || '').trim();
       if (neu) next.push({ id: U.uid('h'), name: neu });
       if (!next.length) next.push.apply(next, U.DEFAULT_HABITS.map(h => ({ id: h.id, name: h.name })));
       state.habits = next;
@@ -3233,8 +3298,9 @@ window.RecordsMemo = {
     }
   });
   moneyForm.addEventListener('submit', e => {
+    if (window.RecordsIme.isActiveComposing()) { e.preventDefault(); return; }
     e.preventDefault();
-    const name = moneyForm.name.value.trim();
+    const name = window.RecordsIme.nfc(moneyForm.name.value).trim();
     const amount = U.parseWon(moneyForm.amount.value);
     if (!name || amount <= 0) return;
     window.RecordsMoney.add({
@@ -3377,7 +3443,7 @@ window.RecordsMemo = {
         return;
       }
       if (res.act !== 'ok') return;
-      const name = (res.form.name || '').trim();
+      const name = window.RecordsIme.nfc(res.form.name || '').trim();
       const amount = U.parseWon(res.form.amount);
       const date = res.form.date;
       if (!name || amount <= 0 || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
@@ -3503,8 +3569,9 @@ window.RecordsMemo = {
     }
   });
   form.addEventListener('submit', e => {
+    if (window.RecordsIme.isActiveComposing()) { e.preventDefault(); return; }
     e.preventDefault();
-    const name = form.name.value.trim();
+    const name = window.RecordsIme.nfc(form.name.value).trim();
     const amount = U.parseWon(form.amount.value);
     if (!name || amount <= 0) return;
     window.RecordsMoney.add({
@@ -3646,8 +3713,9 @@ window.RecordsMemo = {
   fromOneBtn.addEventListener('click', () => setOpt(fromOneBtn, fromOneBtn.dataset.on !== '1'));
 
   addForm.addEventListener('submit', e => {
+    if (window.RecordsIme.isActiveComposing()) { e.preventDefault(); return; }
     e.preventDefault();
-    const title = addForm.title.value.trim();
+    const title = window.RecordsIme.nfc(addForm.title.value).trim();
     const date = addForm.date.value;
     if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
     dday.items.push(normalizeItem({
