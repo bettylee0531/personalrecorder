@@ -13,7 +13,7 @@
   body { margin: 0; background: #fff; color: #333; font-family: 'Do Hyeon', sans-serif; }
   button, input { font-family: inherit; }
   header { display: flex; align-items: center; justify-content: space-between;
-    padding: 24px 40px 14px; border-bottom: 1px solid #ccc; margin: 0 20px;
+    padding: 24px 16px 14px; border-bottom: 1px solid #ccc; margin: 0 24px;
     flex-wrap: wrap; gap: 10px 16px; }
   h1 { margin: 0; font-family: 'Inter', sans-serif; font-size: 40px; color: #2b2b2b; -webkit-text-stroke: 0; font-weight: 700; }
   .header-right { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
@@ -70,8 +70,8 @@
     font: inherit; font-size: 18px; cursor: pointer;
     -webkit-text-stroke: calc(1.5px * 18 / 32) #fff; }
   #addBtn:hover { background: #f4f4f4; -webkit-text-stroke-color: #f4f4f4; }
-  .wall { display: flex; flex-wrap: wrap; gap: 34px 38px; padding: 20px 50px 60px; }
-  .note { position: relative; width: 170px; min-height: 120px; padding: 14px 14px 16px;
+  .wall { position: relative; display: block; padding: 20px 50px 60px; }
+  .note { position: absolute; width: min(var(--w, 170px), 100%); min-height: 120px; padding: 14px 14px 16px;
     background-color: #fdfdfd;
     background-image: linear-gradient(rgba(236, 236, 236, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(236, 236, 236, 0.5) 1px, transparent 1px);
     background-size: 12px 12px;
@@ -88,13 +88,17 @@
   .note:hover .del { display: block; }
   .del:hover { color: #e55; }
   .empty { color: #aaa; font-size: 22px; padding: 40px 50px; }
+  @media (max-width: 860px) {
+    .composer { margin: 14px 12px; }
+    .wall { padding: 18px 16px 50px; }
+  }
   }
 
   /* ===== panel: todo ===== */
   #todo {
 
   .todo-card {
-    margin: 18px auto 40px; max-width: 1180px;
+    margin: 18px 24px 40px;
     background: #fdfdfd;
     background-image:
       linear-gradient(rgba(236,236,236,.5) 1px, transparent 1px),
@@ -106,8 +110,8 @@
     padding: 18px 16px 16px;
     position: relative;
   }
-  @media (min-width: 800px) {
-    .todo-card { margin-left: 28px; margin-right: 28px; }
+  @media (max-width: 860px) {
+    .todo-card { margin: 14px 12px 32px; }
   }
 
   .toolbar {
@@ -491,7 +495,7 @@
   .modal-actions button.ghost { color: #888; }
 
   @media (max-width: 860px) {
-    header { margin: 0 10px; padding: 16px 12px 10px; }
+    header { margin: 0 12px; padding: 16px 4px 10px; }
     h1 { font-size: 30px; }
     .header-right { gap: 10px 14px; }
     .tabs { gap: 12px; }
@@ -499,7 +503,7 @@
   }
 
   .sheet {
-    margin: 18px auto 40px; max-width: 1180px;
+    margin: 18px 24px 40px;
     background: #fdfdfd;
     background-image:
       linear-gradient(rgba(236,236,236,.5) 1px, transparent 1px),
@@ -511,8 +515,8 @@
     padding: 18px 16px 18px;
     position: relative;
   }
-  @media (min-width: 800px) {
-    .sheet { margin-left: 28px; margin-right: 28px; }
+  @media (max-width: 860px) {
+    .sheet { margin: 14px 12px 32px; }
   }
 
   /* ===== panel: daily ===== */
@@ -548,7 +552,7 @@
     white-space: nowrap;
   }
   .back-link:hover { color: #2b2b2b; }
-  .entry-wrap { max-width: 680px; }
+  .entry-wrap { max-width: 920px; }
   .stack { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
   .sec-head {
     display: flex; align-items: baseline; justify-content: space-between;
@@ -732,7 +736,7 @@
     font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
   }
   .mday {
-    min-height: 92px; border-radius: 10px;
+    min-height: clamp(92px, 7.2vw, 132px); border-radius: 10px;
     background: rgba(255,255,255,.72);
     border: 1px solid transparent;
     display: flex; flex-direction: column; align-items: center;
@@ -808,7 +812,7 @@
   }
   .ledger-grid {
     display: grid;
-    grid-template-columns: 300px minmax(0, 1fr);
+    grid-template-columns: minmax(280px, 1fr) minmax(0, 2.2fr);
     gap: 22px 36px;
     align-items: start;
   }
@@ -1351,11 +1355,88 @@ function readInput() {
               .filter(p => p.t === 'img' || p.v.trim());
 }
 
+// 짧은 메모는 170px, 길어지면 최대 480px까지 넓혀 세로가 폭의 약 1.3배를 넘지 않게 함
+const NOTE_BASE = 170, NOTE_MAX = 480, NOTE_RATIO = 1.3;
+function noteMaxWidth() {
+  const st = getComputedStyle(wall);
+  const inner = wall.clientWidth - parseFloat(st.paddingLeft) - parseFloat(st.paddingRight);
+  return Math.max(NOTE_BASE, Math.min(NOTE_MAX, Math.floor(inner)));
+}
+function fitNote(el) {
+  if (!el.offsetParent && getComputedStyle(el).display === 'none') return;
+  if (!wall.offsetWidth) return;
+  const maxW = noteMaxWidth();
+  const img = el.querySelector('.content img');
+  const minW = img ? Math.min(maxW, 260) : NOTE_BASE;
+  el.style.setProperty('--w', minW + 'px');
+  const h0 = el.offsetHeight;
+  if (!h0) return;
+  if (h0 <= minW * NOTE_RATIO + 1) return;
+  let lo = minW, hi = maxW, best = maxW;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    el.style.setProperty('--w', mid + 'px');
+    if (el.offsetHeight <= mid * NOTE_RATIO + 1) { best = mid; hi = mid - 1; }
+    else lo = mid + 1;
+  }
+  el.style.setProperty('--w', best + 'px');
+}
+function noteGap() {
+  return wall.clientWidth <= 700 ? 16 : 22;
+}
+function packWall() {
+  const els = [...wall.querySelectorAll('.note')];
+  if (!els.length) { wall.style.height = ''; return; }
+  if (!wall.offsetWidth) return;
+  const st = getComputedStyle(wall);
+  const padL = parseFloat(st.paddingLeft) || 0;
+  const padR = parseFloat(st.paddingRight) || 0;
+  const padT = parseFloat(st.paddingTop) || 0;
+  const padB = parseFloat(st.paddingBottom) || 0;
+  const inner = wall.clientWidth - padL - padR;
+  if (inner <= 0) return;
+  const gap = noteGap();
+  const unit = 4;
+  const cols = Math.max(1, Math.round(inner / unit));
+  const colW = inner / cols;
+  const sky = new Float64Array(cols);
+  let maxBottom = 0;
+  els.forEach(el => {
+    const w = el.offsetWidth;
+    const h = el.offsetHeight;
+    if (!w || !h) return;
+    const rad = Math.abs(parseFloat(getComputedStyle(el).getPropertyValue('--r')) || 0) * Math.PI / 180;
+    const aw = Math.abs(w * Math.cos(rad)) + Math.abs(h * Math.sin(rad));
+    const ah = Math.abs(w * Math.sin(rad)) + Math.abs(h * Math.cos(rad));
+    const slackX = (aw - w) / 2;
+    const slackY = (ah - h) / 2;
+    const span = Math.min(cols, Math.max(1, Math.ceil(aw / colW)));
+    let bestC = 0, bestY = Infinity;
+    for (let c = 0; c <= cols - span; c++) {
+      let y = 0;
+      for (let i = 0; i < span; i++) if (sky[c + i] > y) y = sky[c + i];
+      if (y < bestY - 0.01) { bestY = y; bestC = c; }
+    }
+    const aabbLeft = bestC * colW;
+    el.style.left = (padL + aabbLeft + slackX) + 'px';
+    el.style.top = (padT + bestY + slackY) + 'px';
+    const newH = bestY + ah + gap;
+    const end = Math.min(cols, Math.ceil((aabbLeft + aw + gap) / colW));
+    for (let i = bestC; i < end; i++) sky[i] = newH;
+    maxBottom = Math.max(maxBottom, bestY + ah);
+  });
+  wall.style.height = (padT + maxBottom + padB) + 'px';
+}
+function sizeWall() {
+  wall.querySelectorAll('.note').forEach(fitNote);
+  packWall();
+}
+
 function render() {
   const q = searchBox.value.trim().toLowerCase();
   const list = notes.filter(n => !q || n.parts.some(p => p.t === 'text' && p.v.toLowerCase().includes(q)) || stamp(n.time).includes(q));
   wall.innerHTML = '';
-  if (!list.length) { wall.innerHTML = `<div class="empty">${q ? '검색 결과가 없어요.' : '아직 기록이 없어요. 첫 메모를 붙여보세요.'}</div>`; return; }
+  if (!list.length) { wall.style.height = ''; wall.innerHTML = `<div class="empty">${q ? '검색 결과가 없어요.' : '아직 기록이 없어요. 첫 메모를 붙여보세요.'}</div>`; return; }
   list.forEach(n => {
     const el = document.createElement('div');
     el.className = 'note';
@@ -1366,7 +1447,11 @@ function render() {
       if (confirm('이 메모를 지울까요?')) { notes = notes.filter(x => x.id !== n.id); save(); render(); }
     };
     wall.appendChild(el);
+    el.querySelectorAll('img').forEach(img => {
+      if (!img.complete) img.addEventListener('load', () => { fitNote(el); packWall(); }, { once: true });
+    });
   });
+  sizeWall();
 }
 
 function addNote() {
@@ -1415,6 +1500,15 @@ document.getElementById('searchBtn').onclick = () => {
   if (searchBox.classList.contains('open')) searchBox.focus(); else { searchBox.value = ''; render(); }
 };
 searchBox.addEventListener('input', render);
+let sizeTimer = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(sizeTimer);
+  sizeTimer = setTimeout(sizeWall, 80);
+});
+document.addEventListener('records-panel', e => {
+  if (e.detail === 'memo') requestAnimationFrame(sizeWall);
+});
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => sizeWall());
 render();
 
 window.RecordsMemo = {
