@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>records</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Inter:wght@700&display=swap" rel="stylesheet">
+<style>
+  /* ===== app shell ===== */
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; color: #333; font-family: 'Do Hyeon', sans-serif; }
+  button, input { font-family: inherit; }
+  header { display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 40px 14px; border-bottom: 1px solid #ccc; margin: 0 20px;
+    flex-wrap: wrap; gap: 10px 16px; }
+  h1 { margin: 0; font-family: 'Inter', sans-serif; font-size: 40px; color: #2b2b2b; -webkit-text-stroke: 0; font-weight: 700; }
+  .header-right { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .tabs { display: flex; gap: 18px; align-items: baseline; }
+  .tabs a { font-size: 18px; color: #999; text-decoration: none;
+    -webkit-text-stroke: calc(1.5px * 18 / 44) #fff; }
+  .tabs a.on { color: #2b2b2b; border-bottom: 1.5px solid #2b2b2b; padding-bottom: 2px; }
+  .tabs a:hover { color: #555; }
+  .search-wrap { display: flex; align-items: center; gap: 8px; }
+  .search-wrap[hidden], section[hidden] { display: none; }
+  #searchBox { width: 0; opacity: 0; border: none; border-bottom: 1px solid #aaa;
+    font: inherit; font-size: 20px; outline: none; transition: .25s; }
+  #searchBox.open { width: 200px; opacity: 1; }
+  #searchBtn { background: none; border: none; cursor: pointer; padding: 4px; }
+  .auth-area { display: flex; align-items: center; flex: 0 0 auto; }
+  #btn-login, #btn-logout {
+    border: 1px solid #ccc; background: #fff; border-radius: 16px;
+    padding: 3px 12px; font: inherit; font-size: 15px; cursor: pointer; color: #555;
+    -webkit-text-stroke: calc(1.5px * 15 / 44) #fff; white-space: nowrap;
+  }
+  #btn-login:hover, #btn-logout:hover { background: #f4f4f4; -webkit-text-stroke-color: #f4f4f4; }
+  #btn-logout { padding: 3px 10px; font-size: 14px; }
+  .user-chip { display: flex; align-items: center; gap: 8px; }
+  .user-chip img {
+    width: 22px; height: 22px; border-radius: 50%; object-fit: cover; background: #eee; flex: 0 0 auto;
+  }
+  .user-name {
+    font-size: 14px; color: #555; max-width: 88px; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+    -webkit-text-stroke: calc(1.5px * 14 / 44) #fff;
+  }
+  .user-chip[hidden], #btn-login[hidden] { display: none !important; }
+  @media (max-width: 700px) { .user-name { display: none; } }
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(12px);
+    background: #333; color: #fff; font-size: 15px; line-height: 1.4;
+    padding: 8px 14px; border-radius: 10px; max-width: min(440px, calc(100% - 32px));
+    opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+    z-index: 80; text-align: center;
+    -webkit-text-stroke: calc(1.5px * 15 / 44) #333;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== panel: memo ===== */
+  #memo {
+  .composer { margin: 18px 40px; max-width: 560px; display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px; border: 1px solid #e3e3e3; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+  #input { flex: 1; min-height: 28px; max-height: 240px; overflow-y: auto; outline: none;
+    font-size: 20px; line-height: 1.4; word-break: break-word;
+    -webkit-text-stroke: calc(1.5px * 20 / 36) #fff; }
+  #input:empty::before { content: attr(data-placeholder); color: #999; }
+  #input img { max-width: 160px; display: block; margin: 4px 0; border-radius: 4px; }
+  #addBtn { border: 1px solid #ccc; background: #fff; border-radius: 16px; padding: 4px 14px;
+    font: inherit; font-size: 18px; cursor: pointer;
+    -webkit-text-stroke: calc(1.5px * 18 / 32) #fff; }
+  #addBtn:hover { background: #f4f4f4; -webkit-text-stroke-color: #f4f4f4; }
+  .wall { display: flex; flex-wrap: wrap; gap: 34px 38px; padding: 20px 50px 60px; }
+  .note { position: relative; width: 170px; min-height: 120px; padding: 14px 14px 16px;
+    background-color: #fdfdfd;
+    background-image: linear-gradient(rgba(236, 236, 236, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(236, 236, 236, 0.5) 1px, transparent 1px);
+    background-size: 12px 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,.13); transform: rotate(var(--r)); transition: transform .15s; }
+  .note:hover { transform: rotate(0deg) scale(1.03); z-index: 2; }
+  .note::before { content: ''; position: absolute; top: -9px; left: 50%; width: 52px; height: 18px;
+    transform: translateX(-50%) rotate(-2deg); background: rgba(225,225,225,.75); }
+  .stamp { font-family: sans-serif; font-size: 11px; color: #777; margin-bottom: 8px; -webkit-text-stroke: 0; }
+  .content { font-size: 20px; line-height: 1.35; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; text-align: center;
+    -webkit-text-stroke: calc(1.5px * 20 / 44) #fdfdfd; }
+  .content img { max-width: 100%; display: block; margin: 4px auto; border-radius: 3px; }
+  .del { position: absolute; top: 4px; right: 6px; border: none; background: none; color: #bbb;
+    cursor: pointer; font-size: 16px; display: none; }
+  .note:hover .del { display: block; }
+  .del:hover { color: #e55; }
+  .empty { color: #aaa; font-size: 22px; padding: 40px 50px; }
+  }
+
+  /* ===== panel: todo ===== */
+  #todo {
+
+  .todo-card {
+    margin: 18px auto 40px; max-width: 1180px;
+    background: #fdfdfd;
+    background-image:
+      linear-gradient(rgba(236,236,236,.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(236,236,236,.5) 1px, transparent 1px);
+    background-size: 16px 16px;
+    border: 1px solid #e3e3e3;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.06);
+    padding: 18px 16px 16px;
+    position: relative;
+  }
+  @media (min-width: 800px) {
+    .todo-card { margin-left: 28px; margin-right: 28px; }
+  }
+
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .toolbar-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; min-width: 0; }
+  .seg {
+    display: inline-flex; border: 1px solid #d0d0d0; border-radius: 8px;
+    overflow: hidden; background: #fff; flex: 0 0 auto;
+  }
+  .seg button {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    padding: 5px 12px; font-size: 15px; color: #777;
+    -webkit-text-stroke: calc(1.5px * 15 / 44) #fff;
+    border-right: 1px solid #d0d0d0;
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button.on {
+    background: #2b2b2b; color: #fff;
+    -webkit-text-stroke: calc(1.5px * 15 / 44) #2b2b2b;
+  }
+  .date-nav { display: flex; align-items: center; gap: 8px; }
+  .nav-btn {
+    width: 26px; height: 26px; border: 1px solid #ddd; background: #fff;
+    border-radius: 50%; color: #555; font-size: 13px; line-height: 24px;
+    text-align: center; font-family: 'Inter', sans-serif; font-weight: 700;
+    -webkit-text-stroke: 0; cursor: pointer; padding: 0;
+  }
+  .nav-btn:hover { background: #f4f4f4; }
+  .date-label {
+    font-size: 18px;
+    -webkit-text-stroke: calc(1.5px * 18 / 44) #fdfdfd;
+    white-space: nowrap;
+  }
+  .date-label em { font-style: normal; color: #888; font-size: 14px; margin-left: 4px; }
+  .jump-today {
+    border: 1px solid #ddd; background: #fff; border-radius: 16px;
+    padding: 3px 10px; font-size: 13px; color: #555; cursor: pointer;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fff;
+  }
+  .streak {
+    font-size: 14px; color: #555; white-space: nowrap;
+    -webkit-text-stroke: calc(1.5px * 14 / 44) #fdfdfd;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .dots { display: flex; gap: 4px; }
+  .dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 1.5px solid #c9c0b5; background: #f4efe8;
+  }
+  .dot.on { background: #c4a484; border-color: #b08a62; }
+  .dot.new { background: #b85c4a; border-color: #a04938; box-shadow: 0 0 0 2px rgba(184,92,74,.2); }
+
+  .prog-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .prog-label {
+    font-size: 14px; color: #666; white-space: nowrap;
+    -webkit-text-stroke: calc(1.5px * 14 / 44) #fdfdfd;
+  }
+  .bar { flex: 1; height: 6px; background: #ececec; border-radius: 99px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: #3a3a3a; border-radius: 99px; width: 0; }
+  .bar.done > i { background: #5a7a55; }
+
+  .list { display: flex; flex-direction: column; gap: 6px; min-height: 40px; }
+  .empty {
+    color: #aaa; font-size: 16px; padding: 28px 8px; text-align: center;
+    -webkit-text-stroke: calc(1.5px * 16 / 44) #fdfdfd;
+  }
+  .row {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.86);
+    border: 1px solid #eee; border-radius: 8px; padding: 9px 10px;
+    position: relative; touch-action: pan-y;
+  }
+  .row.dragging {
+    box-shadow: 0 8px 22px rgba(0,0,0,.16);
+    border-color: #ccc; z-index: 20;
+    pointer-events: none;
+  }
+  .handle {
+    width: 14px; height: 22px; flex: 0 0 14px;
+    display: grid; grid-template-columns: 4px 4px; gap: 3px 4px;
+    align-content: center; justify-content: center;
+    cursor: grab; user-select: none; touch-action: none;
+  }
+  .handle i { width: 3.5px; height: 3.5px; border-radius: 50%; background: #b4b4b4; display: block; }
+  .row.dragging .handle i { background: #555; }
+  .check {
+    width: 18px; height: 18px; flex: 0 0 18px; padding: 0;
+    border: 1.5px solid #bbb; border-radius: 4px; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px; font-family: 'Inter', sans-serif; font-weight: 700;
+    -webkit-text-stroke: 0; cursor: pointer;
+  }
+  .row.done .check { background: #3a3a3a; border-color: #3a3a3a; }
+  .txt {
+    flex: 1; font-size: 19px; line-height: 1.35; word-break: keep-all;
+    -webkit-text-stroke: calc(1.5px * 19 / 44) #fff;
+    min-width: 0;
+  }
+  .row.done .txt { color: #999; text-decoration: line-through; opacity: .7; }
+  .txt-edit {
+    flex: 1; min-width: 0; border: none; border-bottom: 1px solid #ccc;
+    background: transparent; outline: none; font: inherit; font-size: 19px;
+    -webkit-text-stroke: calc(1.5px * 19 / 44) #fff;
+  }
+  .mark {
+    font-size: 12px; color: #6e6e6e; line-height: 1;
+    border: 1px solid #ddd; border-radius: 10px; padding: 3px 7px;
+    -webkit-text-stroke: calc(1.5px * 12 / 44) #fff;
+    white-space: nowrap;
+  }
+  .del {
+    border: none; background: none; color: #ccc; font-size: 16px;
+    font-family: 'Inter', sans-serif; -webkit-text-stroke: 0; padding: 0 2px;
+    cursor: pointer; line-height: 1;
+  }
+  .del:hover { color: #e55; }
+  @media (hover: hover) and (pointer: fine) {
+    .row .del { opacity: 0; }
+    .row:hover .del, .row.show-del .del { opacity: 1; }
+  }
+  @media (hover: none), (pointer: coarse) {
+    .row .del { opacity: 1; color: #bbb; font-size: 15px; }
+  }
+  .ghost {
+    border: 1.5px dashed #d5d5d5; border-radius: 8px;
+    background: rgba(255,255,255,.35);
+  }
+
+  .hint {
+    margin: 10px 2px 0; font-size: 13px; color: #aaa;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fdfdfd;
+  }
+  .add-bar {
+    margin-top: 14px; display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid #e3e3e3; border-radius: 8px;
+    padding: 8px 10px; box-shadow: 0 2px 6px rgba(0,0,0,.06);
+  }
+  .add-bar input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-size: 17px; color: #333; min-width: 0;
+    -webkit-text-stroke: calc(1.5px * 17 / 36) #fff;
+  }
+  .add-bar input::placeholder { color: #bbb; }
+  .repeat-btn {
+    border: 1px solid #ddd; background: #fff; border-radius: 16px;
+    padding: 4px 10px; font-size: 14px; color: #666;
+    white-space: nowrap; cursor: pointer;
+    -webkit-text-stroke: calc(1.5px * 14 / 44) #fff;
+  }
+  .repeat-btn.on { border-color: #bbb; background: #f3f3f3; color: #333; }
+  .carry {
+    margin-top: 12px; width: 100%;
+    border: 1px solid #ddd; background: #fff; border-radius: 16px;
+    padding: 7px 12px; font-size: 15px; color: #555; cursor: pointer;
+    -webkit-text-stroke: calc(1.5px * 15 / 44) #fdfdfd;
+  }
+  .carry:hover:not(:disabled) { background: #f7f7f7; }
+  .carry:disabled, .carry.off { color: #ccc; border-color: #eee; cursor: default; }
+
+  .stamp {
+    position: absolute; right: 18px; top: 132px;
+    width: 118px; height: 118px; border-radius: 50%;
+    border: 3px solid #b85c4a; color: #b85c4a;
+    box-shadow: inset 0 0 0 3px #b85c4a;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transform: rotate(-14deg);
+    background: rgba(253,253,253,.72);
+    pointer-events: none; z-index: 4;
+  }
+  .stamp .ico {
+    font-size: 22px; line-height: 1; margin-bottom: 2px;
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+  }
+  .stamp .cap {
+    font-size: 20px; line-height: 1.15; text-align: center;
+    -webkit-text-stroke: calc(1.5px * 20 / 44) rgba(253,253,253,.72);
+  }
+  .stamp.pop { animation: stampPop .45s ease-out; }
+
+  /* week */
+  .week-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .week {
+    display: grid; grid-template-columns: repeat(7, minmax(148px, 1fr));
+    gap: 8px; align-items: stretch; min-width: 1050px;
+  }
+  .day {
+    background: rgba(255,255,255,.88);
+    border: 1px solid #ececec;
+    border-radius: 8px;
+    padding: 8px 7px;
+    display: flex; flex-direction: column; min-height: 360px;
+    position: relative;
+  }
+  .day.today {
+    border: 1.5px solid #2b2b2b; background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .day-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 4px; margin-bottom: 6px; padding: 0 1px;
+  }
+  .day-name { font-size: 14px; -webkit-text-stroke: calc(1.5px * 14 / 44) #fff; }
+  .day-name em { font-style: normal; color: #999; font-size: 12px; margin-left: 3px; }
+  .day.today .day-name em { color: #b85c4a; }
+  .day-count {
+    font-size: 11px; color: #888; font-family: 'Inter', sans-serif; font-weight: 700;
+    -webkit-text-stroke: 0;
+  }
+  .day.complete .day-count { color: #5a7a55; }
+  .mini-stamp {
+    position: absolute; top: 26px; right: 5px;
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1.5px solid #b85c4a; color: #b85c4a;
+    box-shadow: inset 0 0 0 1.5px #b85c4a;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transform: rotate(-14deg);
+    background: rgba(255,255,255,.82);
+    pointer-events: none; z-index: 2;
+  }
+  .mini-stamp .ico {
+    font-size: 9px; line-height: 1;
+    font-family: 'Inter', sans-serif; font-weight: 700; -webkit-text-stroke: 0;
+  }
+  .mini-stamp .cap {
+    font-size: 9px; line-height: 1.1; margin-top: 1px;
+    -webkit-text-stroke: calc(1.5px * 9 / 44) rgba(255,255,255,.82);
+  }
+  .mini-list { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+  .mini {
+    display: flex; align-items: flex-start; gap: 5px;
+    padding: 5px 5px 5px 4px; border-radius: 6px; background: #fafafa;
+    position: relative; touch-action: pan-y;
+  }
+  .mini.done { opacity: .72; }
+  .mini.dragging { box-shadow: 0 6px 16px rgba(0,0,0,.14); z-index: 20; background: #fff; pointer-events: none; }
+  .mini .check {
+    width: 13px; height: 13px; flex: 0 0 13px; margin-top: 2px;
+    border-radius: 3px; font-size: 9px;
+  }
+  .mini.done .check { background: #3a3a3a; border-color: #3a3a3a; }
+  .mini-body { flex: 1; min-width: 0; }
+  .mini-txt {
+    font-size: 13px; line-height: 1.3; word-break: keep-all;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fafafa;
+  }
+  .mini.done .mini-txt { color: #999; text-decoration: line-through; }
+  .mini-edit {
+    width: 100%; border: none; border-bottom: 1px solid #ccc; background: transparent;
+    outline: none; font: inherit; font-size: 13px;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fafafa;
+  }
+  .mini-mark {
+    display: inline-block; margin-top: 2px;
+    font-size: 10px; color: #6e6e6e; line-height: 1;
+    border: 1px solid #e0e0e0; border-radius: 8px; padding: 1px 5px;
+    -webkit-text-stroke: calc(1.5px * 10 / 44) #fafafa;
+  }
+  .mini-del {
+    border: none; background: none; color: #ccc; font-size: 12px;
+    font-family: 'Inter', sans-serif; -webkit-text-stroke: 0; cursor: pointer;
+    padding: 0; line-height: 1; flex: 0 0 auto;
+  }
+  .mini-del:hover { color: #e55; }
+  @media (hover: hover) and (pointer: fine) {
+    .mini .mini-del { opacity: 0; }
+    .mini:hover .mini-del { opacity: 1; }
+  }
+  @media (hover: none), (pointer: coarse) {
+    .mini .mini-del { opacity: 1; color: #bbb; }
+  }
+  .add-col {
+    margin-top: 6px; width: 100%;
+    border: 1px dashed #ddd; background: #fff; border-radius: 6px;
+    padding: 5px 0; text-align: center; color: #bbb; font-size: 16px; line-height: 1;
+    font-family: 'Inter', sans-serif; font-weight: 700;
+    -webkit-text-stroke: 0; cursor: pointer;
+  }
+  .add-col:hover { color: #888; border-color: #ccc; }
+  .week-add {
+    margin-top: 6px; display: flex; flex-direction: column; gap: 4px;
+    background: #fff; border: 1px solid #e3e3e3; border-radius: 6px; padding: 5px 6px;
+  }
+  .week-add input {
+    width: 100%; border: none; outline: none; background: transparent;
+    font-size: 13px; -webkit-text-stroke: calc(1.5px * 13 / 44) #fff;
+  }
+  .week-add-row { display: flex; justify-content: flex-end; }
+  .caption {
+    margin: 8px 2px 0; font-size: 12px; color: #999;
+    -webkit-text-stroke: calc(1.5px * 12 / 44) #fdfdfd;
+  }
+  }
+
+  @keyframes stampPop {
+    0% { transform: rotate(-14deg) scale(.4); opacity: 0; }
+    70% { transform: rotate(-14deg) scale(1.1); opacity: 1; }
+    100% { transform: rotate(-14deg) scale(1); }
+  }
+
+  /* modal */
+  .backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,.28);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 50; padding: 20px;
+  }
+  .backdrop[hidden] { display: none; }
+  .modal {
+    background: #fff; border-radius: 12px; padding: 22px 22px 16px;
+    max-width: 340px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,.15);
+  }
+  .modal p {
+    margin: 0 0 16px; font-size: 18px; line-height: 1.4;
+    -webkit-text-stroke: calc(1.5px * 18 / 44) #fff;
+  }
+  .modal-actions { display: flex; flex-direction: column; gap: 8px; }
+  .modal-actions button {
+    border: 1px solid #ddd; background: #fff; border-radius: 10px;
+    padding: 8px 12px; font-size: 16px; cursor: pointer;
+    -webkit-text-stroke: calc(1.5px * 16 / 44) #fff;
+  }
+  .modal-actions button:hover { background: #f6f6f6; }
+  .modal-actions button.danger { color: #b85c4a; }
+  .modal-actions button.ghost { color: #888; }
+
+</style>
+</head>
+<body>
+<header>
+  <h1>records</h1>
+  <div class="header-right">
+    <nav class="tabs">
+      <a href="#memo" data-panel="memo">메모</a>
+      <a href="#todo" data-panel="todo">할 일</a>
+    </nav>
+    <div class="search-wrap" id="memoSearchWrap">
+      <input id="searchBox" placeholder="검색">
+      <button id="searchBtn" title="검색">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
+      </button>
+    </div>
+    <div id="auth-area" class="auth-area">
+      <button type="button" id="btn-login">Google로 로그인</button>
+      <div id="auth-user" class="user-chip" hidden>
+        <img id="auth-photo" alt="" width="22" height="22" referrerpolicy="no-referrer">
+        <span id="auth-name" class="user-name"></span>
+        <button type="button" id="btn-logout">로그아웃</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="memo">
+<div class="composer">
+  <div id="input" contenteditable="true" data-placeholder="지금 기분이나 일을 적어보세요 (붙여넣기 가능)"></div>
+  <button id="addBtn">붙이기</button>
+</div>
+<div class="wall" id="wall"></div>
+</section>
+
+<section id="todo">
+<div class="todo-card" id="card">
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="seg" id="viewToggle">
+        <button type="button" data-view="today">오늘</button>
+        <button type="button" data-view="week">일주일</button>
+      </div>
+      <div class="date-nav" id="dateNav"></div>
+    </div>
+    <div class="streak" id="streak"></div>
+  </div>
+  <div id="todayView"></div>
+  <div id="weekView" hidden></div>
+</div>
+</section>
+
+<div class="backdrop" id="modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <p id="modalMsg">이 반복 일과를 어떻게 할까요?</p>
+    <div class="modal-actions">
+      <button type="button" data-act="today">오늘만 삭제</button>
+      <button type="button" data-act="all" class="danger">반복 일과 전체 삭제</button>
+      <button type="button" data-act="cancel" class="ghost">취소</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ===== app shell: tab switching (more panels can be registered later) ===== */
+(function () {
+  const TAB_KEY = 'records-tab';
+  const PANELS = ['memo', 'todo'];
+
+  function normalize(name) {
+    return PANELS.includes(name) ? name : 'memo';
+  }
+
+  function tabFromHash() {
+    const h = (location.hash || '').replace(/^#/, '');
+    return PANELS.includes(h) ? h : null;
+  }
+
+  function showPanel(name, opts) {
+    name = normalize(name);
+    const writeHash = !opts || opts.hash !== false;
+    PANELS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.hidden = id !== name;
+    });
+    const search = document.getElementById('memoSearchWrap');
+    if (search) search.hidden = name !== 'memo';
+    document.querySelectorAll('.tabs a[data-panel]').forEach(a => {
+      a.classList.toggle('on', a.dataset.panel === name);
+    });
+    try { localStorage.setItem(TAB_KEY, name); } catch (e) {}
+    if (writeHash) {
+      const next = '#' + name;
+      if (location.hash !== next) {
+        try { history.replaceState(null, '', next); }
+        catch (e) { location.hash = next; }
+      }
+    }
+  }
+
+  document.querySelector('.tabs').addEventListener('click', e => {
+    const a = e.target.closest('a[data-panel]');
+    if (!a) return;
+    e.preventDefault();
+    showPanel(a.dataset.panel);
+  });
+
+  window.addEventListener('hashchange', () => {
+    const fromHash = tabFromHash();
+    if (fromHash) showPanel(fromHash, { hash: false });
+  });
+
+  const initial = tabFromHash() || (function () {
+    try { return localStorage.getItem(TAB_KEY); } catch (e) { return null; }
+  })();
+  showPanel(initial || 'memo', { hash: true });
+})();
+
+/* ===== panel: memo ===== */
+(function () {
+
+const KEY = 'records-notes';
+const input = document.getElementById('input');
+const wall = document.getElementById('wall');
+const searchBox = document.getElementById('searchBox');
+let notes = JSON.parse(localStorage.getItem(KEY) || '[]');
+
+function save(opts) {
+  try { localStorage.setItem(KEY, JSON.stringify(notes)); }
+  catch (e) { alert('저장 공간이 부족해요. 큰 이미지를 줄이거나 메모를 정리해 주세요.'); }
+  if ((!opts || !opts.localOnly) && window.RecordsCloud) window.RecordsCloud.onNotesSave(notes);
+}
+function pad(n) { return String(n).padStart(2, '0'); }
+function stamp(t) {
+  const d = new Date(t);
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} · ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// 입력칸 내용을 [텍스트/이미지] 조각 목록으로 변환 (서식은 모두 버림)
+function readInput() {
+  const parts = [];
+  let buf = '';
+  function walk(node) {
+    node.childNodes.forEach(n => {
+      if (n.nodeType === 3) buf += n.textContent;
+      else if (n.nodeName === 'IMG') { if (buf) { parts.push({t:'text', v:buf}); buf=''; } parts.push({t:'img', v:n.src}); }
+      else if (n.nodeName === 'BR') buf += '\n';
+      else { if ((n.nodeName === 'DIV' || n.nodeName === 'P') && buf && !buf.endsWith('\n')) buf += '\n'; walk(n); }
+    });
+  }
+  walk(input);
+  if (buf) parts.push({t:'text', v:buf});
+  return parts.map(p => p.t === 'text' ? {t:'text', v:p.v.replace(/^\n+|\n+$/g,'')} : p)
+              .filter(p => p.t === 'img' || p.v.trim());
+}
+
+function render() {
+  const q = searchBox.value.trim().toLowerCase();
+  const list = notes.filter(n => !q || n.parts.some(p => p.t === 'text' && p.v.toLowerCase().includes(q)) || stamp(n.time).includes(q));
+  wall.innerHTML = '';
+  if (!list.length) { wall.innerHTML = `<div class="empty">${q ? '검색 결과가 없어요.' : '아직 기록이 없어요. 첫 메모를 붙여보세요.'}</div>`; return; }
+  list.forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'note';
+    el.style.setProperty('--r', n.rot + 'deg');
+    el.innerHTML = `<button class="del" title="삭제">✕</button><div class="stamp">${stamp(n.time)}</div><div class="content">${
+      n.parts.map(p => p.t === 'img' ? `<img src="${p.v}">` : escapeHtml(p.v)).join('')}</div>`;
+    el.querySelector('.del').onclick = () => {
+      if (confirm('이 메모를 지울까요?')) { notes = notes.filter(x => x.id !== n.id); save(); render(); }
+    };
+    wall.appendChild(el);
+  });
+}
+
+function addNote() {
+  const parts = readInput();
+  if (!parts.length) { input.focus(); return; }
+  const now = Date.now();
+  notes.unshift({ id: now, time: now, rot: +(Math.random()*5 - 2.5).toFixed(1), parts });
+  save(); input.innerHTML = ''; render(); input.focus();
+}
+
+// 붙여넣기: 이미지는 그대로, 텍스트는 서식 없이
+input.addEventListener('paste', e => {
+  e.preventDefault();
+  const items = [...(e.clipboardData.items || [])];
+  const imgItem = items.find(i => i.type.startsWith('image/'));
+  if (imgItem) {
+    const reader = new FileReader();
+    reader.onload = () => resizeImage(reader.result, src => document.execCommand('insertHTML', false, `<img src="${src}">`));
+    reader.readAsDataURL(imgItem.getAsFile());
+  } else {
+    document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
+  }
+});
+// 저장 공간 절약을 위해 큰 이미지는 가로 600px로 줄임
+function resizeImage(src, cb) {
+  const img = new Image();
+  img.onload = () => {
+    const max = 600, s = Math.min(1, max / img.width);
+    const c = document.createElement('canvas');
+    c.width = img.width * s; c.height = img.height * s;
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    cb(c.toDataURL('image/jpeg', 0.85));
+  };
+  img.src = src;
+}
+// 굵게/기울임 단축키 막기
+input.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && ['b','i','u'].includes(e.key.toLowerCase())) e.preventDefault();
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); addNote(); }
+});
+input.addEventListener('drop', e => e.preventDefault());
+
+document.getElementById('addBtn').onclick = addNote;
+document.getElementById('searchBtn').onclick = () => {
+  searchBox.classList.toggle('open');
+  if (searchBox.classList.contains('open')) searchBox.focus(); else { searchBox.value = ''; render(); }
+};
+searchBox.addEventListener('input', render);
+render();
+
+window.RecordsMemo = {
+  getNotes: () => notes,
+  applyCloud: function (list) {
+    notes = Array.isArray(list) ? list : [];
+    save({ localOnly: true });
+    render();
+  }
+};
+
+})();
+
+/* ===== panel: todo ===== */
+
+(function () {
+  const KEY = 'records-todos';
+  const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+  const $ = (sel, el) => (el || document).querySelector(sel);
+  const $$ = (sel, el) => [...(el || document).querySelectorAll(sel)];
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function toISO(d) {
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+  function parseISO(s) {
+    const [y, m, d] = s.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+  function todayISO() { return toISO(new Date()); }
+  function addDays(iso, n) {
+    const d = parseISO(iso);
+    d.setDate(d.getDate() + n);
+    return toISO(d);
+  }
+  function mondayOf(iso) {
+    const d = parseISO(iso);
+    const day = d.getDay();
+    d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
+    return toISO(d);
+  }
+  function fmtDot(iso) {
+    const d = parseISO(iso);
+    return d.getFullYear() + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate());
+  }
+  function fmtDotShort(iso) {
+    const d = parseISO(iso);
+    return pad(d.getMonth() + 1) + '.' + pad(d.getDate());
+  }
+  function weekLabel(mon) {
+    const sun = addDays(mon, 6);
+    return fmtDot(mon) + ' – ' + fmtDotShort(sun);
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+  function uid(prefix) {
+    return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+  function handleHtml() {
+    return '<span class="handle" aria-label="순서 변경" data-handle="1">' +
+      '<i></i><i></i><i></i><i></i><i></i><i></i></span>';
+  }
+
+  let state = { v: 1, view: 'today', oneoffs: [], routines: [], stickers: [] };
+  let viewDate = todayISO();
+  let weekAddDate = null;
+  let weekRepeatOn = false;
+  let repeatOn = false;
+  let justCompleted = null;
+  let justSticker = null;
+  let pendingDelete = null;
+  let didDrag = false;
+
+  function defaultState() {
+    return { v: 1, view: 'today', oneoffs: [], routines: [], stickers: [] };
+  }
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) { state = defaultState(); return; }
+      const data = JSON.parse(raw);
+      state = defaultState();
+      if (data && typeof data === 'object') {
+        state.view = data.view === 'week' ? 'week' : 'today';
+        state.oneoffs = Array.isArray(data.oneoffs) ? data.oneoffs.filter(validOneoff) : [];
+        state.routines = Array.isArray(data.routines) ? data.routines.filter(validRoutine) : [];
+        state.stickers = Array.isArray(data.stickers)
+          ? data.stickers.filter(s => /^\d{4}-\d{2}-\d{2}$/.test(s))
+          : [];
+      }
+    } catch (e) {
+      state = defaultState();
+    }
+  }
+  function validOneoff(t) {
+    return t && typeof t.id === 'string' && typeof t.text === 'string' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(t.date);
+  }
+  function validRoutine(r) {
+    return r && typeof r.id === 'string' && typeof r.text === 'string' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(r.start);
+  }
+  function save(opts) {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); }
+    catch (e) { alert('저장 공간이 부족해요.'); }
+    if ((!opts || !opts.localOnly) && window.RecordsCloud) window.RecordsCloud.onTodosSave(state);
+  }
+
+  function applyCloudState(data) {
+    const next = defaultState();
+    if (data && typeof data === 'object') {
+      next.view = data.view === 'week' ? 'week' : 'today';
+      next.oneoffs = Array.isArray(data.oneoffs) ? data.oneoffs.filter(validOneoff) : [];
+      next.routines = Array.isArray(data.routines) ? data.routines.filter(validRoutine) : [];
+      next.stickers = Array.isArray(data.stickers)
+        ? data.stickers.filter(s => /^\d{4}-\d{2}-\d{2}$/.test(s))
+        : [];
+      if (Number.isFinite(data.v)) next.v = data.v;
+    }
+    state = next;
+    save({ localOnly: true });
+    render();
+  }
+
+  function itemsFor(dateStr) {
+    const list = [];
+    for (const t of state.oneoffs) {
+      if (t.date === dateStr) {
+        list.push({
+          kind: 'oneoff', id: t.id, text: t.text, done: !!t.done,
+          order: Number.isFinite(t.order) ? t.order : 0
+        });
+      }
+    }
+    for (const r of state.routines) {
+      if (r.start <= dateStr && !(r.hidden || []).includes(dateStr)) {
+        const done = !!(r.done && r.done[dateStr]);
+        const order = (r.ordDay && r.ordDay[dateStr] != null)
+          ? r.ordDay[dateStr]
+          : (Number.isFinite(r.ord) ? r.ord : 0);
+        list.push({ kind: 'routine', id: r.id, text: r.text, done, order });
+      }
+    }
+    list.sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
+    return list;
+  }
+  function isComplete(dateStr) {
+    const list = itemsFor(dateStr);
+    return list.length >= 1 && list.every(i => i.done);
+  }
+  function nextOrder(dateStr) {
+    const list = itemsFor(dateStr);
+    if (!list.length) return 0;
+    return Math.max(...list.map(i => i.order)) + 1;
+  }
+  function findOneoff(id) { return state.oneoffs.find(t => t.id === id); }
+  function findRoutine(id) { return state.routines.find(r => r.id === id); }
+
+  function setDone(kind, id, dateStr, done) {
+    if (kind === 'oneoff') {
+      const t = findOneoff(id);
+      if (t) t.done = done;
+    } else {
+      const r = findRoutine(id);
+      if (r) {
+        r.done = r.done || {};
+        if (done) r.done[dateStr] = true;
+        else delete r.done[dateStr];
+      }
+    }
+  }
+  function afterDoneChange(dateStr) {
+    if (isComplete(dateStr)) {
+      if (!state.stickers.includes(dateStr)) {
+        state.stickers.push(dateStr);
+        justSticker = dateStr;
+      }
+      justCompleted = dateStr;
+    } else if (justCompleted === dateStr) {
+      justCompleted = null;
+    }
+    save();
+    render();
+  }
+
+  function streakCount() {
+    const today = todayISO();
+    let end = today;
+    if (!isComplete(today)) end = addDays(today, -1);
+    if (!isComplete(end)) return 0;
+    let n = 0;
+    let d = end;
+    while (isComplete(d)) { n++; d = addDays(d, -1); }
+    return n;
+  }
+
+  function applyOrder(dateStr, ordered) {
+    ordered.forEach((item, i) => {
+      if (item.kind === 'oneoff') {
+        const t = findOneoff(item.id);
+        if (t) t.order = i;
+      } else {
+        const r = findRoutine(item.id);
+        if (r) {
+          r.ordDay = r.ordDay || {};
+          r.ordDay[dateStr] = i;
+        }
+      }
+    });
+  }
+
+  function addTask(dateStr, text, isRoutine) {
+    const trimmed = text.replace(/\s+/g, ' ').trim();
+    if (!trimmed) return false;
+    const order = nextOrder(dateStr);
+    if (isRoutine) {
+      state.routines.push({
+        id: uid('r'), text: trimmed, start: dateStr,
+        hidden: [], done: {}, ord: order, ordDay: { [dateStr]: order }
+      });
+    } else {
+      state.oneoffs.push({
+        id: uid('o'), text: trimmed, date: dateStr, done: false, order
+      });
+    }
+    save();
+    render();
+    return true;
+  }
+
+  function editText(kind, id, text) {
+    const trimmed = text.replace(/\s+/g, ' ').trim();
+    if (!trimmed) return false;
+    if (kind === 'oneoff') {
+      const t = findOneoff(id);
+      if (t) t.text = trimmed;
+    } else {
+      const r = findRoutine(id);
+      if (r) r.text = trimmed;
+    }
+    save();
+    render();
+    return true;
+  }
+
+  function deferUnfinished(dateStr) {
+    const tomorrow = addDays(dateStr, 1);
+    let next = nextOrder(tomorrow);
+    let moved = 0;
+    for (const t of state.oneoffs) {
+      if (t.date === dateStr && !t.done) {
+        t.date = tomorrow;
+        t.order = next++;
+        moved++;
+      }
+    }
+    if (moved) { save(); render(); }
+    return moved;
+  }
+
+  function deleteOneoff(id) {
+    state.oneoffs = state.oneoffs.filter(t => t.id !== id);
+    save();
+    render();
+  }
+  function hideRoutineOn(id, dateStr) {
+    const r = findRoutine(id);
+    if (!r) return;
+    r.hidden = Array.isArray(r.hidden) ? r.hidden : [];
+    if (!r.hidden.includes(dateStr)) r.hidden.push(dateStr);
+    if (r.done) delete r.done[dateStr];
+    save();
+    render();
+  }
+  function deleteRoutine(id) {
+    state.routines = state.routines.filter(r => r.id !== id);
+    save();
+    render();
+  }
+
+  /* ---------- render ---------- */
+  function render() {
+    const today = todayISO();
+    const isTodayView = state.view === 'today';
+    $$('#viewToggle button').forEach(b => {
+      b.classList.toggle('on', b.dataset.view === state.view);
+    });
+    renderDateNav(today, isTodayView);
+    renderStreak(today);
+    $('#todayView').hidden = !isTodayView;
+    $('#weekView').hidden = isTodayView;
+    if (isTodayView) renderToday(today);
+    else renderWeek(today);
+  }
+
+  function renderDateNav(today, isTodayView) {
+    const nav = $('#dateNav');
+    if (isTodayView) {
+      const isToday = viewDate === today;
+      nav.innerHTML =
+        '<button type="button" class="nav-btn" id="prevDate" aria-label="이전 날">◀</button>' +
+        '<div class="date-label">' + fmtDot(viewDate) +
+          (isToday ? ' <em>오늘</em>' : '') + '</div>' +
+        '<button type="button" class="nav-btn" id="nextDate" aria-label="다음 날">▶</button>' +
+        (isToday ? '' : '<button type="button" class="jump-today" id="jumpToday">오늘</button>');
+    } else {
+      const mon = mondayOf(viewDate);
+      const inThisWeek = viewDate >= mon && viewDate <= addDays(mon, 6) &&
+        today >= mon && today <= addDays(mon, 6);
+      nav.innerHTML =
+        '<button type="button" class="nav-btn" id="prevDate" aria-label="이전 주">◀</button>' +
+        '<div class="date-label">' + weekLabel(mon) + '</div>' +
+        '<button type="button" class="nav-btn" id="nextDate" aria-label="다음 주">▶</button>' +
+        (inThisWeek ? '' : '<button type="button" class="jump-today" id="jumpToday">오늘</button>');
+    }
+  }
+
+  function renderStreak(today) {
+    const n = streakCount();
+    const todayDone = isComplete(today);
+    const slots = Math.min(7, Math.max(3, n));
+    let dots = '';
+    for (let i = 0; i < slots; i++) {
+      const on = i < n;
+      const isNew = on && i === n - 1 && todayDone && justSticker === today;
+      dots += '<i class="dot' + (on ? ' on' : '') + (isNew ? ' new' : '') + '"></i>';
+    }
+    $('#streak').innerHTML = '연속 ' + n + '일 <span class="dots">' + dots + '</span>';
+  }
+
+  function renderToday(today) {
+    const list = itemsFor(viewDate);
+    const done = list.filter(i => i.done).length;
+    const total = list.length;
+    const complete = total >= 1 && done === total;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    const unfinishedOneoff = list.some(i => i.kind === 'oneoff' && !i.done);
+    const deferLabel = viewDate === today ? '남은 일 내일로 미루기' : '남은 일 다음날로 미루기';
+    const stampLabel = viewDate === today ? '오늘 완료!' : '완료!';
+    const pop = justCompleted === viewDate ? ' pop' : '';
+
+    let rows = '';
+    if (!list.length) {
+      rows = '<div class="empty">아직 할 일이 없어요. 아래칸에 적어 보세요.</div>';
+    } else {
+      rows = list.map(item => todayRow(item, viewDate)).join('');
+    }
+
+    $('#todayView').innerHTML =
+      '<div class="prog-row">' +
+        '<div class="bar' + (complete ? ' done' : '') + '"><i style="width:' + pct + '%"></i></div>' +
+        '<div class="prog-label">' + done + '/' + total + '</div>' +
+      '</div>' +
+      '<div class="list" id="todayList" data-date="' + viewDate + '">' + rows + '</div>' +
+      '<div class="hint">두 번 눌러 수정 · 핸들 또는 길게 눌러 순서 변경</div>' +
+      '<div class="add-bar">' +
+        '<input id="addInput" type="text" maxlength="200" placeholder="할 일을 적고 Enter" autocomplete="off">' +
+        '<button type="button" class="repeat-btn' + (repeatOn ? ' on' : '') + '" id="repeatBtn">매일 반복</button>' +
+      '</div>' +
+      '<button type="button" class="carry' + (unfinishedOneoff ? '' : ' off') + '" id="carryBtn"' +
+        (unfinishedOneoff ? '' : ' disabled') + '>' + deferLabel + '</button>' +
+      (complete
+        ? '<div class="stamp' + pop + '"><div class="ico">★</div><div class="cap">' + stampLabel + '</div></div>'
+        : '');
+
+    const inp = $('#addInput');
+    if (inp) inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (addTask(viewDate, inp.value, repeatOn)) inp.value = '';
+      }
+    });
+  }
+
+  function todayRow(item, dateStr) {
+    return '<div class="row' + (item.done ? ' done' : '') + '" data-id="' + item.id +
+      '" data-kind="' + item.kind + '" data-date="' + dateStr + '">' +
+      handleHtml() +
+      '<button type="button" class="check" aria-label="' + (item.done ? '완료 취소' : '완료') + '">' +
+        (item.done ? '✓' : '') + '</button>' +
+      '<span class="txt">' + escapeHtml(item.text) + '</span>' +
+      (item.kind === 'routine' ? '<span class="mark">매일</span>' : '') +
+      '<button type="button" class="del" aria-label="삭제">✕</button>' +
+    '</div>';
+  }
+
+  function renderWeek(today) {
+    const mon = mondayOf(viewDate);
+    let cols = '';
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(mon, i);
+      const list = itemsFor(d);
+      const done = list.filter(x => x.done).length;
+      const total = list.length;
+      const complete = total >= 1 && done === total;
+      const isToday = d === today;
+      const wd = DAYS[parseISO(d).getDay()];
+      const dayNum = isToday ? '오늘' : String(parseISO(d).getDate());
+      cols += '<div class="day' + (isToday ? ' today' : '') + (complete ? ' complete' : '') +
+        '" data-date="' + d + '">' +
+        '<div class="day-head"><div class="day-name">' + wd + ' <em>' + dayNum + '</em></div>' +
+        '<div class="day-count">' + done + '/' + total + '</div></div>' +
+        (complete ? '<div class="mini-stamp"><div class="ico">★</div><div class="cap">완료</div></div>' : '') +
+        '<div class="mini-list" data-date="' + d + '">' +
+          list.map(item => weekRow(item, d)).join('') +
+        '</div>' +
+        weekAddHtml(d) +
+      '</div>';
+    }
+    $('#weekView').innerHTML =
+      '<div class="week-wrap"><div class="week">' + cols + '</div></div>' +
+      '<div class="caption">화면이 좁을 때는 일주일을 좌우로 밀어 볼 수 있어요.</div>';
+    if (weekAddDate) {
+      const inp = $('.week-add input');
+      if (inp) inp.focus();
+    }
+  }
+
+  function weekRow(item, dateStr) {
+    return '<div class="mini' + (item.done ? ' done' : '') + '" data-id="' + item.id +
+      '" data-kind="' + item.kind + '" data-date="' + dateStr + '">' +
+      '<button type="button" class="check" aria-label="' + (item.done ? '완료 취소' : '완료') + '">' +
+        (item.done ? '✓' : '') + '</button>' +
+      '<div class="mini-body"><div class="mini-txt">' + escapeHtml(item.text) + '</div>' +
+      (item.kind === 'routine' ? '<span class="mini-mark">매일</span>' : '') + '</div>' +
+      '<button type="button" class="mini-del" aria-label="삭제">✕</button>' +
+    '</div>';
+  }
+
+  function weekAddHtml(d) {
+    if (weekAddDate === d) {
+      return '<div class="week-add">' +
+        '<input type="text" maxlength="200" placeholder="할 일을 적고 Enter" autocomplete="off">' +
+        '<div class="week-add-row">' +
+          '<button type="button" class="repeat-btn' + (weekRepeatOn ? ' on' : '') +
+            '" data-week-repeat="1">매일</button>' +
+        '</div></div>';
+    }
+    return '<button type="button" class="add-col" data-add="' + d + '">+</button>';
+  }
+
+  /* ---------- events ---------- */
+  $('#viewToggle').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-view]');
+    if (!btn) return;
+    state.view = btn.dataset.view;
+    if (state.view === 'today' && mondayOf(viewDate) !== mondayOf(todayISO()) &&
+        viewDate !== todayISO()) {
+      /* keep viewDate as-is so user can stay on a chosen day */
+    }
+    save();
+    render();
+  });
+
+  $('#dateNav').addEventListener('click', e => {
+    if (e.target.closest('#prevDate')) {
+      viewDate = addDays(viewDate, state.view === 'week' ? -7 : -1);
+      weekAddDate = null;
+      render();
+    } else if (e.target.closest('#nextDate')) {
+      viewDate = addDays(viewDate, state.view === 'week' ? 7 : 1);
+      weekAddDate = null;
+      render();
+    } else if (e.target.closest('#jumpToday')) {
+      viewDate = todayISO();
+      weekAddDate = null;
+      render();
+    }
+  });
+
+  $('#card').addEventListener('click', e => {
+    if (e.target.closest('#repeatBtn')) {
+      repeatOn = !repeatOn;
+      $('#repeatBtn').classList.toggle('on', repeatOn);
+      return;
+    }
+    if (e.target.closest('#carryBtn') && !$('#carryBtn').disabled) {
+      deferUnfinished(viewDate);
+      return;
+    }
+    const weekRepeat = e.target.closest('[data-week-repeat]');
+    if (weekRepeat) {
+      weekRepeatOn = !weekRepeatOn;
+      weekRepeat.classList.toggle('on', weekRepeatOn);
+      return;
+    }
+    const addCol = e.target.closest('[data-add]');
+    if (addCol) {
+      weekAddDate = addCol.dataset.add;
+      weekRepeatOn = false;
+      render();
+      return;
+    }
+    const check = e.target.closest('.check');
+    if (check) {
+      const row = check.closest('[data-id]');
+      if (!row) return;
+      const done = !row.classList.contains('done');
+      setDone(row.dataset.kind, row.dataset.id, row.dataset.date, done);
+      afterDoneChange(row.dataset.date);
+      return;
+    }
+    const del = e.target.closest('.del, .mini-del');
+    if (del) {
+      const row = del.closest('[data-id]');
+      if (!row) return;
+      requestDelete(row.dataset.kind, row.dataset.id, row.dataset.date);
+    }
+  });
+
+  $('#card').addEventListener('keydown', e => {
+    const weekInp = e.target.closest('.week-add input');
+    if (weekInp) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (addTask(weekAddDate, weekInp.value, weekRepeatOn)) {
+          weekAddDate = null;
+          weekRepeatOn = false;
+        }
+      } else if (e.key === 'Escape') {
+        weekAddDate = null;
+        weekRepeatOn = false;
+        render();
+      }
+    }
+  });
+
+  /* inline edit */
+  let lastTap = { t: 0, el: null };
+  $('#card').addEventListener('dblclick', e => {
+    const txt = e.target.closest('.txt, .mini-txt');
+    if (txt) startEdit(txt);
+  });
+  $('#card').addEventListener('click', e => {
+    const txt = e.target.closest('.txt, .mini-txt');
+    if (!txt) return;
+    const now = Date.now();
+    if (lastTap.el === txt && now - lastTap.t < 350) {
+      startEdit(txt);
+      lastTap = { t: 0, el: null };
+    } else {
+      lastTap = { t: now, el: txt };
+    }
+  });
+
+  function startEdit(txtEl) {
+    if (didDrag) return;
+    const row = txtEl.closest('[data-id]');
+    if (!row || row.querySelector('.txt-edit, .mini-edit')) return;
+    const kind = row.dataset.kind, id = row.dataset.id;
+    const current = (txtEl.textContent || '').trim();
+    const isMini = txtEl.classList.contains('mini-txt');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.maxLength = 200;
+    input.value = current;
+    input.className = isMini ? 'mini-edit' : 'txt-edit';
+    const parent = isMini ? txtEl.parentNode : row;
+    parent.replaceChild(input, txtEl);
+    if (isMini) {
+      const mark = parent.querySelector('.mini-mark');
+      if (mark) mark.remove();
+    }
+    input.focus();
+    input.select();
+    let saved = false;
+    const finish = (ok) => {
+      if (saved) return;
+      saved = true;
+      if (ok) editText(kind, id, input.value);
+      else render();
+    };
+    input.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
+      if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
+    });
+    input.addEventListener('blur', () => finish(true));
+  }
+
+  /* delete / modal */
+  function requestDelete(kind, id, dateStr) {
+    if (kind === 'oneoff') { deleteOneoff(id); return; }
+    pendingDelete = { kind, id, dateStr };
+    $('#modalMsg').textContent = '이 반복 일과를 어떻게 할까요?';
+    $('#modal').hidden = false;
+  }
+  $('#modal').addEventListener('click', e => {
+    const act = e.target.dataset && e.target.dataset.act;
+    if (!act) {
+      if (e.target === $('#modal')) { pendingDelete = null; $('#modal').hidden = true; }
+      return;
+    }
+    const p = pendingDelete;
+    pendingDelete = null;
+    $('#modal').hidden = true;
+    if (!p || act === 'cancel') return;
+    if (act === 'today') hideRoutineOn(p.id, p.dateStr);
+    else if (act === 'all') deleteRoutine(p.id);
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !$('#modal').hidden) {
+      pendingDelete = null;
+      $('#modal').hidden = true;
+    }
+  });
+
+  /* drag: mouse on handle immediately; touch long-press ~300ms on row */
+  let drag = null;
+  let pressTimer = null;
+  let pressStart = null;
+
+  function clearPress() {
+    if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+    pressStart = null;
+  }
+
+  $('#card').addEventListener('pointerdown', e => {
+    if (e.button != null && e.button !== 0) return;
+    if (e.target.closest('.check, .del, .mini-del, .txt-edit, .mini-edit, input, button.repeat-btn, button.add-col, button.carry, button.nav-btn, button.jump-today, .seg, .week-add')) return;
+    const row = e.target.closest('[data-id][data-date]');
+    if (!row) return;
+    const onHandle = !!e.target.closest('[data-handle]');
+    const isTouch = e.pointerType === 'touch' || e.pointerType === 'pen';
+    if (!isTouch && !onHandle) return;
+    if (isTouch) {
+      pressStart = { x: e.clientX, y: e.clientY, id: e.pointerId, row, ev: e };
+      pressTimer = setTimeout(() => {
+        if (pressStart) startDrag(pressStart.ev, pressStart.row);
+      }, 300);
+      return;
+    }
+    e.preventDefault();
+    startDrag(e, row);
+  });
+
+  document.addEventListener('pointermove', e => {
+    if (pressStart && e.pointerId === pressStart.id) {
+      const dx = e.clientX - pressStart.x, dy = e.clientY - pressStart.y;
+      if (Math.hypot(dx, dy) > 12) clearPress();
+    }
+    if (drag && e.pointerId === drag.pointerId) onDragMove(e);
+  });
+  document.addEventListener('pointerup', e => {
+    if (pressStart && e.pointerId === pressStart.id) clearPress();
+    if (drag && e.pointerId === drag.pointerId) endDrag();
+  });
+  document.addEventListener('pointercancel', e => {
+    if (pressStart && e.pointerId === pressStart.id) clearPress();
+    if (drag && e.pointerId === drag.pointerId) endDrag(true);
+  });
+
+  function startDrag(e, row) {
+    clearPress();
+    const list = row.parentElement;
+    if (!list) return;
+    const dateStr = row.dataset.date;
+    const rect = row.getBoundingClientRect();
+    const ghost = document.createElement('div');
+    ghost.className = 'ghost';
+    ghost.style.height = rect.height + 'px';
+    list.insertBefore(ghost, row);
+    row.classList.add('dragging');
+    row.style.width = rect.width + 'px';
+    row.style.position = 'fixed';
+    row.style.left = rect.left + 'px';
+    row.style.top = rect.top + 'px';
+    row.style.zIndex = '30';
+    row.style.margin = '0';
+    try { row.setPointerCapture(e.pointerId); } catch (err) {}
+    drag = {
+      pointerId: e.pointerId,
+      row, list, dateStr, ghost,
+      offsetX: e.clientX - rect.left,
+      offsetY: e.clientY - rect.top,
+      kind: row.dataset.kind,
+      id: row.dataset.id
+    };
+    didDrag = true;
+    document.body.style.userSelect = 'none';
+  }
+
+  function onDragMove(e) {
+    if (!drag) return;
+    e.preventDefault();
+    drag.row.style.left = (e.clientX - drag.offsetX) + 'px';
+    drag.row.style.top = (e.clientY - drag.offsetY) + 'px';
+    const others = [...drag.list.querySelectorAll('[data-id]')].filter(el => el !== drag.row);
+    let target = others.length;
+    for (let i = 0; i < others.length; i++) {
+      const r = others[i].getBoundingClientRect();
+      if (e.clientY < r.top + r.height / 2) { target = i; break; }
+    }
+    if (target >= others.length) drag.list.appendChild(drag.ghost);
+    else drag.list.insertBefore(drag.ghost, others[target]);
+  }
+
+  function endDrag(cancel) {
+    if (!drag) return;
+    const { row, list, dateStr, ghost, kind, id } = drag;
+    drag = null;
+    document.body.style.userSelect = '';
+    const others = [...list.querySelectorAll('[data-id]')].filter(el => el !== row);
+    const idx = Math.max(0, [...list.children].indexOf(ghost));
+    /* build new order from others + dragged, using ghost position among others */
+    let insertAt = others.length;
+    for (let i = 0; i < others.length; i++) {
+      if (ghost.compareDocumentPosition(others[i]) & Node.DOCUMENT_POSITION_FOLLOWING) {
+        insertAt = i;
+        break;
+      }
+    }
+    const ordered = [
+      ...others.slice(0, insertAt).map(el => ({ kind: el.dataset.kind, id: el.dataset.id })),
+      { kind, id },
+      ...others.slice(insertAt).map(el => ({ kind: el.dataset.kind, id: el.dataset.id }))
+    ];
+    row.classList.remove('dragging');
+    row.style.cssText = '';
+    if (ghost.parentNode) ghost.remove();
+    if (!cancel) {
+      applyOrder(dateStr, ordered);
+      save();
+    }
+    render();
+    setTimeout(() => { didDrag = false; }, 250);
+    void idx;
+  }
+
+  load();
+  render();
+
+  window.RecordsTodo = {
+    getState: () => state,
+    applyCloud: applyCloudState
+  };
+})();
+
+</script>
+<script type="module">
+/* ===== cloud: Firebase Google login + Firestore sync ===== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+import {
+  initializeFirestore,
+  getFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  memoryLocalCache,
+  collection,
+  doc,
+  setDoc,
+  deleteDoc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  writeBatch
+} from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAz01u9o0t2CP0c2Z0OIJArte0Ma3Mef5g",
+  authDomain: "personal-7d614.firebaseapp.com",
+  projectId: "personal-7d614",
+  storageBucket: "personal-7d614.firebasestorage.app",
+  messagingSenderId: "1099390253468",
+  appId: "1:1099390253468:web:22e74715cad16514b37059"
+};
+
+const DOC_LIMIT = 900000;
+let fbApp = null;
+let fbAuth = null;
+let fbDb = null;
+let fbReady = false;
+let currentUser = null;
+let applyingCloud = false;
+let notesUnsub = null;
+let todosUnsub = null;
+let todosTimer = null;
+let lastNotesJson = "";
+let lastTodosJson = "";
+let toastTimer = null;
+
+try {
+  fbApp = initializeApp(FIREBASE_CONFIG);
+  fbAuth = getAuth(fbApp);
+  try {
+    fbDb = initializeFirestore(fbApp, {
+      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+    });
+  } catch (err) {
+    try {
+      fbDb = initializeFirestore(fbApp, { localCache: memoryLocalCache() });
+    } catch (err2) {
+      fbDb = getFirestore(fbApp);
+    }
+  }
+  fbReady = true;
+} catch (err) {
+  console.warn("Firebase 초기화에 실패해 이 브라우저에만 저장해요.", err);
+}
+
+function $(id) { return document.getElementById(id); }
+
+function toast(msg, ms) {
+  const el = $("toast");
+  if (!el) { console.warn(msg); return; }
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), ms || 2800);
+}
+
+function friendlyError(err) {
+  const code = (err && err.code) || "";
+  const map = {
+    "auth/unauthorized-domain": "이 주소가 Firebase 승인된 도메인에 등록되지 않았어요.",
+    "auth/popup-blocked": "로그인 팝업이 차단되었어요.",
+    "auth/popup-closed-by-user": "로그인을 취소했어요.",
+    "auth/cancelled-popup-request": "로그인 창이 이미 열려 있어요.",
+    "auth/network-request-failed": "네트워크 연결을 확인해 주세요.",
+    "auth/internal-error": "로그인 중 오류가 났어요. 잠시 후 다시 시도해 주세요.",
+    "auth/operation-not-allowed": "Google 로그인이 Firebase에서 아직 켜져 있지 않아요.",
+    "auth/account-exists-with-different-credential": "같은 이메일로 이미 다른 로그인 방법이 연결되어 있어요.",
+    "permission-denied": "저장 권한이 없어요. 로그인 상태를 확인해 주세요.",
+    "firestore/permission-denied": "저장 권한이 없어요. 로그인 상태를 확인해 주세요.",
+    "unavailable": "네트워크를 확인해 주세요. 연결되면 자동으로 동기화돼요."
+  };
+  if (map[code]) return map[code];
+  if (/unauthorized-domain/.test(code)) return map["auth/unauthorized-domain"];
+  if (/permission-denied/.test(code)) return map["permission-denied"];
+  if (/network-request-failed/.test(code)) return map["auth/network-request-failed"];
+  return "문제가 생겼어요. 잠시 후 다시 시도해 주세요." + (code ? " (" + code + ")" : "");
+}
+
+function notesCol(uid) { return collection(fbDb, "users", uid, "notes"); }
+function noteRef(uid, id) { return doc(fbDb, "users", uid, "notes", String(id)); }
+function todosRef(uid) { return doc(fbDb, "users", uid, "data", "todos"); }
+function settingsRef(uid) { return doc(fbDb, "users", uid, "data", "settings"); }
+
+function clean(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+function normalizeNoteId(id) {
+  const s = String(id);
+  if (/^\d+$/.test(s)) {
+    const n = Number(s);
+    if (Number.isSafeInteger(n)) return n;
+  }
+  return s;
+}
+
+function normalizeNote(raw) {
+  if (!raw) return null;
+  const parts = Array.isArray(raw.parts) ? raw.parts.filter(p => p && (p.t === "text" || p.t === "img") && typeof p.v === "string") : [];
+  if (!parts.length) return null;
+  return {
+    id: normalizeNoteId(raw.id),
+    time: typeof raw.time === "number" ? raw.time : (Number(raw.time) || Date.now()),
+    rot: typeof raw.rot === "number" ? raw.rot : 0,
+    parts
+  };
+}
+
+function notesSignature(list) {
+  const rows = (list || []).map(n => [n.id, n.time, n.rot, n.parts]);
+  rows.sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+  return JSON.stringify(rows);
+}
+
+function noteContentKey(n) {
+  return JSON.stringify(n.parts || []);
+}
+
+function byteSize(obj) {
+  try { return new Blob([JSON.stringify(obj)]).size; }
+  catch (e) { return JSON.stringify(obj).length; }
+}
+
+function recompressDataUrl(src, max, quality) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const s = Math.min(1, max / (img.width || max));
+      const c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(img.width * s));
+      c.height = Math.max(1, Math.round(img.height * s));
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      try { resolve(c.toDataURL("image/jpeg", quality)); }
+      catch (e) { resolve(src); }
+    };
+    img.onerror = () => resolve(src);
+    img.src = src;
+  });
+}
+
+async function shrinkNote(note) {
+  let n = { id: note.id, time: note.time, rot: note.rot, parts: note.parts.slice() };
+  const steps = [[600, 0.75], [400, 0.62], [300, 0.52], [240, 0.45]];
+  for (let i = 0; i < steps.length; i++) {
+    if (byteSize(noteToDoc(n)) <= DOC_LIMIT) return n;
+    const [max, q] = steps[i];
+    const parts = [];
+    for (const p of n.parts) {
+      if (p.t === "img") parts.push({ t: "img", v: await recompressDataUrl(p.v, max, q) });
+      else parts.push(p);
+    }
+    n = { id: n.id, time: n.time, rot: n.rot, parts };
+  }
+  return n;
+}
+
+function noteToDoc(n) {
+  return clean({
+    id: String(n.id),
+    time: n.time,
+    rot: n.rot,
+    parts: n.parts,
+    updatedAt: new Date().toISOString()
+  });
+}
+
+function todosPayload(state) {
+  const s = state || { v: 1, view: "today", oneoffs: [], routines: [], stickers: [] };
+  return clean({
+    v: s.v || 1,
+    view: s.view === "week" ? "week" : "today",
+    oneoffs: Array.isArray(s.oneoffs) ? s.oneoffs : [],
+    routines: Array.isArray(s.routines) ? s.routines : [],
+    stickers: Array.isArray(s.stickers) ? s.stickers : [],
+    updatedAt: new Date().toISOString()
+  });
+}
+
+function todosSignature(state) {
+  const s = todosPayload(state);
+  delete s.updatedAt;
+  return JSON.stringify(s);
+}
+
+function localNotes() {
+  if (window.RecordsMemo && typeof window.RecordsMemo.getNotes === "function") {
+    return (window.RecordsMemo.getNotes() || []).map(normalizeNote).filter(Boolean);
+  }
+  try { return (JSON.parse(localStorage.getItem("records-notes") || "[]") || []).map(normalizeNote).filter(Boolean); }
+  catch (e) { return []; }
+}
+
+function localTodos() {
+  if (window.RecordsTodo && typeof window.RecordsTodo.getState === "function") {
+    return window.RecordsTodo.getState();
+  }
+  try { return JSON.parse(localStorage.getItem("records-todos") || "null") || emptyTodos(); }
+  catch (e) { return emptyTodos(); }
+}
+
+function emptyTodos() { return { v: 1, view: "today", oneoffs: [], routines: [], stickers: [] }; }
+
+function todosHasData(s) {
+  if (!s) return false;
+  return (s.oneoffs && s.oneoffs.length) || (s.routines && s.routines.length) || (s.stickers && s.stickers.length);
+}
+
+function notesFromSnapshot(snap) {
+  return snap.docs.map(d => normalizeNote(Object.assign({}, d.data() || {}, { id: d.id })))
+    .filter(Boolean)
+    .sort((a, b) => (b.time || 0) - (a.time || 0));
+}
+
+function applyNotes(list) {
+  applyingCloud = true;
+  lastNotesJson = notesSignature(list);
+  if (window.RecordsMemo) window.RecordsMemo.applyCloud(list);
+  applyingCloud = false;
+}
+
+function applyTodos(state) {
+  applyingCloud = true;
+  lastTodosJson = todosSignature(state);
+  if (window.RecordsTodo) window.RecordsTodo.applyCloud(state);
+  applyingCloud = false;
+}
+
+function mergeNotes(cloud, local) {
+  const out = [];
+  const byId = new Map();
+  const content = new Set();
+  (cloud || []).forEach(n => {
+    const nn = normalizeNote(n);
+    if (!nn) return;
+    byId.set(String(nn.id), nn);
+    content.add(noteContentKey(nn));
+    out.push(nn);
+  });
+  (local || []).forEach(n => {
+    const nn = normalizeNote(n);
+    if (!nn) return;
+    if (byId.has(String(nn.id))) return;
+    if (content.has(noteContentKey(nn))) return;
+    byId.set(String(nn.id), nn);
+    content.add(noteContentKey(nn));
+    out.push(nn);
+  });
+  out.sort((a, b) => (b.time || 0) - (a.time || 0));
+  return out;
+}
+
+function mergeDone(a, b) {
+  const out = Object.assign({}, a || {});
+  Object.keys(b || {}).forEach(k => { if (b[k]) out[k] = true; else if (!(k in out)) out[k] = b[k]; });
+  return out;
+}
+
+function mergeTodos(cloud, local) {
+  const c = cloud || emptyTodos();
+  const l = local || emptyTodos();
+  const oneoffs = [];
+  const oneoffIds = new Set();
+  const oneoffKey = t => (t.date || "") + "\0" + (t.text || "");
+  const oneoffKeys = new Set();
+  const takeOne = t => {
+    if (!t || !t.id) return;
+    if (oneoffIds.has(t.id)) return;
+    const k = oneoffKey(t);
+    if (oneoffKeys.has(k)) return;
+    oneoffIds.add(t.id);
+    oneoffKeys.add(k);
+    oneoffs.push(t);
+  };
+  // same id: prefer done, keep local text if present
+  const byId = new Map();
+  (c.oneoffs || []).forEach(t => byId.set(t.id, Object.assign({}, t)));
+  (l.oneoffs || []).forEach(t => {
+    if (byId.has(t.id)) {
+      const prev = byId.get(t.id);
+      byId.set(t.id, Object.assign({}, prev, t, { done: !!(prev.done || t.done) }));
+    } else {
+      byId.set(t.id, Object.assign({}, t));
+    }
+  });
+  byId.forEach(t => takeOne(t));
+
+  const routines = [];
+  const routineIds = new Set();
+  const routineKey = r => (r.start || "") + "\0" + (r.text || "");
+  const routineKeys = new Set();
+  const rById = new Map();
+  (c.routines || []).forEach(r => rById.set(r.id, Object.assign({}, r, { done: Object.assign({}, r.done || {}), hidden: (r.hidden || []).slice(), ordDay: Object.assign({}, r.ordDay || {}) })));
+  (l.routines || []).forEach(r => {
+    if (rById.has(r.id)) {
+      const prev = rById.get(r.id);
+      rById.set(r.id, Object.assign({}, prev, r, {
+        done: mergeDone(prev.done, r.done),
+        hidden: Array.from(new Set([].concat(prev.hidden || [], r.hidden || []))),
+        ordDay: Object.assign({}, prev.ordDay || {}, r.ordDay || {})
+      }));
+    } else {
+      rById.set(r.id, Object.assign({}, r, { done: Object.assign({}, r.done || {}), hidden: (r.hidden || []).slice(), ordDay: Object.assign({}, r.ordDay || {}) }));
+    }
+  });
+  rById.forEach(r => {
+    if (routineIds.has(r.id) || routineKeys.has(routineKey(r))) return;
+    routineIds.add(r.id);
+    routineKeys.add(routineKey(r));
+    routines.push(r);
+  });
+
+  const stickerSet = new Set([].concat(c.stickers || [], l.stickers || []).filter(s => /^\d{4}-\d{2}-\d{2}$/.test(s)));
+  return {
+    v: Math.max(c.v || 1, l.v || 1),
+    view: l.view || c.view || "today",
+    oneoffs,
+    routines,
+    stickers: Array.from(stickerSet).sort()
+  };
+}
+
+async function uploadNotes(uid, list) {
+  const skipped = [];
+  let i = 0;
+  const prepared = [];
+  for (const raw of list) {
+    let n = normalizeNote(raw);
+    if (!n) continue;
+    n = await shrinkNote(n);
+    const data = noteToDoc(n);
+    if (byteSize(data) > DOC_LIMIT) {
+      skipped.push(n);
+      continue;
+    }
+    prepared.push({ n, data });
+  }
+  while (i < prepared.length) {
+    const batch = writeBatch(fbDb);
+    prepared.slice(i, i + 400).forEach(({ n, data }) => {
+      batch.set(noteRef(uid, n.id), data, { merge: true });
+    });
+    await batch.commit();
+    i += 400;
+  }
+  if (skipped.length) {
+    toast("이미지가 너무 큰 메모 " + skipped.length + "개는 계정에 올리지 못했어요. 이 브라우저에는 그대로 남아 있어요.");
+  }
+  return prepared.map(p => p.n);
+}
+
+async function deleteMissingNotes(uid, keepList, existingIds) {
+  const keep = new Set((keepList || []).map(n => String(n.id)));
+  const toDelete = (existingIds || []).filter(id => !keep.has(String(id)));
+  let i = 0;
+  while (i < toDelete.length) {
+    const batch = writeBatch(fbDb);
+    toDelete.slice(i, i + 400).forEach(id => batch.delete(noteRef(uid, id)));
+    await batch.commit();
+    i += 400;
+  }
+}
+
+async function uploadTodos(uid, state) {
+  const data = todosPayload(state);
+  if (byteSize(data) > DOC_LIMIT) {
+    toast("할 일 데이터가 너무 커서 계정에 올리지 못했어요.");
+    return;
+  }
+  await setDoc(todosRef(uid), data, { merge: true });
+}
+
+async function markInitialized(uid) {
+  await setDoc(settingsRef(uid), {
+    initialized: true,
+    updatedAt: new Date().toISOString()
+  }, { merge: true });
+}
+
+async function maybeMigrate(uid, cloudNotes, cloudTodos, cloudNoteIds) {
+  const locN = localNotes();
+  const locT = localTodos();
+  const localHas = locN.length > 0 || todosHasData(locT);
+  const cloudHas = (cloudNotes || []).length > 0 || todosHasData(cloudTodos);
+  const notesDiff = notesSignature(locN) !== notesSignature(cloudNotes || []);
+  const todosDiff = todosSignature(locT) !== todosSignature(cloudTodos || emptyTodos());
+  const different = notesDiff || todosDiff;
+
+  if (localHas && (!cloudHas || different)) {
+    const skipKey = "records-migrate-skip:" + uid;
+    if (!sessionStorage.getItem(skipKey)) {
+      const nCount = locN.length;
+      const tCount = (locT.oneoffs || []).length + (locT.routines || []).length;
+      const parts = [];
+      if (nCount) parts.push("메모 " + nCount + "개");
+      if (tCount) parts.push("할 일 " + tCount + "개");
+      const label = parts.length ? parts.join("와 ") + "를" : "기록을";
+      const msg = "이 브라우저에 저장된 " + label +
+        " 구글 계정으로 옮길까요? 이미 계정에 있는 같은 항목은 하나로 합쳐져요.";
+      if (window.confirm(msg)) {
+        try {
+          const mergedNotes = mergeNotes(cloudNotes, locN);
+          const mergedTodos = mergeTodos(cloudTodos, locT);
+          const uploaded = await uploadNotes(uid, mergedNotes);
+          await deleteMissingNotes(uid, uploaded, cloudNoteIds);
+          await uploadTodos(uid, mergedTodos);
+          applyNotes(uploaded.length ? uploaded : mergedNotes);
+          applyTodos(mergedTodos);
+          await markInitialized(uid);
+          return true;
+        } catch (err) {
+          toast(friendlyError(err));
+        }
+      } else {
+        try { sessionStorage.setItem(skipKey, "1"); } catch (e) {}
+        toast("이 브라우저의 기록은 그대로 남아 있어요. 로그아웃하면 다시 볼 수 있어요.");
+      }
+    }
+  }
+  try { await markInitialized(uid); } catch (e) {}
+  return false;
+}
+
+async function pushNotesNow(list) {
+  if (!currentUser || !fbDb || applyingCloud) return;
+  const sig = notesSignature(list || []);
+  if (sig === lastNotesJson) return;
+  try {
+    const snap = await getDocs(notesCol(currentUser.uid));
+    const existing = snap.docs.map(d => d.id);
+    const uploaded = await uploadNotes(currentUser.uid, list || []);
+    await deleteMissingNotes(currentUser.uid, uploaded, existing);
+    lastNotesJson = notesSignature(uploaded.length ? uploaded : (list || []));
+  } catch (err) {
+    toast(friendlyError(err));
+  }
+}
+
+async function pushTodosNow(state) {
+  if (!currentUser || !fbDb || applyingCloud) return;
+  const sig = todosSignature(state);
+  if (sig === lastTodosJson) return;
+  try {
+    await uploadTodos(currentUser.uid, state);
+    lastTodosJson = sig;
+  } catch (err) {
+    toast(friendlyError(err));
+  }
+}
+
+function stopCloudSync() {
+  if (notesUnsub) { notesUnsub(); notesUnsub = null; }
+  if (todosUnsub) { todosUnsub(); todosUnsub = null; }
+  if (todosTimer) { clearTimeout(todosTimer); todosTimer = null; }
+}
+
+function startCloudSync(uid) {
+  stopCloudSync();
+  notesUnsub = onSnapshot(notesCol(uid), snap => {
+    if (applyingCloud) return;
+    const list = notesFromSnapshot(snap);
+    const sig = notesSignature(list);
+    if (sig === lastNotesJson) return;
+    applyNotes(list);
+  }, err => toast(friendlyError(err)));
+
+  todosUnsub = onSnapshot(todosRef(uid), snap => {
+    if (applyingCloud) return;
+    const data = snap.exists() ? snap.data() : emptyTodos();
+    const sig = todosSignature(data);
+    if (sig === lastTodosJson) return;
+    applyTodos(data);
+  }, err => toast(friendlyError(err)));
+}
+
+async function enterSignedIn(user) {
+  currentUser = user;
+  updateAuthUi();
+  if (!fbDb) {
+    toast("저장소를 불러오지 못했어요. 이 브라우저에만 잠시 저장해요.");
+    return;
+  }
+  try {
+    const [nSnap, tSnap] = await Promise.all([
+      getDocs(notesCol(user.uid)),
+      getDoc(todosRef(user.uid))
+    ]);
+    const cloudNotes = notesFromSnapshot(nSnap);
+    const cloudTodos = tSnap.exists() ? tSnap.data() : emptyTodos();
+    const wrote = await maybeMigrate(user.uid, cloudNotes, cloudTodos, nSnap.docs.map(d => d.id));
+    if (!wrote) {
+      applyNotes(cloudNotes);
+      applyTodos(cloudTodos);
+    }
+    startCloudSync(user.uid);
+  } catch (err) {
+    toast(friendlyError(err));
+    startCloudSync(user.uid);
+  }
+}
+
+function enterSignedOut() {
+  stopCloudSync();
+  currentUser = null;
+  lastNotesJson = "";
+  lastTodosJson = "";
+  updateAuthUi();
+  // localStorage still holds the last cache (or unsynced local data)
+  try {
+    const notes = JSON.parse(localStorage.getItem("records-notes") || "[]");
+    if (window.RecordsMemo) window.RecordsMemo.applyCloud(Array.isArray(notes) ? notes : []);
+  } catch (e) {}
+  try {
+    const todos = JSON.parse(localStorage.getItem("records-todos") || "null");
+    if (window.RecordsTodo) window.RecordsTodo.applyCloud(todos || emptyTodos());
+  } catch (e) {}
+}
+
+function updateAuthUi() {
+  const loginBtn = $("btn-login");
+  const box = $("auth-user");
+  if (!loginBtn || !box) return;
+  if (currentUser) {
+    loginBtn.hidden = true;
+    box.hidden = false;
+    const name = currentUser.displayName || currentUser.email || "로그인됨";
+    $("auth-name").textContent = name;
+    const img = $("auth-photo");
+    if (currentUser.photoURL) {
+      img.hidden = false;
+      img.src = currentUser.photoURL;
+      img.alt = name;
+    } else {
+      img.hidden = true;
+      img.removeAttribute("src");
+    }
+  } else {
+    loginBtn.hidden = false;
+    box.hidden = true;
+  }
+}
+
+function isMobileAuth() {
+  const ua = navigator.userAgent || "";
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+}
+
+function googleProvider() {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  return provider;
+}
+
+async function loginGoogle() {
+  if (!fbReady || !fbAuth) {
+    toast("로그인 기능을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
+    return;
+  }
+  const provider = googleProvider();
+  try {
+    if (isMobileAuth()) {
+      await signInWithRedirect(fbAuth, provider);
+      return;
+    }
+    await signInWithPopup(fbAuth, provider);
+  } catch (err) {
+    if (err && (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment")) {
+      try {
+        toast("팝업이 차단되어 다른 방법으로 로그인할게요.");
+        await signInWithRedirect(fbAuth, provider);
+      } catch (err2) {
+        toast(friendlyError(err2));
+      }
+    } else if (err && (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request")) {
+      return;
+    } else {
+      toast(friendlyError(err));
+    }
+  }
+}
+
+async function logoutGoogle() {
+  try {
+    if (todosTimer) { clearTimeout(todosTimer); todosTimer = null; }
+    if (currentUser && fbDb) {
+      try { await pushTodosNow(localTodos()); } catch (e) {}
+    }
+    stopCloudSync();
+    if (fbAuth) await signOut(fbAuth);
+  } catch (err) {
+    toast(friendlyError(err));
+  }
+}
+
+window.RecordsCloud = {
+  get ready() { return fbReady; },
+  isLoggedIn() { return !!currentUser; },
+  onNotesSave(notes) {
+    if (!currentUser || applyingCloud) return;
+    pushNotesNow(notes);
+  },
+  onTodosSave(state) {
+    if (!currentUser || applyingCloud) return;
+    clearTimeout(todosTimer);
+    todosTimer = setTimeout(() => { todosTimer = null; pushTodosNow(state); }, 250);
+  }
+};
+
+const loginBtn = $("btn-login");
+const logoutBtn = $("btn-logout");
+if (loginBtn) loginBtn.addEventListener("click", () => { loginGoogle(); });
+if (logoutBtn) logoutBtn.addEventListener("click", () => { logoutGoogle(); });
+
+(async function startAuth() {
+  updateAuthUi();
+  if (!fbReady || !fbAuth) return;
+  try {
+    await getRedirectResult(fbAuth);
+  } catch (err) {
+    toast(friendlyError(err));
+  }
+  onAuthStateChanged(fbAuth, user => {
+    if (user) enterSignedIn(user);
+    else enterSignedOut();
+  });
+})();
+
+</script>
+</body>
+</html>
