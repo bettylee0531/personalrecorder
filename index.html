@@ -3819,7 +3819,10 @@ import {
   signInWithRedirect,
   getRedirectResult,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
+  indexedDBLocalPersistence
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 import {
   initializeFirestore,
@@ -3875,6 +3878,11 @@ try {
   fbApp = initializeApp(FIREBASE_CONFIG);
   fbAuth = getAuth(fbApp);
   try {
+    setPersistence(fbAuth, indexedDBLocalPersistence)
+      .catch(() => setPersistence(fbAuth, browserLocalPersistence))
+      .catch(err => console.warn("login persistence", err));
+  } catch (e) {}
+  try {
     fbDb = initializeFirestore(fbApp, {
       localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
     });
@@ -3912,14 +3920,20 @@ function friendlyError(err) {
     "auth/internal-error": "로그인 중 오류가 났어요. 잠시 후 다시 시도해 주세요.",
     "auth/operation-not-allowed": "Google 로그인이 Firebase에서 아직 켜져 있지 않아요.",
     "auth/account-exists-with-different-credential": "같은 이메일로 이미 다른 로그인 방법이 연결되어 있어요.",
+    "auth/web-storage-unsupported": "이 브라우저 설정이 로그인 정보를 저장하지 못하게 막고 있어요. 쿠키/사이트 데이터 차단을 꺼 주세요.",
+    "auth/operation-not-supported-in-this-environment": "이 브라우저에서는 로그인이 지원되지 않아요. Chrome이나 삼성 인터넷에서 열어 주세요.",
+    "auth/disallowed-useragent": "앱 안의 브라우저에서는 구글 로그인이 막혀 있어요. Chrome에서 열어 주세요.",
+    "auth/too-many-requests": "로그인 시도가 너무 많아요. 잠시 후 다시 시도해 주세요.",
+    "auth/user-disabled": "이 구글 계정은 사용할 수 없어요.",
     "permission-denied": "저장 권한이 없어요. 로그인 상태를 확인해 주세요.",
     "firestore/permission-denied": "저장 권한이 없어요. 로그인 상태를 확인해 주세요.",
     "unavailable": "네트워크를 확인해 주세요. 연결되면 자동으로 동기화돼요."
   };
-  if (map[code]) return map[code];
-  if (/unauthorized-domain/.test(code)) return map["auth/unauthorized-domain"];
-  if (/permission-denied/.test(code)) return map["permission-denied"];
-  if (/network-request-failed/.test(code)) return map["auth/network-request-failed"];
+  const tail = code ? " (" + code + ")" : "";
+  if (map[code]) return map[code] + tail;
+  if (/unauthorized-domain/.test(code)) return map["auth/unauthorized-domain"] + tail;
+  if (/permission-denied/.test(code)) return map["permission-denied"] + tail;
+  if (/network-request-failed/.test(code)) return map["auth/network-request-failed"] + tail;
   return "문제가 생겼어요. 잠시 후 다시 시도해 주세요." + (code ? " (" + code + ")" : "");
 }
 
@@ -3929,6 +3943,18 @@ function todosRef(uid) { return doc(fbDb, "users", uid, "data", "todos"); }
 function settingsRef(uid) { return doc(fbDb, "users", uid, "data", "settings"); }
 
 function clean(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+/* JSON with object keys sorted, so the same data always gives the same text
+   (Firestore can hand fields back in a different order than this browser saved them). */
+function stableStringify(v) {
+  if (v === undefined) return undefined;
+  if (v === null || typeof v !== "object") return JSON.stringify(v);
+  if (Array.isArray(v)) return "[" + v.map(x => { const t = stableStringify(x); return t === undefined ? "null" : t; }).join(",") + "]";
+  const keys = Object.keys(v).sort();
+  const parts = [];
+  keys.forEach(k => { const t = stableStringify(v[k]); if (t !== undefined) parts.push(JSON.stringify(k) + ":" + t); });
+  return "{" + parts.join(",") + "}";
+}
 
 function normalizeNoteId(id) {
   const s = String(id);
@@ -3957,7 +3983,7 @@ function normalizeNote(raw) {
 function notesSignature(list) {
   const rows = (list || []).map(n => [n.id, n.time, n.rot, n.editedAt || 0, n.parts]);
   rows.sort((a, b) => String(a[0]).localeCompare(String(b[0])));
-  return JSON.stringify(rows);
+  return stableStringify(rows);
 }
 
 function noteContentKey(n) {
@@ -4031,7 +4057,7 @@ function todosPayload(state) {
 function todosSignature(state) {
   const s = todosPayload(state);
   delete s.updatedAt;
-  return JSON.stringify(s);
+  return stableStringify(s);
 }
 
 function localNotes() {
@@ -4258,7 +4284,7 @@ function moneyPayload(state) {
 function moneySignature(state) {
   const s = moneyPayload(state);
   delete s.updatedAt;
-  return JSON.stringify(s);
+  return stableStringify(s);
 }
 function dailyMetaPayload(state) {
   const s = state || emptyDaily();
@@ -4270,7 +4296,7 @@ function dailyMetaPayload(state) {
       mood: d.mood || 0,
       thanks: d.thanks || "",
       habits: d.habits || {},
-      hasPhoto: !!(d.photo),
+      hasPhoto: !!(d.photo || d.hasPhoto),
       metBf: !!d.metBf
     };
   });
@@ -4284,7 +4310,7 @@ function dailyMetaPayload(state) {
 function dailySignature(state) {
   const s = dailyMetaPayload(state);
   delete s.updatedAt;
-  return JSON.stringify(s);
+  return stableStringify(s);
 }
 function ddayPayload(state) {
   const s = state || emptyDday();
@@ -4297,7 +4323,7 @@ function ddayPayload(state) {
 function ddaySignature(state) {
   const s = ddayPayload(state);
   delete s.updatedAt;
-  return JSON.stringify(s);
+  return stableStringify(s);
 }
 
 function localMoney() {
@@ -4338,7 +4364,7 @@ function photosFromSnapshot(snap) {
 }
 function photoSignature(map) {
   const keys = Object.keys(map || {}).sort();
-  return JSON.stringify(keys.map(k => [k, (map[k] || "").length]));
+  return stableStringify(keys.map(k => [k, (map[k] || "").length]));
 }
 
 function applyMoney(state) {
@@ -4539,82 +4565,332 @@ async function pushPhotoNow(date, photo) {
 }
 
 
+/* ---- one-time "move this browser's records to the account" check ----
+   Remembers, per Google account and per browser (localStorage "records-migrated-<uid>"),
+   which items were already in the account ("synced") and which ones the user chose
+   to keep only in this browser ("declined"), so the question is asked at most once
+   for the same items. Only items that are truly NOT in the account are counted. */
+const MIGRATE_PREFIX = "records-migrated-";
+const KEEP_KEY = "records-local-kept";
+const DEFAULT_HABIT_IDS = new Set(["qt", "stretch", "pray"]);
+
+function loadMigrateState(uid) {
+  try {
+    const o = JSON.parse(localStorage.getItem(MIGRATE_PREFIX + uid) || "null");
+    if (o && typeof o === "object") {
+      return { asked: !!o.asked, synced: new Set(o.synced || []), declined: new Set(o.declined || []) };
+    }
+  } catch (e) {}
+  return { asked: false, synced: new Set(), declined: new Set() };
+}
+function saveMigrateState(uid, st) {
+  try {
+    localStorage.setItem(MIGRATE_PREFIX + uid, JSON.stringify({
+      v: 1, asked: !!st.asked, at: Date.now(),
+      synced: Array.from(st.synced), declined: Array.from(st.declined)
+    }));
+  } catch (e) {}
+}
+function rememberSynced(uid, keys) {
+  if (!uid || !keys || !keys.length) return;
+  const st = loadMigrateState(uid);
+  let changed = false;
+  keys.forEach(k => { if (!st.synced.has(k)) { st.synced.add(k); changed = true; } });
+  if (changed) saveMigrateState(uid, st);
+}
+
+function dayHasContent(d) {
+  if (!d) return false;
+  return !!((d.line && String(d.line).trim()) || (d.thanks && String(d.thanks).trim()) || d.mood ||
+    d.photo || d.hasPhoto || d.metBf || Object.keys(d.habits || {}).some(k => d.habits[k]));
+}
+function noteKeys(list) { return (list || []).filter(n => n && n.id != null).map(n => "n:" + String(n.id)); }
+function todoKeys(s) {
+  s = s || {};
+  return [].concat(
+    (s.oneoffs || []).filter(t => t && t.id).map(t => "t:" + t.id),
+    (s.routines || []).filter(r => r && r.id).map(r => "r:" + r.id)
+  );
+}
+function moneyKeys(s) {
+  s = s || {};
+  const k = (s.entries || []).filter(e => e && e.id).map(e => "m:" + e.id);
+  if (s.openingMonth && s.openingBalance != null) k.push("mo");
+  return k;
+}
+function dailyKeys(s) {
+  s = s || {};
+  const k = [];
+  Object.keys(s.days || {}).forEach(iso => { if (dayHasContent(s.days[iso])) k.push("d:" + iso); });
+  (s.habits || []).forEach(h => { if (h && h.id) k.push("h:" + h.id); });
+  return k;
+}
+function ddayKeys(s) { return ((s && s.items) || []).filter(i => i && i.id).map(i => "dd:" + i.id); }
+function photoKeys(map) { return Object.keys(map || {}).map(iso => "d:" + iso); }
+
+/* items present in `local` but not in `cloud` and never seen in this account on this browser */
+function findLocalOnly(cloud, local, synced) {
+  const seen = k => synced.has(k);
+  const out = { notes: [], oneoffs: [], routines: [], entries: [], opening: null, days: {}, habits: [], ddays: [], keys: [] };
+
+  const cNoteIds = new Set((cloud.notes || []).map(n => String(n.id)));
+  const cNoteContent = new Set((cloud.notes || []).map(noteContentKey));
+  (local.notes || []).forEach(n => {
+    const k = "n:" + String(n.id);
+    if (cNoteIds.has(String(n.id)) || cNoteContent.has(noteContentKey(n)) || seen(k)) return;
+    out.notes.push(n); out.keys.push(k);
+  });
+
+  const ct = cloud.todos || {}, lt = local.todos || {};
+  const cOneIds = new Set((ct.oneoffs || []).map(t => t && t.id));
+  const cOneKeys = new Set((ct.oneoffs || []).map(t => t && ((t.date || "") + "\0" + (t.text || ""))));
+  (lt.oneoffs || []).forEach(t => {
+    if (!t || !t.id) return;
+    const k = "t:" + t.id;
+    if (cOneIds.has(t.id) || cOneKeys.has((t.date || "") + "\0" + (t.text || "")) || seen(k)) return;
+    out.oneoffs.push(t); out.keys.push(k);
+  });
+  const cRIds = new Set((ct.routines || []).map(r => r && r.id));
+  const cRKeys = new Set((ct.routines || []).map(r => r && ((r.start || "") + "\0" + (r.text || ""))));
+  (lt.routines || []).forEach(r => {
+    if (!r || !r.id) return;
+    const k = "r:" + r.id;
+    if (cRIds.has(r.id) || cRKeys.has((r.start || "") + "\0" + (r.text || "")) || seen(k)) return;
+    out.routines.push(r); out.keys.push(k);
+  });
+
+  const cm = cloud.money || {}, lm = local.money || {};
+  const mKeyOf = e => (e.date || "") + "\0" + (e.type || "") + "\0" + (e.name || "") + "\0" + String(e.amount);
+  const cMIds = new Set((cm.entries || []).map(e => e && e.id));
+  const cMKeys = new Set((cm.entries || []).map(e => e && mKeyOf(e)));
+  (lm.entries || []).forEach(e => {
+    if (!e || !e.id) return;
+    const k = "m:" + e.id;
+    if (cMIds.has(e.id) || cMKeys.has(mKeyOf(e)) || seen(k)) return;
+    out.entries.push(e); out.keys.push(k);
+  });
+  if (lm.openingMonth && lm.openingBalance != null && !(cm.openingMonth && cm.openingBalance != null) && !seen("mo")) {
+    out.opening = { openingMonth: lm.openingMonth, openingBalance: lm.openingBalance };
+    out.keys.push("mo");
+  }
+
+  const cd = cloud.daily || {}, ld = local.daily || {};
+  Object.keys(ld.days || {}).forEach(iso => {
+    const k = "d:" + iso;
+    if (!dayHasContent(ld.days[iso])) return;
+    if (dayHasContent((cd.days || {})[iso]) || (cloud.photos || {})[iso] || seen(k)) return;
+    out.days[iso] = ld.days[iso]; out.keys.push(k);
+  });
+  const cHIds = new Set((cd.habits || []).map(h => h && h.id));
+  const cHNames = new Set((cd.habits || []).map(h => h && h.name));
+  (ld.habits || []).forEach(h => {
+    if (!h || !h.id || !h.name) return;
+    const k = "h:" + h.id;
+    if (DEFAULT_HABIT_IDS.has(h.id) || cHIds.has(h.id) || cHNames.has(h.name) || seen(k)) return;
+    out.habits.push(h); out.keys.push(k);
+  });
+
+  const cdd = cloud.dday || {}, ldd = local.dday || {};
+  const dKeyOf = it => (it.title || "") + "\0" + (it.date || "");
+  const cDIds = new Set((cdd.items || []).map(i => i && i.id));
+  const cDKeys = new Set((cdd.items || []).map(i => i && dKeyOf(i)));
+  (ldd.items || []).forEach(it => {
+    if (!it || !it.id) return;
+    const k = "dd:" + it.id;
+    if (cDIds.has(it.id) || cDKeys.has(dKeyOf(it)) || seen(k)) return;
+    out.ddays.push(it); out.keys.push(k);
+  });
+  return out;
+}
+
+/* add local-only items on top of a base (cloud or cache); never removes or overwrites base items */
+function appendLocalOnly(base, lo) {
+  const notes = (base.notes || []).slice();
+  const nIds = new Set(notes.map(n => String(n.id)));
+  (lo.notes || []).forEach(n => { const nn = normalizeNote(n); if (nn && !nIds.has(String(nn.id))) { nIds.add(String(nn.id)); notes.push(nn); } });
+  notes.sort((a, b) => (b.time || 0) - (a.time || 0));
+
+  const bt = base.todos || emptyTodos();
+  const oneoffs = (bt.oneoffs || []).slice();
+  const oIds = new Set(oneoffs.map(t => t.id));
+  (lo.oneoffs || []).forEach(t => { if (!oIds.has(t.id)) { oIds.add(t.id); oneoffs.push(t); } });
+  const routines = (bt.routines || []).slice();
+  const rIds = new Set(routines.map(r => r.id));
+  (lo.routines || []).forEach(r => { if (!rIds.has(r.id)) { rIds.add(r.id); routines.push(r); } });
+  const todos = Object.assign({}, emptyTodos(), bt, { oneoffs, routines, stickers: (bt.stickers || []).slice() });
+  delete todos.updatedAt;
+
+  const mh = window.RecordsMoney && window.RecordsMoney.hydrate;
+  const money = mh ? mh(base.money) : Object.assign(emptyMoney(), base.money || {});
+  const mIds = new Set((money.entries || []).map(e => e.id));
+  money.entries = (money.entries || []).slice();
+  (lo.entries || []).forEach(e => { if (!mIds.has(e.id)) { mIds.add(e.id); money.entries.push(e); } });
+  if (lo.opening && !(money.openingMonth && money.openingBalance != null)) {
+    money.openingMonth = lo.opening.openingMonth;
+    money.openingBalance = lo.opening.openingBalance;
+  }
+
+  const dh = window.RecordsDaily && window.RecordsDaily.hydrate;
+  const daily = dh ? dh(base.daily) : JSON.parse(JSON.stringify(base.daily || emptyDaily()));
+  daily.days = daily.days || {};
+  Object.keys(base.photos || {}).forEach(iso => { if (daily.days[iso]) daily.days[iso].photo = base.photos[iso]; });
+  const hIds = new Set((daily.habits || []).map(h => h.id));
+  const hNames = new Set((daily.habits || []).map(h => h.name));
+  (lo.habits || []).forEach(h => {
+    if (hIds.has(h.id) || hNames.has(h.name)) return;
+    hIds.add(h.id); hNames.add(h.name);
+    daily.habits.push({ id: String(h.id), name: String(h.name) });
+  });
+  Object.keys(lo.days || {}).forEach(iso => {
+    if (dayHasContent(daily.days[iso])) return;
+    daily.days[iso] = JSON.parse(JSON.stringify(lo.days[iso]));
+  });
+
+  const ddh = window.RecordsDday && window.RecordsDday.hydrate;
+  const dday = ddh ? ddh(base.dday) : Object.assign(emptyDday(), base.dday || {});
+  const dIds = new Set((dday.items || []).map(i => i.id));
+  dday.items = (dday.items || []).slice();
+  (lo.ddays || []).forEach(it => { if (!dIds.has(it.id)) { dIds.add(it.id); dday.items.push(it); } });
+
+  return { notes, todos, money, daily, dday };
+}
+
+function emptyLocalOnly() {
+  return { notes: [], oneoffs: [], routines: [], entries: [], opening: null, days: {}, habits: [], ddays: [], keys: [] };
+}
+
+/* Keep items the user chose not to move, so they come back after logging out
+   (while logged in, the screen and cache show the account's data). */
+function stashLocalOnly(lo) {
+  if (!lo || !lo.keys || !lo.keys.length) return;
+  let prev = null;
+  try { prev = JSON.parse(localStorage.getItem(KEEP_KEY) || "null"); } catch (e) { prev = null; }
+  const cur = (prev && typeof prev === "object") ? Object.assign(emptyLocalOnly(), prev) : emptyLocalOnly();
+  const add = (arr, items, idOf) => {
+    const ids = new Set(arr.map(idOf));
+    items.forEach(x => { if (!ids.has(idOf(x))) { ids.add(idOf(x)); arr.push(x); } });
+  };
+  add(cur.notes, lo.notes || [], n => String(n.id));
+  add(cur.oneoffs, lo.oneoffs || [], t => t.id);
+  add(cur.routines, lo.routines || [], r => r.id);
+  add(cur.entries, lo.entries || [], e => e.id);
+  add(cur.habits, lo.habits || [], h => h.id);
+  add(cur.ddays, lo.ddays || [], i => i.id);
+  if (lo.opening && !cur.opening) cur.opening = lo.opening;
+  Object.keys(lo.days || {}).forEach(iso => { if (!cur.days[iso]) cur.days[iso] = lo.days[iso]; });
+  cur.keys = Array.from(new Set([].concat(cur.keys || [], lo.keys)));
+  cur.at = Date.now();
+  try { localStorage.setItem(KEEP_KEY, JSON.stringify(cur)); }
+  catch (e) {
+    // too big (photos): keep everything except the photos
+    try {
+      const slim = JSON.parse(JSON.stringify(cur));
+      Object.keys(slim.days || {}).forEach(iso => { if (slim.days[iso]) slim.days[iso].photo = null; });
+      localStorage.setItem(KEEP_KEY, JSON.stringify(slim));
+    } catch (e2) {}
+  }
+}
+
+function restoreStashedLocal() {
+  let kept = null;
+  try { kept = JSON.parse(localStorage.getItem(KEEP_KEY) || "null"); } catch (e) { kept = null; }
+  if (!kept || typeof kept !== "object") return;
+  const lo = Object.assign(emptyLocalOnly(), kept);
+  const merged = appendLocalOnly({
+    notes: localNotes(), todos: localTodos(), money: localMoney(), daily: localDaily(), dday: localDday()
+  }, lo);
+  if (window.RecordsMemo) window.RecordsMemo.applyCloud(merged.notes);
+  if (window.RecordsTodo) window.RecordsTodo.applyCloud(merged.todos);
+  if (window.RecordsMoney) window.RecordsMoney.applyCloud(merged.money);
+  if (window.RecordsDaily) window.RecordsDaily.applyCloud(merged.daily, {});
+  if (window.RecordsDday) window.RecordsDday.applyCloud(merged.dday);
+  try { localStorage.removeItem(KEEP_KEY); } catch (e) {}
+}
+
 async function maybeMigrate(uid, bag) {
   bag = bag || {};
-  const cloudNotes = bag.cloudNotes || [];
-  const cloudTodos = bag.cloudTodos || emptyTodos();
-  const cloudNoteIds = bag.cloudNoteIds || [];
-  const cloudMoney = bag.cloudMoney || emptyMoney();
-  const cloudDaily = bag.cloudDaily || emptyDaily();
-  const cloudDday = bag.cloudDday || emptyDday();
-  const cloudPhotos = bag.cloudPhotos || {};
-  const cloudPhotoIds = bag.cloudPhotoIds || [];
+  const cloud = {
+    notes: bag.cloudNotes || [],
+    todos: bag.cloudTodos || emptyTodos(),
+    money: bag.cloudMoney || emptyMoney(),
+    daily: bag.cloudDaily || emptyDaily(),
+    dday: bag.cloudDday || emptyDday(),
+    photos: bag.cloudPhotos || {}
+  };
+  const local = { notes: localNotes(), todos: localTodos(), money: localMoney(), daily: localDaily(), dday: localDday() };
 
-  const locN = localNotes();
-  const locT = localTodos();
-  const locM = localMoney();
-  const locD = localDaily();
-  const locDd = localDday();
-  const localHas = locN.length > 0 || todosHasData(locT) || moneyHasData(locM) || dailyHasData(locD) || ddayHasData(locDd);
-  const cloudHas = (cloudNotes || []).length > 0 || todosHasData(cloudTodos) || moneyHasData(cloudMoney) || dailyHasData(cloudDaily) || ddayHasData(cloudDday);
-  const notesDiff = notesSignature(locN) !== notesSignature(cloudNotes || []);
-  const todosDiff = todosSignature(locT) !== todosSignature(cloudTodos || emptyTodos());
-  const moneyDiff = moneySignature(locM) !== moneySignature(cloudMoney);
-  const dailyDiff = dailySignature(locD) !== dailySignature(cloudDaily);
-  const ddayDiff = ddaySignature(locDd) !== ddaySignature(cloudDday);
-  const different = notesDiff || todosDiff || moneyDiff || dailyDiff || ddayDiff;
+  const st = loadMigrateState(uid);
+  // everything currently in the account counts as "synced" on this browser
+  [noteKeys(cloud.notes), todoKeys(cloud.todos), moneyKeys(cloud.money), dailyKeys(cloud.daily),
+    ddayKeys(cloud.dday), photoKeys(cloud.photos)].forEach(ks => ks.forEach(k => st.synced.add(k)));
 
-  if (localHas && (!cloudHas || different)) {
-    const skipKey = "records-migrate-skip:" + uid;
-    if (!sessionStorage.getItem(skipKey)) {
-      const nCount = locN.length;
-      const tCount = (locT.oneoffs || []).length + (locT.routines || []).length;
-      const mCount = (locM.entries || []).length;
-      const dCount = locD.days ? Object.keys(locD.days).length : 0;
-      const ddCount = (locDd.items || []).length;
-      const parts = [];
-      if (nCount) parts.push("메모 " + nCount + "개");
-      if (tCount) parts.push("할 일 " + tCount + "개");
-      if (dCount) parts.push("매일 기록 " + dCount + "일");
-      if (mCount) parts.push("수입·지출 " + mCount + "개");
-      if (ddCount) parts.push("디데이 " + ddCount + "개");
-      const label = parts.length ? parts.join(", ") + "를" : "기록을";
-      const msg = "이 브라우저에 저장된 " + label +
-        " 구글 계정으로 옮길까요? 이미 계정에 있는 같은 항목은 하나로 합쳐져요.";
-      if (window.confirm(msg)) {
-        try {
-          const mergedNotes = mergeNotes(cloudNotes, locN);
-          const mergedTodos = mergeTodos(cloudTodos, locT);
-          const mergedMoney = mergeMoney(cloudMoney, locM);
-          const mergedDaily = mergeDaily(cloudDaily, locD);
-          const mergedDday = mergeDday(cloudDday, locDd);
-          const uploaded = await uploadNotes(uid, mergedNotes);
-          await deleteMissingNotes(uid, uploaded, cloudNoteIds);
-          await uploadTodos(uid, mergedTodos);
-          await uploadMoney(uid, mergedMoney);
-          await uploadDaily(uid, mergedDaily);
-          await uploadDailyPhotos(uid, mergedDaily, cloudPhotoIds);
-          await uploadDday(uid, mergedDday);
-          applyNotes(uploaded.length ? uploaded : mergedNotes);
-          applyTodos(mergedTodos);
-          applyMoney(mergedMoney);
-          const photoMap = {};
-          Object.keys((mergedDaily.days || {})).forEach(iso => {
-            if (mergedDaily.days[iso] && mergedDaily.days[iso].photo) photoMap[iso] = mergedDaily.days[iso].photo;
-          });
-          applyDaily(mergedDaily, photoMap);
-          applyDday(mergedDday);
-          await markInitialized(uid);
-          return true;
-        } catch (err) {
-          toast(friendlyError(err));
-        }
-      } else {
-        try { sessionStorage.setItem(skipKey, "1"); } catch (e) {}
-        toast("이 브라우저의 기록은 그대로 남아 있어요. 로그아웃하면 다시 볼 수 있어요.");
+  const lo = findLocalOnly(cloud, local, st.synced);
+  if (!lo.keys.length) {
+    st.asked = true;
+    saveMigrateState(uid, st);
+    try { await markInitialized(uid); } catch (e) {}
+    return false;
+  }
+
+  const fresh = lo.keys.filter(k => !st.declined.has(k));
+  if (!fresh.length) {
+    // already asked about exactly these and the user said no: don't ask again, just keep them safe
+    stashLocalOnly(lo);
+    saveMigrateState(uid, st);
+    return false;
+  }
+
+  const tCount = lo.oneoffs.length + lo.routines.length;
+  const dCount = Object.keys(lo.days).length;
+  const parts = [];
+  if (lo.notes.length) parts.push("메모 " + lo.notes.length + "개");
+  if (tCount) parts.push("할 일 " + tCount + "개");
+  if (dCount) parts.push("매일 기록 " + dCount + "일");
+  if (lo.habits.length) parts.push("습관 " + lo.habits.length + "개");
+  if (lo.entries.length) parts.push("수입·지출 " + lo.entries.length + "개");
+  if (lo.opening) parts.push("가계부 시작 잔액");
+  if (lo.ddays.length) parts.push("디데이 " + lo.ddays.length + "개");
+  const label = parts.length ? parts.join(", ") + "를" : "기록을";
+  const msg = "이 브라우저에만 있고 구글 계정에는 없는 " + label +
+    " 계정으로 옮길까요? 계정에 있는 기록은 그대로 두고 더하기만 해요.";
+
+  if (window.confirm(msg)) {
+    try {
+      const merged = appendLocalOnly(cloud, lo);
+      if (lo.notes.length) await uploadNotes(uid, lo.notes);
+      if (lo.oneoffs.length || lo.routines.length) await uploadTodos(uid, merged.todos);
+      if (lo.entries.length || lo.opening) await uploadMoney(uid, merged.money);
+      if (dCount || lo.habits.length) await uploadDaily(uid, merged.daily);
+      for (const iso of Object.keys(lo.days)) {
+        if (lo.days[iso] && lo.days[iso].photo) await uploadPhoto(uid, iso, lo.days[iso].photo);
       }
+      if (lo.ddays.length) await uploadDday(uid, merged.dday);
+      applyNotes(merged.notes);
+      applyTodos(merged.todos);
+      applyMoney(merged.money);
+      const photoMap = Object.assign({}, cloud.photos);
+      Object.keys(lo.days).forEach(iso => { if (lo.days[iso] && lo.days[iso].photo) photoMap[iso] = lo.days[iso].photo; });
+      applyDaily(merged.daily, photoMap);
+      applyDday(merged.dday);
+      lo.keys.forEach(k => { st.synced.add(k); st.declined.delete(k); });
+      st.asked = true;
+      saveMigrateState(uid, st);
+      try { await markInitialized(uid); } catch (e) {}
+      toast("이 브라우저의 기록을 계정으로 옮겼어요.");
+      return true;
+    } catch (err) {
+      // nothing is marked, so it will be offered again next time; keep the items safe meanwhile
+      stashLocalOnly(lo);
+      saveMigrateState(uid, st);
+      toast(friendlyError(err));
+      return false;
     }
   }
+  fresh.forEach(k => st.declined.add(k));
+  st.asked = true;
+  saveMigrateState(uid, st);
+  stashLocalOnly(lo);
+  toast("이 브라우저의 기록은 따로 보관해 둘게요. 로그아웃하면 다시 볼 수 있어요.");
   try { await markInitialized(uid); } catch (e) {}
   return false;
 }
@@ -4664,6 +4940,7 @@ function startCloudSync(uid) {
   notesUnsub = onSnapshot(notesCol(uid), snap => {
     if (applyingCloud) return;
     const list = notesFromSnapshot(snap);
+    rememberSynced(uid, noteKeys(list));
     const sig = notesSignature(list);
     if (sig === lastNotesJson) return;
     applyNotes(list);
@@ -4672,6 +4949,7 @@ function startCloudSync(uid) {
   todosUnsub = onSnapshot(todosRef(uid), snap => {
     if (applyingCloud) return;
     const data = snap.exists() ? snap.data() : emptyTodos();
+    rememberSynced(uid, todoKeys(data));
     const sig = todosSignature(data);
     if (sig === lastTodosJson) return;
     applyTodos(data);
@@ -4680,6 +4958,7 @@ function startCloudSync(uid) {
   moneyUnsub = onSnapshot(moneyRef(uid), snap => {
     if (applyingCloud) return;
     const data = snap.exists() ? snap.data() : emptyMoney();
+    rememberSynced(uid, moneyKeys(data));
     const sig = moneySignature(data);
     if (sig === lastMoneyJson) return;
     applyMoney(data);
@@ -4688,6 +4967,7 @@ function startCloudSync(uid) {
   dailyUnsub = onSnapshot(dailyRef(uid), snap => {
     if (applyingCloud) return;
     const data = snap.exists() ? snap.data() : emptyDaily();
+    rememberSynced(uid, dailyKeys(data));
     const sig = dailySignature(data);
     if (sig === lastDailyJson) return;
     applyDaily(data);
@@ -4696,6 +4976,7 @@ function startCloudSync(uid) {
   ddayUnsub = onSnapshot(ddayRef(uid), snap => {
     if (applyingCloud) return;
     const data = snap.exists() ? snap.data() : emptyDday();
+    rememberSynced(uid, ddayKeys(data));
     const sig = ddaySignature(data);
     if (sig === lastDdayJson) return;
     applyDday(data);
@@ -4704,6 +4985,7 @@ function startCloudSync(uid) {
   photosUnsub = onSnapshot(dailyCol(uid), snap => {
     if (applyingCloud) return;
     const map = photosFromSnapshot(snap);
+    rememberSynced(uid, photoKeys(map));
     const sig = photoSignature(map);
     if (sig === lastPhotoJson) return;
     lastPhotoJson = sig;
@@ -4784,6 +5066,8 @@ function enterSignedOut() {
     const dday = JSON.parse(localStorage.getItem("records-dday") || "null");
     if (window.RecordsDday) window.RecordsDday.applyCloud(dday || emptyDday());
   } catch (e) {}
+  // bring back items the user chose to keep only in this browser
+  try { restoreStashedLocal(); } catch (e) { console.warn(e); }
 }
 
 function updateAuthUi() {
@@ -4815,38 +5099,95 @@ function isMobileAuth() {
   return /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
 }
 
+/* In-app browsers (KakaoTalk, Instagram, Naver app, etc.): Google blocks login there */
+function inAppBrowserName() {
+  const ua = navigator.userAgent || "";
+  if (/KAKAOTALK/i.test(ua)) return "카카오톡";
+  if (/Instagram/i.test(ua)) return "인스타그램";
+  if (/FBAN|FBAV|FB_IAB/i.test(ua)) return "페이스북";
+  if (/NAVER\(inapp|NAVER\//i.test(ua)) return "네이버 앱";
+  if (/\bLine\//i.test(ua)) return "라인";
+  if (/DaumApps/i.test(ua)) return "다음 앱";
+  if (/everytimeApp/i.test(ua)) return "에브리타임";
+  if (/Android/i.test(ua) && /; wv\)/.test(ua)) return "앱 안의 브라우저";
+  return "";
+}
+
+function showInAppGuide(appName) {
+  let box = $("inapp-guide");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "inapp-guide";
+    box.setAttribute("role", "dialog");
+    box.style.cssText = "position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;";
+    box.innerHTML =
+      '<div style="background:#fff;border-radius:14px;max-width:360px;width:100%;padding:18px 18px 14px;font-size:16px;line-height:1.5;color:#333;text-align:center">' +
+      '<p id="inapp-guide-msg" style="margin:0 0 14px"></p>' +
+      '<div style="display:flex;flex-direction:column;gap:8px">' +
+      '<button type="button" id="inapp-open" style="font:inherit;padding:9px;border-radius:10px;border:none;background:#1a73e8;color:#fff;cursor:pointer">Chrome으로 열기</button>' +
+      '<button type="button" id="inapp-copy" style="font:inherit;padding:9px;border-radius:10px;border:1px solid #ccc;background:#fff;color:#333;cursor:pointer">주소 복사하기</button>' +
+      '<button type="button" id="inapp-close" style="font:inherit;padding:6px;border:none;background:none;color:#888;cursor:pointer">닫기</button>' +
+      '</div></div>';
+    document.body.appendChild(box);
+    box.addEventListener("click", e => { if (e.target === box) box.remove(); });
+    $("inapp-close").addEventListener("click", () => box.remove());
+    $("inapp-copy").addEventListener("click", async () => {
+      const url = location.href.split("#")[0];
+      try { await navigator.clipboard.writeText(url); toast("주소를 복사했어요. Chrome 주소창에 붙여 넣어 주세요.", 4000); }
+      catch (e) { window.prompt("이 주소를 길게 눌러 복사해 주세요.", url); }
+    });
+    $("inapp-open").addEventListener("click", () => {
+      const url = location.href.split("#")[0];
+      const ua = navigator.userAgent || "";
+      if (/KAKAOTALK/i.test(ua)) {
+        location.href = "kakaotalk://web/openExternal?url=" + encodeURIComponent(url);
+      } else if (/Android/i.test(ua)) {
+        location.href = "intent://" + url.replace(/^https?:\/\//, "") +
+          "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" + encodeURIComponent(url) + ";end";
+      } else {
+        toast("오른쪽 아래(또는 위) 메뉴에서 'Safari로 열기'나 '다른 브라우저로 열기'를 눌러 주세요.", 5000);
+      }
+    });
+  }
+  $("inapp-guide-msg").textContent = appName + " 안에서는 구글이 로그인을 막아요. Chrome(또는 삼성 인터넷)에서 열어서 로그인해 주세요.";
+}
+
 function googleProvider() {
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: "select_account" });
   return provider;
 }
 
-async function loginGoogle() {
+const REDIRECT_FLAG = "records-auth-redirect";
+
+function loginGoogle() {
   if (!fbReady || !fbAuth) {
     toast("로그인 기능을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
     return;
   }
+  const inApp = inAppBrowserName();
+  if (inApp) { showInAppGuide(inApp); return; }
   const provider = googleProvider();
-  try {
-    if (isMobileAuth()) {
-      await signInWithRedirect(fbAuth, provider);
+  // Popup on every device (phones open it as a new tab). Must be called right away
+  // inside the tap, before any await, or the browser treats it as an unwanted popup.
+  // Redirect login is only a last resort: the login page (personal-7d614.firebaseapp.com)
+  // is a different site from this one, so mobile Chrome/Safari drop the result
+  // and you come back logged out.
+  signInWithPopup(fbAuth, provider).catch(err => {
+    const code = (err && err.code) || "";
+    if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return;
+    if (code === "auth/popup-blocked" || code === "auth/operation-not-supported-in-this-environment") {
+      toast("팝업이 막혀서 페이지를 이동해서 로그인할게요. 잘 안 되면 브라우저 설정에서 이 사이트의 팝업을 허용해 주세요.", 5000);
+      try { sessionStorage.setItem(REDIRECT_FLAG, String(Date.now())); } catch (e) {}
+      signInWithRedirect(fbAuth, provider).catch(err2 => {
+        try { sessionStorage.removeItem(REDIRECT_FLAG); } catch (e) {}
+        toast(friendlyError(err2), 6000);
+      });
       return;
     }
-    await signInWithPopup(fbAuth, provider);
-  } catch (err) {
-    if (err && (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment")) {
-      try {
-        toast("팝업이 차단되어 다른 방법으로 로그인할게요.");
-        await signInWithRedirect(fbAuth, provider);
-      } catch (err2) {
-        toast(friendlyError(err2));
-      }
-    } else if (err && (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request")) {
-      return;
-    } else {
-      toast(friendlyError(err));
-    }
-  }
+    console.warn("login failed", err);
+    toast(friendlyError(err), 6000);
+  });
 }
 
 async function logoutGoogle() {
@@ -4909,12 +5250,22 @@ if (logoutBtn) logoutBtn.addEventListener("click", () => { logoutGoogle(); });
 (async function startAuth() {
   updateAuthUi();
   if (!fbReady || !fbAuth) return;
+  let redirectPending = false;
+  try { redirectPending = !!sessionStorage.getItem(REDIRECT_FLAG); sessionStorage.removeItem(REDIRECT_FLAG); } catch (e) {}
   try {
     await getRedirectResult(fbAuth);
   } catch (err) {
-    toast(friendlyError(err));
+    console.warn("redirect login failed", err);
+    toast(friendlyError(err), 7000);
+    redirectPending = false;
   }
+  let firstAuth = true;
   onAuthStateChanged(fbAuth, user => {
+    if (firstAuth && redirectPending && !user) {
+      // came back from the Google page but the browser dropped the result
+      toast("구글에서 돌아왔지만 로그인 정보가 전달되지 않았어요. 브라우저에서 이 사이트의 팝업을 허용한 뒤 다시 눌러 주세요. (redirect-lost)", 8000);
+    }
+    firstAuth = false;
     if (user) enterSignedIn(user);
     else enterSignedOut();
   });
