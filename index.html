@@ -260,6 +260,62 @@
     -webkit-text-stroke: calc(1.5px * 14 / 44) #fff;
   }
   .repeat-btn.on { border-color: #bbb; background: #f3f3f3; color: #333; }
+  .add-wrap { margin-top: 14px; }
+  .add-wrap .add-bar { margin-top: 0; }
+  .add-wrap.open .add-bar {
+    border-radius: 8px 8px 0 0;
+    border-bottom-color: #eee;
+    box-shadow: none;
+  }
+  .repeat-panel {
+    background: #fff;
+    border: 1px solid #e3e3e3;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 8px 10px 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.06);
+  }
+  .repeat-modes {
+    display: inline-flex; border: 1px solid #d0d0d0; border-radius: 8px;
+    overflow: hidden; background: #fff; flex-wrap: wrap;
+  }
+  .repeat-modes button {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    padding: 5px 12px; font-size: 14px; color: #777;
+    -webkit-text-stroke: calc(1.5px * 14 / 44) #fff;
+    border-right: 1px solid #d0d0d0;
+    white-space: nowrap;
+  }
+  .repeat-modes button:last-child { border-right: 0; }
+  .repeat-modes button.on {
+    background: #2b2b2b; color: #fff;
+    -webkit-text-stroke: calc(1.5px * 14 / 44) #2b2b2b;
+  }
+  .dow-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+  .dow-chip {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid #ddd; background: #fff; color: #666;
+    font-size: 13px; cursor: pointer; padding: 0; line-height: 30px;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fff;
+  }
+  .dow-chip.on {
+    background: #2b2b2b; color: #fff; border-color: #2b2b2b;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #2b2b2b;
+  }
+  .week-add.open { border-radius: 6px; }
+  .week-add .repeat-panel {
+    border: none; border-top: 1px solid #eee; box-shadow: none;
+    border-radius: 0; padding: 6px 0 2px; background: transparent;
+  }
+  .week-add .repeat-modes button { padding: 4px 6px; font-size: 11px;
+    -webkit-text-stroke: calc(1.5px * 11 / 44) #fff; }
+  .week-add .repeat-modes button.on { -webkit-text-stroke: calc(1.5px * 11 / 44) #2b2b2b; }
+  .week-add .dow-chip {
+    width: 24px; height: 24px; font-size: 11px; line-height: 22px;
+    -webkit-text-stroke: calc(1.5px * 11 / 44) #fff;
+  }
+  .week-add .dow-chip.on { -webkit-text-stroke: calc(1.5px * 11 / 44) #2b2b2b; }
+  .week-add .dow-row { gap: 4px; margin-top: 6px; }
   .carry {
     margin-top: 12px; width: 100%;
     border: 1px solid #ddd; background: #fff; border-radius: 16px;
@@ -727,8 +783,12 @@ window.RecordsMemo = {
   let state = { v: 1, view: 'today', oneoffs: [], routines: [], stickers: [] };
   let viewDate = todayISO();
   let weekAddDate = null;
-  let weekRepeatOn = false;
-  let repeatOn = false;
+  let weekRepeatOpen = false;
+  let weekRepeatMode = 'none';
+  let weekRepeatDays = [];
+  let repeatOpen = false;
+  let repeatMode = 'none';
+  let repeatDays = [];
   let justCompleted = null;
   let justSticker = null;
   let pendingDelete = null;
@@ -786,6 +846,77 @@ window.RecordsMemo = {
     render();
   }
 
+  const DOW_ORDER = [1, 2, 3, 4, 5, 6, 0];
+  const DOW_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
+
+  function weekdayList(r) {
+    if (!r || r.freq !== 'weekly') return null;
+    const days = [...new Set((r.weekdays || []).map(Number).filter(d => d >= 0 && d <= 6))];
+    return days.length ? days : null;
+  }
+  function routineOnDate(r, dateStr) {
+    if (r.start > dateStr) return false;
+    if ((r.hidden || []).includes(dateStr)) return false;
+    const days = weekdayList(r);
+    if (!days) return true;
+    return days.includes(parseISO(dateStr).getDay());
+  }
+  function badgeText(r) {
+    const days = weekdayList(r);
+    if (!days) return '매일';
+    return DOW_ORDER.filter(d => days.includes(d)).map(d => DOW_NAMES[d]).join('·');
+  }
+  function repeatSpec(scope) {
+    const mode = scope === 'week' ? weekRepeatMode : repeatMode;
+    const days = scope === 'week' ? weekRepeatDays : repeatDays;
+    if (mode === 'daily') return { freq: 'daily' };
+    if (mode === 'weekly') {
+      if (!days.length) return false;
+      return { freq: 'weekly', weekdays: days.slice().sort((a, b) => a - b) };
+    }
+    return { freq: 'none' };
+  }
+  function repeatPanelHtml(scope, open, mode, days) {
+    if (!open) return '';
+    const modes = [['none', '없음'], ['daily', '매일'], ['weekly', '요일 지정']];
+    let html = '<div class="repeat-panel" data-repeat-scope="' + scope + '">';
+    html += '<div class="repeat-modes">';
+    modes.forEach(([id, label]) => {
+      html += '<button type="button" data-repeat-mode="' + id + '" data-repeat-scope="' + scope + '"' +
+        (mode === id ? ' class="on"' : '') + '>' + label + '</button>';
+    });
+    html += '</div>';
+    if (mode === 'weekly') {
+      html += '<div class="dow-row">';
+      DOW_ORDER.forEach(d => {
+        const on = days.includes(d);
+        html += '<button type="button" class="dow-chip' + (on ? ' on' : '') +
+          '" data-dow="' + d + '" data-repeat-scope="' + scope + '" aria-pressed="' + on + '">' +
+          DOW_NAMES[d] + '</button>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+    return html;
+  }
+  function withInputPreserved(scope, fn) {
+    const sel = scope === 'week' ? '.week-add input' : '#addInput';
+    const inp = $(sel);
+    const val = inp ? inp.value : '';
+    const start = inp ? inp.selectionStart : null;
+    const end = inp ? inp.selectionEnd : null;
+    fn();
+    render();
+    const inp2 = $(sel);
+    if (inp2) {
+      inp2.value = val;
+      inp2.focus();
+      if (start != null && end != null) {
+        try { inp2.setSelectionRange(start, end); } catch (e) {}
+      }
+    }
+  }
+
   function itemsFor(dateStr) {
     const list = [];
     for (const t of state.oneoffs) {
@@ -797,7 +928,7 @@ window.RecordsMemo = {
       }
     }
     for (const r of state.routines) {
-      if (r.start <= dateStr && !(r.hidden || []).includes(dateStr)) {
+      if (routineOnDate(r, dateStr)) {
         const done = !!(r.done && r.done[dateStr]);
         const order = (r.ordDay && r.ordDay[dateStr] != null)
           ? r.ordDay[dateStr]
@@ -873,13 +1004,22 @@ window.RecordsMemo = {
     });
   }
 
-  function addTask(dateStr, text, isRoutine) {
+  function addTask(dateStr, text, spec) {
     const trimmed = text.replace(/\s+/g, ' ').trim();
     if (!trimmed) return false;
+    if (spec === false) return false;
     const order = nextOrder(dateStr);
-    if (isRoutine) {
+    if (spec && spec.freq === 'daily') {
       state.routines.push({
         id: uid('r'), text: trimmed, start: dateStr,
+        freq: 'daily', hidden: [], done: {}, ord: order, ordDay: { [dateStr]: order }
+      });
+    } else if (spec && spec.freq === 'weekly') {
+      const days = [...new Set((spec.weekdays || []).map(Number).filter(d => d >= 0 && d <= 6))];
+      if (!days.length) return false;
+      state.routines.push({
+        id: uid('r'), text: trimmed, start: dateStr,
+        freq: 'weekly', weekdays: days.sort((a, b) => a - b),
         hidden: [], done: {}, ord: order, ordDay: { [dateStr]: order }
       });
     } else {
@@ -1017,9 +1157,12 @@ window.RecordsMemo = {
       '</div>' +
       '<div class="list" id="todayList" data-date="' + viewDate + '">' + rows + '</div>' +
       '<div class="hint">두 번 눌러 수정 · 핸들 또는 길게 눌러 순서 변경</div>' +
-      '<div class="add-bar">' +
-        '<input id="addInput" type="text" maxlength="200" placeholder="할 일을 적고 Enter" autocomplete="off">' +
-        '<button type="button" class="repeat-btn' + (repeatOn ? ' on' : '') + '" id="repeatBtn">매일 반복</button>' +
+      '<div class="add-wrap' + (repeatOpen ? ' open' : '') + '">' +
+        '<div class="add-bar">' +
+          '<input id="addInput" type="text" maxlength="200" placeholder="할 일을 적고 Enter" autocomplete="off">' +
+          '<button type="button" class="repeat-btn' + ((repeatOpen || repeatMode !== 'none') ? ' on' : '') + '" id="repeatBtn">반복</button>' +
+        '</div>' +
+        repeatPanelHtml('today', repeatOpen, repeatMode, repeatDays) +
       '</div>' +
       '<button type="button" class="carry' + (unfinishedOneoff ? '' : ' off') + '" id="carryBtn"' +
         (unfinishedOneoff ? '' : ' disabled') + '>' + deferLabel + '</button>' +
@@ -1031,7 +1174,7 @@ window.RecordsMemo = {
     if (inp) inp.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        if (addTask(viewDate, inp.value, repeatOn)) inp.value = '';
+        if (addTask(viewDate, inp.value, repeatSpec('today'))) inp.value = '';
       }
     });
   }
@@ -1043,7 +1186,7 @@ window.RecordsMemo = {
       '<button type="button" class="check" aria-label="' + (item.done ? '완료 취소' : '완료') + '">' +
         (item.done ? '✓' : '') + '</button>' +
       '<span class="txt">' + escapeHtml(item.text) + '</span>' +
-      (item.kind === 'routine' ? '<span class="mark">매일</span>' : '') +
+      (item.kind === 'routine' ? '<span class="mark">' + escapeHtml(badgeText(findRoutine(item.id))) + '</span>' : '') +
       '<button type="button" class="del" aria-label="삭제">✕</button>' +
     '</div>';
   }
@@ -1086,19 +1229,21 @@ window.RecordsMemo = {
       '<button type="button" class="check" aria-label="' + (item.done ? '완료 취소' : '완료') + '">' +
         (item.done ? '✓' : '') + '</button>' +
       '<div class="mini-body"><div class="mini-txt">' + escapeHtml(item.text) + '</div>' +
-      (item.kind === 'routine' ? '<span class="mini-mark">매일</span>' : '') + '</div>' +
+      (item.kind === 'routine' ? '<span class="mini-mark">' + escapeHtml(badgeText(findRoutine(item.id))) + '</span>' : '') + '</div>' +
       '<button type="button" class="mini-del" aria-label="삭제">✕</button>' +
     '</div>';
   }
 
   function weekAddHtml(d) {
     if (weekAddDate === d) {
-      return '<div class="week-add">' +
+      return '<div class="week-add' + (weekRepeatOpen ? ' open' : '') + '">' +
         '<input type="text" maxlength="200" placeholder="할 일을 적고 Enter" autocomplete="off">' +
         '<div class="week-add-row">' +
-          '<button type="button" class="repeat-btn' + (weekRepeatOn ? ' on' : '') +
-            '" data-week-repeat="1">매일</button>' +
-        '</div></div>';
+          '<button type="button" class="repeat-btn' + ((weekRepeatOpen || weekRepeatMode !== 'none') ? ' on' : '') +
+            '" data-week-repeat="1">반복</button>' +
+        '</div>' +
+        repeatPanelHtml('week', weekRepeatOpen, weekRepeatMode, weekRepeatDays) +
+      '</div>';
     }
     return '<button type="button" class="add-col" data-add="' + d + '">+</button>';
   }
@@ -1134,8 +1279,7 @@ window.RecordsMemo = {
 
   $('#card').addEventListener('click', e => {
     if (e.target.closest('#repeatBtn')) {
-      repeatOn = !repeatOn;
-      $('#repeatBtn').classList.toggle('on', repeatOn);
+      withInputPreserved('today', () => { repeatOpen = !repeatOpen; });
       return;
     }
     if (e.target.closest('#carryBtn') && !$('#carryBtn').disabled) {
@@ -1144,14 +1288,37 @@ window.RecordsMemo = {
     }
     const weekRepeat = e.target.closest('[data-week-repeat]');
     if (weekRepeat) {
-      weekRepeatOn = !weekRepeatOn;
-      weekRepeat.classList.toggle('on', weekRepeatOn);
+      withInputPreserved('week', () => { weekRepeatOpen = !weekRepeatOpen; });
+      return;
+    }
+    const modeBtn = e.target.closest('[data-repeat-mode]');
+    if (modeBtn) {
+      const scope = modeBtn.dataset.repeatScope;
+      withInputPreserved(scope, () => {
+        const mode = modeBtn.dataset.repeatMode;
+        if (scope === 'week') weekRepeatMode = mode;
+        else repeatMode = mode;
+      });
+      return;
+    }
+    const dowBtn = e.target.closest('[data-dow]');
+    if (dowBtn) {
+      const scope = dowBtn.dataset.repeatScope;
+      const d = Number(dowBtn.dataset.dow);
+      withInputPreserved(scope, () => {
+        const arr = scope === 'week' ? weekRepeatDays : repeatDays;
+        const i = arr.indexOf(d);
+        if (i >= 0) arr.splice(i, 1);
+        else arr.push(d);
+      });
       return;
     }
     const addCol = e.target.closest('[data-add]');
     if (addCol) {
       weekAddDate = addCol.dataset.add;
-      weekRepeatOn = false;
+      weekRepeatOpen = false;
+      weekRepeatMode = 'none';
+      weekRepeatDays = [];
       render();
       return;
     }
@@ -1177,13 +1344,17 @@ window.RecordsMemo = {
     if (weekInp) {
       if (e.key === 'Enter') {
         e.preventDefault();
-        if (addTask(weekAddDate, weekInp.value, weekRepeatOn)) {
+        if (addTask(weekAddDate, weekInp.value, repeatSpec('week'))) {
           weekAddDate = null;
-          weekRepeatOn = false;
+          weekRepeatOpen = false;
+          weekRepeatMode = 'none';
+          weekRepeatDays = [];
         }
       } else if (e.key === 'Escape') {
         weekAddDate = null;
-        weekRepeatOn = false;
+        weekRepeatOpen = false;
+        weekRepeatMode = 'none';
+        weekRepeatDays = [];
         render();
       }
     }
@@ -1280,7 +1451,7 @@ window.RecordsMemo = {
 
   $('#card').addEventListener('pointerdown', e => {
     if (e.button != null && e.button !== 0) return;
-    if (e.target.closest('.check, .del, .mini-del, .txt-edit, .mini-edit, input, button.repeat-btn, button.add-col, button.carry, button.nav-btn, button.jump-today, .seg, .week-add')) return;
+    if (e.target.closest('.check, .del, .mini-del, .txt-edit, .mini-edit, input, button.repeat-btn, button.add-col, button.carry, button.nav-btn, button.jump-today, .seg, .week-add, .repeat-panel, .dow-chip, .repeat-modes')) return;
     const row = e.target.closest('[data-id][data-date]');
     if (!row) return;
     const onHandle = !!e.target.closest('[data-handle]');
