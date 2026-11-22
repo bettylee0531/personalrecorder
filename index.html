@@ -256,6 +256,64 @@
     border: 1.5px dashed #d5d5d5; border-radius: 8px;
     background: rgba(255,255,255,.35);
   }
+  /* overdue (✕) + postpone */
+  .row.missed .check, .mini.missed .check { background: #fff; border-color: #c98b84; color: #c0605a; }
+  .row.missed .check { font-size: 12px; }
+  .row.missed .txt { color: #8a8a8a; text-decoration: line-through; text-decoration-color: rgba(192,96,90,.75); }
+  .mini.missed .mini-txt { color: #8a8a8a; text-decoration: line-through; text-decoration-color: rgba(192,96,90,.75); }
+  .from-tag {
+    font-size: 12px; line-height: 1; border-radius: 10px; padding: 3px 7px; white-space: nowrap;
+    -webkit-text-stroke: calc(1.5px * 12 / 44) #fff;
+  }
+  .from-tag { color: #1E3A5F; border: 1px solid #cdd6e2; background: #f3f6fa; -webkit-text-stroke-color: #f3f6fa; }
+  .post-btn {
+    border: 1px solid #cdd6e2; background: #fff; color: #1E3A5F; border-radius: 12px;
+    padding: 2px 9px; font: inherit; font-size: 13px; line-height: 1.5; cursor: pointer; white-space: nowrap;
+    -webkit-text-stroke: calc(1.5px * 13 / 44) #fff; flex: 0 0 auto;
+  }
+  .post-btn:hover { background: #f3f6fa; }
+  .post-btn.on { background: #1E3A5F; color: #fff; border-color: #1E3A5F; -webkit-text-stroke-color: #1E3A5F; }
+  .row.moved { background: transparent; border-style: dashed; border-color: #ddd; cursor: pointer; }
+  .row.moved .handle { visibility: hidden; }
+  .row.moved .txt { color: #aaa; }
+  .row.moved .check { border: 0; background: none; color: #9aa7b8; font-size: 15px; font-weight: 400; }
+  .moved-tag { font-size: 12px; color: #7d8ea5; white-space: nowrap; -webkit-text-stroke: calc(1.5px * 12 / 44) #fdfdfd; }
+  .row.menu-open { z-index: 25; }
+  .post-menu {
+    position: absolute; right: 8px; top: calc(100% + 6px); z-index: 30; background: #fff;
+    border: 1px solid #dfe5ec; border-radius: 10px; box-shadow: 0 8px 24px rgba(30,58,95,.16);
+    padding: 8px; width: 300px; display: flex; flex-direction: column; gap: 4px; cursor: default;
+  }
+  .post-menu .ttl { font-size: 13px; color: #888; padding: 2px 6px 4px; -webkit-text-stroke: calc(1.5px * 13 / 44) #fff; }
+  .post-menu .opt {
+    text-align: left; border: 0; background: none; border-radius: 7px; padding: 8px; font: inherit;
+    font-size: 16px; color: #2b2b2b; cursor: pointer; display: flex; justify-content: space-between;
+    align-items: center; gap: 8px; -webkit-text-stroke: calc(1.5px * 16 / 44) #fff;
+  }
+  .post-menu .opt em { font-style: normal; font-size: 12px; color: #aaa; -webkit-text-stroke: 0; white-space: nowrap; }
+  .post-menu .opt:hover, .post-menu .opt:focus-visible { background: #f3f6fa; color: #1E3A5F; -webkit-text-stroke-color: #f3f6fa; outline: none; }
+  .post-menu .pick {
+    display: flex; gap: 6px; align-items: center; border-top: 1px dashed #eee; margin-top: 4px;
+    padding: 8px 6px 2px; font-size: 14px; color: #666; -webkit-text-stroke: calc(1.5px * 14 / 44) #fff;
+  }
+  .post-menu .pick span { white-space: nowrap; }
+  .post-menu .pick input {
+    flex: 1; min-width: 0; border: 1px solid #ddd; border-radius: 7px; padding: 4px 6px;
+    font-family: 'Inter', sans-serif; font-size: 13px; color: #555; background: #fff; -webkit-text-stroke: 0;
+  }
+  .post-menu .pick-go {
+    background: #1E3A5F; color: #fff; border: 0; border-radius: 7px; padding: 6px 10px; font: inherit;
+    font-size: 14px; white-space: nowrap; cursor: pointer; -webkit-text-stroke: calc(1.5px * 14 / 44) #1E3A5F;
+  }
+  .post-menu .pick-go:disabled { background: #b8c2cf; -webkit-text-stroke-color: #b8c2cf; cursor: default; }
+  .mini .from-tag { font-size: 10.5px; padding: 2px 5px; margin-top: 3px; display: inline-block; -webkit-text-stroke: 0; }
+  .mini.moved { opacity: .55; outline: 1.5px dashed #d5d5d5; outline-offset: -1.5px; background: transparent; cursor: pointer; }
+  .mini.moved .check { border: 0; background: none; color: #9aa7b8; font-size: 11px; font-weight: 400; }
+  .mini.moved .mini-txt { color: #999; }
+  @media (hover: none), (pointer: coarse) { .post-btn { font-size: 12px; padding: 2px 7px; } }
+  @media (max-width: 600px) {
+    .post-menu { left: 0; right: 0; width: auto; }
+  }
 
   .hint {
     margin: 10px 2px 0; font-size: 13px; color: #aaa;
@@ -2159,6 +2217,15 @@ window.RecordsMemo = {
     const d = parseISO(iso);
     return pad(d.getMonth() + 1) + '.' + pad(d.getDate());
   }
+  function fmtMD(iso) {
+    const d = parseISO(iso);
+    return (d.getMonth() + 1) + '월 ' + d.getDate() + '일';
+  }
+  function fmtSlash(iso) {
+    const d = parseISO(iso);
+    return (d.getMonth() + 1) + '/' + d.getDate();
+  }
+  function isISO(s) { return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s); }
   function weekLabel(mon) {
     const sun = addDays(mon, 6);
     return fmtDot(mon) + ' – ' + fmtDotShort(sun);
@@ -2189,6 +2256,7 @@ window.RecordsMemo = {
   let justSticker = null;
   let pendingDelete = null;
   let didDrag = false;
+  let postOpen = null; /* {kind, id, date} of the row whose 미루기 menu is open */
 
   function defaultState() {
     return { v: 1, view: 'today', oneoffs: [], routines: [], stickers: [] };
@@ -2320,7 +2388,9 @@ window.RecordsMemo = {
       if (t.date === dateStr) {
         list.push({
           kind: 'oneoff', id: t.id, text: t.text, done: !!t.done,
-          order: Number.isFinite(t.order) ? t.order : 0
+          order: Number.isFinite(t.order) ? t.order : 0,
+          movedTo: isISO(t.movedTo) ? t.movedTo : null,
+          movedFrom: isISO(t.movedFrom) ? t.movedFrom : null
         });
       }
     }
@@ -2330,14 +2400,21 @@ window.RecordsMemo = {
         const order = (r.ordDay && r.ordDay[dateStr] != null)
           ? r.ordDay[dateStr]
           : (Number.isFinite(r.ord) ? r.ord : 0);
-        list.push({ kind: 'routine', id: r.id, text: r.text, done, order });
+        const mv = r.moved && isISO(r.moved[dateStr]) ? r.moved[dateStr] : null;
+        list.push({ kind: 'routine', id: r.id, text: r.text, done: mv ? false : done, order, movedTo: mv, movedFrom: null });
       }
     }
     list.sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
     return list;
   }
+  function activeFor(dateStr) {
+    return itemsFor(dateStr).filter(i => !i.movedTo);
+  }
+  function isMissed(item, dateStr, today) {
+    return !item.done && !item.movedTo && dateStr < (today || todayISO());
+  }
   function isComplete(dateStr) {
-    const list = itemsFor(dateStr);
+    const list = activeFor(dateStr);
     return list.length >= 1 && list.every(i => i.done);
   }
   function nextOrder(dateStr) {
@@ -2444,18 +2521,55 @@ window.RecordsMemo = {
     return true;
   }
 
+  /* 미루기: the original stays as a faded "→ n월 n일로 미룸" row,
+     a copy is added on the new date with a "↪ m/d에서 미룸" tag. */
+  function moveOne(kind, id, fromDate, toDate, order) {
+    if (!isISO(toDate) || toDate === fromDate) return false;
+    let text = null;
+    if (kind === 'oneoff') {
+      const t = findOneoff(id);
+      if (!t || t.done || t.movedTo || t.date !== fromDate) return false;
+      t.movedTo = toDate;
+      text = t.text;
+    } else {
+      const r = findRoutine(id);
+      if (!r || !routineOnDate(r, fromDate)) return false;
+      if (r.done && r.done[fromDate]) return false;
+      r.moved = (r.moved && typeof r.moved === 'object') ? r.moved : {};
+      if (r.moved[fromDate]) return false;
+      r.moved[fromDate] = toDate;
+      text = r.text;
+    }
+    state.oneoffs.push({
+      id: uid('o'), text, date: toDate, done: false,
+      order: order != null ? order : nextOrder(toDate), movedFrom: fromDate
+    });
+    return true;
+  }
+  function postpone(kind, id, fromDate, toDate) {
+    postOpen = null;
+    if (moveOne(kind, id, fromDate, toDate)) {
+      save();
+      const el = document.getElementById('toast');
+      if (el) {
+        el.textContent = fmtMD(toDate) + '로 미뤘어요.';
+        el.classList.add('show');
+        clearTimeout(postpone._t);
+        postpone._t = setTimeout(() => el.classList.remove('show'), 2400);
+      }
+    }
+    if (isComplete(fromDate) && !state.stickers.includes(fromDate)) { state.stickers.push(fromDate); save(); }
+    render();
+  }
   function deferUnfinished(dateStr) {
     const tomorrow = addDays(dateStr, 1);
     let next = nextOrder(tomorrow);
     let moved = 0;
-    for (const t of state.oneoffs) {
-      if (t.date === dateStr && !t.done) {
-        t.date = tomorrow;
-        t.order = next++;
-        moved++;
-      }
+    const ids = state.oneoffs.filter(t => t.date === dateStr && !t.done && !t.movedTo).map(t => t.id);
+    for (const id of ids) {
+      if (moveOne('oneoff', id, dateStr, tomorrow, next)) { next++; moved++; }
     }
-    if (moved) { save(); render(); }
+    if (moved) { postOpen = null; save(); render(); }
     return moved;
   }
 
@@ -2470,6 +2584,7 @@ window.RecordsMemo = {
     r.hidden = Array.isArray(r.hidden) ? r.hidden : [];
     if (!r.hidden.includes(dateStr)) r.hidden.push(dateStr);
     if (r.done) delete r.done[dateStr];
+    if (r.moved) delete r.moved[dateStr];
     save();
     render();
   }
@@ -2540,7 +2655,8 @@ window.RecordsMemo = {
   }
 
   function renderToday(today) {
-    const list = itemsFor(viewDate);
+    const all = itemsFor(viewDate);
+    const list = all.filter(i => !i.movedTo);
     const done = list.filter(i => i.done).length;
     const total = list.length;
     const complete = total >= 1 && done === total;
@@ -2551,10 +2667,10 @@ window.RecordsMemo = {
     const pop = justCompleted === viewDate ? ' pop' : '';
 
     let rows = '';
-    if (!list.length) {
+    if (!all.length) {
       rows = '<div class="empty">아직 할 일이 없어요. 아래칸에 적어 보세요.</div>';
     } else {
-      rows = list.map(item => todayRow(item, viewDate)).join('');
+      rows = all.map(item => todayRow(item, viewDate, today)).join('');
     }
 
     $('#todayView').innerHTML =
@@ -2586,15 +2702,59 @@ window.RecordsMemo = {
     });
   }
 
-  function todayRow(item, dateStr) {
-    return '<div class="row' + (item.done ? ' done' : '') + '" data-id="' + item.id +
-      '" data-kind="' + item.kind + '" data-date="' + dateStr + '">' +
+  function todayRow(item, dateStr, today) {
+    today = today || todayISO();
+    const attrs = '" data-id="' + item.id + '" data-kind="' + item.kind + '" data-date="' + dateStr + '"';
+    if (item.movedTo) {
+      return '<div class="row moved' + attrs + ' data-moved-to="' + item.movedTo + '" title="' + fmtMD(item.movedTo) + '로 가기">' +
+        handleHtml() +
+        '<button type="button" class="check" aria-label="' + fmtMD(item.movedTo) + '로 가기">↪</button>' +
+        '<span class="txt">' + escapeHtml(item.text) + '</span>' +
+        '<span class="moved-tag">→ ' + fmtMD(item.movedTo) + '로 미룸</span>' +
+        '<button type="button" class="del" aria-label="삭제">✕</button>' +
+      '</div>';
+    }
+    const missed = isMissed(item, dateStr, today);
+    const open = postOpen && postOpen.kind === item.kind && postOpen.id === item.id && postOpen.date === dateStr;
+    return '<div class="row' + (item.done ? ' done' : '') + (missed ? ' missed' : '') + (open ? ' menu-open' : '') + attrs + '>' +
       handleHtml() +
       '<button type="button" class="check" aria-label="' + (item.done ? '완료 취소' : '완료') + '">' +
-        (item.done ? '✓' : '') + '</button>' +
+        (item.done ? '✓' : (missed ? '✕' : '')) + '</button>' +
       '<span class="txt">' + escapeHtml(item.text) + '</span>' +
+      (item.movedFrom ? '<span class="from-tag">↪ ' + fmtSlash(item.movedFrom) + '에서 미룸</span>' : '') +
       (item.kind === 'routine' ? '<span class="mark">' + escapeHtml(badgeText(findRoutine(item.id))) + '</span>' : '') +
+      (item.done ? '' : '<button type="button" class="post-btn' + (open ? ' on' : '') + '" aria-expanded="' + !!open + '">↪ 미루기</button>') +
       '<button type="button" class="del" aria-label="삭제">✕</button>' +
+      (open ? postMenuHtml(dateStr, today) : '') +
+    '</div>';
+  }
+
+  function postOptions(dateStr, today) {
+    const rel = d => d === today ? '오늘' : d === addDays(today, 1) ? '내일' : d === addDays(today, 2) ? '모레' : '';
+    const sub = d => DAYS[parseISO(d).getDay()] + (rel(d) ? ' · ' + rel(d) : '');
+    let dates;
+    if (dateStr < today) {
+      dates = [today, addDays(today, 1), addDays(today, 2)];
+    } else {
+      const dow = parseISO(dateStr).getDay();
+      const nextMon = addDays(dateStr, dow === 0 ? 1 : 8 - dow);
+      dates = [addDays(dateStr, 1), addDays(dateStr, 2)];
+      dates.push(dates.includes(nextMon) ? addDays(nextMon, 7) : nextMon);
+    }
+    return dates.map(d => ({ date: d, label: fmtMD(d) + (d === today ? '(오늘)' : '') + '로 미루기', sub: sub(d) }));
+  }
+  function postMenuHtml(dateStr, today) {
+    const opts = postOptions(dateStr, today);
+    const min = dateStr < today ? today : addDays(dateStr, 1);
+    const def = addDays(opts[opts.length - 1].date, 1);
+    return '<div class="post-menu" role="menu">' +
+      '<div class="ttl">언제로 미룰까요?</div>' +
+      opts.map(o => '<button type="button" class="opt" role="menuitem" data-post-to="' + o.date + '">' +
+        o.label + '<em>' + o.sub + '</em></button>').join('') +
+      '<div class="pick"><span>날짜 고르기</span>' +
+        '<input type="date" class="pick-date" min="' + min + '" value="' + def + '" aria-label="미룰 날짜">' +
+        '<button type="button" class="pick-go" data-post-pick="1">' + fmtMD(def) + '로</button>' +
+      '</div>' +
     '</div>';
   }
 
@@ -2603,7 +2763,8 @@ window.RecordsMemo = {
     let cols = '';
     for (let i = 0; i < 7; i++) {
       const d = addDays(mon, i);
-      const list = itemsFor(d);
+      const all = itemsFor(d);
+      const list = all.filter(x => !x.movedTo);
       const done = list.filter(x => x.done).length;
       const total = list.length;
       const complete = total >= 1 && done === total;
@@ -2616,7 +2777,7 @@ window.RecordsMemo = {
         '<div class="day-count">' + done + '/' + total + '</div></div>' +
         (complete ? '<div class="mini-stamp"><div class="ico">★</div><div class="cap">완료</div></div>' : '') +
         '<div class="mini-list" data-date="' + d + '">' +
-          list.map(item => weekRow(item, d)).join('') +
+          all.map(item => weekRow(item, d, today)).join('') +
         '</div>' +
         weekAddHtml(d) +
       '</div>';
@@ -2630,13 +2791,19 @@ window.RecordsMemo = {
     }
   }
 
-  function weekRow(item, dateStr) {
-    return '<div class="mini' + (item.done ? ' done' : '') + '" data-id="' + item.id +
-      '" data-kind="' + item.kind + '" data-date="' + dateStr + '">' +
-      '<button type="button" class="check" aria-label="' + (item.done ? '완료 취소' : '완료') + '">' +
-        (item.done ? '✓' : '') + '</button>' +
+  function weekRow(item, dateStr, today) {
+    const missed = isMissed(item, dateStr, today);
+    const cls = item.movedTo ? ' moved' : (item.done ? ' done' : '') + (missed ? ' missed' : '');
+    return '<div class="mini' + cls + '" data-id="' + item.id +
+      '" data-kind="' + item.kind + '" data-date="' + dateStr + '"' +
+      (item.movedTo ? ' data-moved-to="' + item.movedTo + '"' : '') + '>' +
+      '<button type="button" class="check" aria-label="' +
+        (item.movedTo ? fmtMD(item.movedTo) + '로 가기' : (item.done ? '완료 취소' : '완료')) + '">' +
+        (item.movedTo ? '↪' : item.done ? '✓' : (missed ? '✕' : '')) + '</button>' +
       '<div class="mini-body"><div class="mini-txt">' + escapeHtml(item.text) + '</div>' +
-      (item.kind === 'routine' ? '<span class="mini-mark">' + escapeHtml(badgeText(findRoutine(item.id))) + '</span>' : '') + '</div>' +
+      (item.kind === 'routine' && !item.movedTo ? '<span class="mini-mark">' + escapeHtml(badgeText(findRoutine(item.id))) + '</span>' : '') +
+      (item.movedTo ? '<span class="from-tag">→ ' + fmtSlash(item.movedTo) + '로 미룸</span>' : '') +
+      (item.movedFrom ? '<span class="from-tag">↪ ' + fmtSlash(item.movedFrom) + '에서</span>' : '') + '</div>' +
       '<button type="button" class="mini-del" aria-label="삭제">✕</button>' +
     '</div>';
   }
@@ -2729,10 +2896,45 @@ window.RecordsMemo = {
       render();
       return;
     }
+    const postBtn = e.target.closest('.post-btn');
+    if (postBtn) {
+      const row = postBtn.closest('[data-id]');
+      if (!row) return;
+      const same = postOpen && postOpen.id === row.dataset.id && postOpen.kind === row.dataset.kind && postOpen.date === row.dataset.date;
+      postOpen = same ? null : { kind: row.dataset.kind, id: row.dataset.id, date: row.dataset.date };
+      render();
+      return;
+    }
+    const postTo = e.target.closest('[data-post-to]');
+    if (postTo) {
+      const row = postTo.closest('[data-id]');
+      if (row) postpone(row.dataset.kind, row.dataset.id, row.dataset.date, postTo.dataset.postTo);
+      return;
+    }
+    const pickGo = e.target.closest('[data-post-pick]');
+    if (pickGo) {
+      const row = pickGo.closest('[data-id]');
+      const inp = row && row.querySelector('.pick-date');
+      const v = inp && inp.value;
+      if (row && isISO(v) && v >= (inp.min || '')) postpone(row.dataset.kind, row.dataset.id, row.dataset.date, v);
+      return;
+    }
+    if (e.target.closest('.post-menu')) return;
+    const del0 = e.target.closest('.del, .mini-del');
+    const movedRow = !del0 && e.target.closest('.row.moved, .mini.moved');
+    if (movedRow) {
+      postOpen = null;
+      viewDate = movedRow.dataset.movedTo;
+      state.view = 'today';
+      save();
+      render();
+      return;
+    }
     const check = e.target.closest('.check');
     if (check) {
       const row = check.closest('[data-id]');
       if (!row) return;
+      if (row.classList.contains('moved')) return;
       const done = !row.classList.contains('done');
       setDone(row.dataset.kind, row.dataset.id, row.dataset.date, done);
       afterDoneChange(row.dataset.date);
@@ -2744,6 +2946,24 @@ window.RecordsMemo = {
       if (!row) return;
       requestDelete(row.dataset.kind, row.dataset.id, row.dataset.date);
     }
+  });
+
+  document.addEventListener('click', e => {
+    if (!postOpen) return;
+    if (e.target.closest && e.target.closest('.post-menu, .post-btn')) return;
+    postOpen = null;
+    render();
+  }, true);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && postOpen) { postOpen = null; render(); }
+  });
+  $('#card').addEventListener('input', e => {
+    const inp = e.target.closest('.pick-date');
+    if (!inp) return;
+    const go = inp.parentNode.querySelector('.pick-go');
+    const ok = isISO(inp.value) && inp.value >= (inp.min || '');
+    go.disabled = !ok;
+    go.textContent = ok ? fmtMD(inp.value) + '로' : '날짜 선택';
   });
 
   $('#card').addEventListener('keydown', e => {
@@ -2789,6 +3009,7 @@ window.RecordsMemo = {
     if (didDrag) return;
     const row = txtEl.closest('[data-id]');
     if (!row || row.querySelector('.txt-edit, .mini-edit')) return;
+    if (row.classList.contains('moved')) return;
     const kind = row.dataset.kind, id = row.dataset.id;
     const current = (txtEl.textContent || '').trim();
     const isMini = txtEl.classList.contains('mini-txt');
@@ -2858,7 +3079,7 @@ window.RecordsMemo = {
 
   $('#card').addEventListener('pointerdown', e => {
     if (e.button != null && e.button !== 0) return;
-    if (e.target.closest('.check, .del, .mini-del, .txt-edit, .mini-edit, input, button.repeat-btn, button.add-col, button.carry, button.nav-btn, button.jump-today, .seg, .week-add, .repeat-panel, .dow-chip, .repeat-modes')) return;
+    if (e.target.closest('.check, .del, .mini-del, .post-btn, .post-menu, .txt-edit, .mini-edit, input, button.repeat-btn, button.add-col, button.carry, button.nav-btn, button.jump-today, .seg, .week-add, .repeat-panel, .dow-chip, .repeat-modes')) return;
     const row = e.target.closest('[data-id][data-date]');
     if (!row) return;
     const onHandle = !!e.target.closest('[data-handle]');
@@ -5393,7 +5614,8 @@ function mergeTodos(cloud, local) {
       rById.set(r.id, Object.assign({}, prev, r, {
         done: mergeDone(prev.done, r.done),
         hidden: Array.from(new Set([].concat(prev.hidden || [], r.hidden || []))),
-        ordDay: Object.assign({}, prev.ordDay || {}, r.ordDay || {})
+        ordDay: Object.assign({}, prev.ordDay || {}, r.ordDay || {}),
+        moved: Object.assign({}, prev.moved || {}, r.moved || {})
       }));
     } else {
       rById.set(r.id, Object.assign({}, r, { done: Object.assign({}, r.done || {}), hidden: (r.hidden || []).slice(), ordDay: Object.assign({}, r.ordDay || {}) }));
