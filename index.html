@@ -1306,6 +1306,100 @@
     #study .tm .h, #study .tm .c { height: 22px; }
   }
 
+  /* ===== study planner: day / week / month switch ===== */
+  #study .st-tl { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  #study .st-seg { display: inline-flex; border: 1px solid #1E3A5F; border-radius: 16px; overflow: hidden; }
+  #study .st-seg button {
+    border: 0; padding: 4px 14px; font: inherit; font-size: 15px; color: #1E3A5F; background: #fff; cursor: pointer;
+    -webkit-text-stroke: calc(1.5px * 15 / 44) #fff;
+  }
+  #study .st-seg button + button { border-left: 1px solid #1E3A5F; }
+  #study .st-seg button.on { background: #1E3A5F; color: #fff; -webkit-text-stroke-color: #1E3A5F; }
+  #study .st-layout[hidden], #study .st-period[hidden] { display: none; }
+  #study .pstats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+  #study .pstat { background: rgba(255,255,255,.92); border: 1px solid #ececec; border-radius: 10px; padding: 12px 16px; min-width: 0; }
+  #study .pstat .k { font-size: 13px; color: #999; -webkit-text-stroke: calc(1.5px * 13 / 44) #fff; }
+  #study .pstat .v { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 26px; color: #2b2b2b; margin-top: 4px; line-height: 1.1; -webkit-text-stroke: 0; }
+  #study .pstat .v small { font-family: 'Do Hyeon', sans-serif; font-weight: 400; font-size: 14px; color: #888; margin: 0 3px 0 1px; }
+  #study .pstat.main { background: #1E3A5F; border-color: #1E3A5F; }
+  #study .pstat.main .k { color: #c9d4e2; -webkit-text-stroke-color: #1E3A5F; }
+  #study .pstat.main .v { color: #fff; }
+  #study .pstat.main .v small { color: #c9d4e2; }
+  #study .pgrid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 18px; align-items: stretch; }
+  #study .pgrid > .card { display: flex; flex-direction: column; }
+  #study .pgrid .pfull { grid-column: 1 / -1; }
+  #study .wchart { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; align-items: end; height: 250px; padding-top: 6px; }
+  #study .wcol { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px; cursor: pointer; border: 0; background: none; padding: 6px 0 0; }
+  #study .wcol .tt { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; color: #555; -webkit-text-stroke: 0; }
+  #study .wcol .tt.zero { color: #ccc; }
+  #study .stack { width: 58%; max-width: 46px; display: flex; flex-direction: column-reverse; border-radius: 6px; overflow: hidden; background: #f1f1f1; }
+  #study .stack i { display: block; flex: 0 0 auto; }
+  #study .wlab { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 8px; }
+  #study .wlab button { text-align: center; font: inherit; font-size: 14px; color: #777; padding: 4px 0; border-radius: 8px; border: 0; background: none; cursor: pointer; -webkit-text-stroke: calc(1.5px * 14 / 44) #fff; }
+  #study .wlab button b { display: block; font-family: 'Inter', sans-serif; font-size: 12px; color: #aaa; font-weight: 700; -webkit-text-stroke: 0; }
+  #study .wlab button.today { background: #1E3A5F; color: #fff; -webkit-text-stroke-color: #1E3A5F; }
+  #study .wlab button.today b, #study .wlab button.today .tk { color: #c9d4e2; }
+  #study .wlab button.fut { color: #ccc; }
+  #study .wlab .tk { display: block; font-size: 11.5px; color: #999; margin-top: 2px; }
+  #study .ratio { display: flex; height: 14px; border-radius: 7px; overflow: hidden; margin: 6px 0 8px; background: #f1f1f1; }
+  #study .ratio i { display: block; }
+  #study .ratio-lg { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: #777; }
+  #study .ratio-lg span { display: inline-flex; align-items: center; gap: 5px; }
+  #study .ratio-lg b { font-family: 'Inter', sans-serif; font-size: 12px; color: #555; -webkit-text-stroke: 0; }
+  #study .sub-sep { border-top: 1px dashed #e6e6e6; margin: 14px 0 10px; }
+  #study .strip-head { display: grid; grid-template-columns: 70px 1fr 64px; gap: 10px; font-family: 'Inter', sans-serif; font-size: 10px; color: #bbb; margin-bottom: 4px; -webkit-text-stroke: 0; }
+  #study .strip-head .ticks { display: flex; justify-content: space-between; }
+  #study .strip { display: grid; grid-template-columns: 70px 1fr 64px; gap: 10px; align-items: center; padding: 5px 0; border: 0; border-bottom: 1px solid #f2f2f2; background: none; width: 100%; cursor: pointer; font: inherit; text-align: left; }
+  #study .strip .dl { font-size: 15px; color: #555; -webkit-text-stroke: calc(1.5px * 15 / 44) #fff; }
+  #study .strip .dl em { font-style: normal; font-size: 12px; color: #aaa; margin-left: 3px; }
+  #study .strip.today .dl { color: #1E3A5F; }
+  #study .cells { display: grid; grid-template-columns: repeat(144, 1fr); height: 18px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
+  #study .cells i:nth-child(6n) { box-shadow: inset -1px 0 0 rgba(255,255,255,.7); }
+  #study .strip .tot { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; color: #555; text-align: right; -webkit-text-stroke: 0; }
+  #study .strip.fut .dl, #study .strip.fut .tot { color: #ccc; }
+  #study .mcal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  #study .mdow { text-align: center; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12px; color: #aaa; padding-bottom: 2px; -webkit-text-stroke: 0; }
+  #study .mc { min-height: 86px; border-radius: 9px; background: #eef0f3; padding: 7px 8px; display: flex; flex-direction: column; justify-content: space-between; position: relative; border: 0; cursor: pointer; font: inherit; text-align: left; min-width: 0; }
+  #study .mc .n { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12px; color: rgba(0,0,0,.45); -webkit-text-stroke: 0; }
+  #study .mc .t { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 16px; color: #1E3A5F; text-align: right; -webkit-text-stroke: 0; }
+  #study .mc .rb { display: flex; height: 5px; border-radius: 3px; overflow: hidden; margin-top: 4px; background: rgba(255,255,255,.5); }
+  #study .mc .rb i { display: block; }
+  #study .mc.l1 { background: #dde4ee; } #study .mc.l2 { background: #b7c6d9; }
+  #study .mc.l3 { background: #7d97b6; } #study .mc.l4 { background: #1E3A5F; }
+  #study .mc.l3 .t, #study .mc.l3 .n, #study .mc.l4 .t, #study .mc.l4 .n { color: #fff; }
+  #study .mc.blank { background: transparent; cursor: default; }
+  #study .mc.fut { background: #f7f7f7; } #study .mc.fut .n { color: #ccc; }
+  #study .mc.today { outline: 2px solid #2b2b2b; outline-offset: 1px; }
+  #study .mc.best::after { content: '최고'; position: absolute; top: 6px; right: 7px; font-size: 11px; color: #fff; background: #E07A6E; border-radius: 8px; padding: 1px 6px; }
+  #study .wk-row { display: grid; grid-template-columns: 96px 1fr 50px; gap: 10px; align-items: center; margin: 8px 0; font-size: 14px; color: #666; }
+  #study .wk-row .v { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; color: #555; text-align: right; -webkit-text-stroke: 0; }
+  #study .wk-row em { font-style: normal; color: #bbb; font-size: 12px; }
+  @media (min-width: 861px) and (max-width: 1100px) {
+    #study .pgrid { grid-template-columns: minmax(0, 1fr) 300px; }
+    #study .pstat .v { font-size: 23px; }
+  }
+  @media (max-width: 860px) {
+    #study .pgrid { grid-template-columns: 1fr; gap: 16px; }
+    #study .pstats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    #study .pstat .v { font-size: 22px; }
+    #study .wchart { height: 190px; gap: 6px; }
+    #study .wlab { gap: 6px; }
+    #study .wlab button { font-size: 13px; }
+    #study .stack { width: 70%; }
+    #study .wcol .tt { font-size: 11px; }
+    #study .strip-head, #study .strip { grid-template-columns: 52px 1fr 44px; gap: 6px; }
+    #study .strip .dl { font-size: 14px; }
+    #study .strip .dl em { display: none; }
+    #study .strip .tot { font-size: 11.5px; }
+    #study .cells { height: 16px; }
+    #study .mcal { gap: 3px; }
+    #study .mc { min-height: 58px; padding: 4px; border-radius: 7px; }
+    #study .mc .n { font-size: 10px; }
+    #study .mc .t { font-size: 11px; text-align: center; }
+    #study .mc .rb { height: 4px; margin-top: 2px; }
+    #study .mc.best::after { content: '★'; background: none; color: #E07A6E; top: 2px; right: 3px; padding: 0; font-size: 10px; }
+  }
+
 </style>
 </head>
 <body>
@@ -1365,10 +1459,14 @@
 <section id="study" hidden>
 <div class="sheet">
   <div class="st-toolbar">
-    <div class="date-nav" id="studyNav"></div>
+    <div class="st-tl">
+      <div class="st-seg" id="studyMode" role="tablist"><button type="button" data-mode="day">일간</button><button type="button" data-mode="week">주간</button><button type="button" data-mode="month">월간</button></div>
+      <div class="date-nav" id="studyNav"></div>
+    </div>
     <div class="ddays" id="studyDdays"></div>
   </div>
-  <div class="st-layout">
+  <div class="st-period" id="studyPeriod" hidden></div>
+  <div class="st-layout" id="studyDayLayout">
     <div class="st-col">
       <div class="card grow c-tasks">
         <div class="sec-head"><p class="sec-label">오늘의 공부 목록</p><span class="sec-extra" id="studyTaskCount"></span></div>
@@ -4397,8 +4495,182 @@ window.RecordsMemo = {
     renderClock();
   }
 
+  /* ----- week / month views ----- */
+  const MODE_KEY = 'records-study-mode';
+  let mode = (function () { try { const m = localStorage.getItem(MODE_KEY); return ['day', 'week', 'month'].includes(m) ? m : 'day'; } catch (e) { return 'day'; } })();
+  const modeEl = document.getElementById('studyMode');
+  const periodEl = document.getElementById('studyPeriod');
+  const dayLayout = document.getElementById('studyDayLayout');
+  function weekStart(iso) { return U.addDays(iso, -U.parseISO(iso).getDay()); }
+  function bigHM(m) { return Math.floor(m / 60) + '<small>시간</small>' + String(m % 60).padStart(2, '0') + '<small>분</small>'; }
+  function levelOf(m) { return m === 0 ? '' : m < 120 ? 'l1' : m < 210 ? 'l2' : m < 300 ? 'l3' : 'l4'; }
+  function taskCounts(iso) { const t = getDay(iso).tasks; return [t.filter(x => x.done).length, t.length]; }
+  function sumSubjects(isos) {
+    const per = {};
+    isos.forEach(iso => { const p = subjMinutes(iso); Object.keys(p).forEach(k => { per[k] = (per[k] || 0) + p[k]; }); });
+    return per;
+  }
+  function subjOrder(per) {
+    const order = state.subjects.map(s => s.id);
+    return Object.keys(per).filter(k => per[k] > 0).sort((a, b) => (per[b] - per[a]) || (order.indexOf(a) - order.indexOf(b)));
+  }
+  function ratioBar(per, total, cls) {
+    return '<div class="' + cls + '">' + subjOrder(per).map(k => '<i style="width:' + (per[k] / total * 100).toFixed(2) + '%;background:' + subjColor(k) + '"></i>').join('') + '</div>';
+  }
+  function subjCard(per, title, extra) {
+    const ks = subjOrder(per);
+    const tot = ks.reduce((a, k) => a + per[k], 0);
+    let body;
+    if (!ks.length) body = '<p class="empty-msg">아직 기록된 공부 시간이 없어요.</p>';
+    else {
+      const mx = per[ks[0]];
+      body = ks.map(k => '<div class="bar-row"><span class="nm"><span class="dot" style="background:' + subjColor(k) + '"></span>' + esc(subjName(k)) + '</span>' +
+        '<div class="track"><div class="fill" style="width:' + (per[k] / mx * 100).toFixed(1) + '%;background:' + subjColor(k) + '"></div></div><span class="v">' + fmtShort(per[k]) + '</span></div>').join('') +
+        '<div class="sub-sep"></div><p class="sec-label" style="margin-bottom:4px">비율</p>' + ratioBar(per, tot, 'ratio') +
+        '<div class="ratio-lg">' + ks.map(k => '<span><span class="dot" style="background:' + subjColor(k) + '"></span>' + esc(subjName(k)) + ' <b>' + Math.round(per[k] / tot * 100) + '%</b></span>').join('') + '</div>';
+    }
+    return '<div class="card"><div class="sec-head"><p class="sec-label">' + title + '</p></div>' + body + (extra || '') + '</div>';
+  }
+  function statBox(k, v, main) { return '<div class="pstat' + (main ? ' main' : '') + '"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>'; }
+  function renderWeek() {
+    const today = plannerToday();
+    const ws = weekStart(viewDate);
+    const days = [0, 1, 2, 3, 4, 5, 6].map(i => U.addDays(ws, i));
+    const past = days.filter(d => d <= today);
+    const mins = days.map(dayMinutes);
+    const total = mins.reduce((a, b) => a + b, 0);
+    const avg = past.length ? Math.round(total / past.length) : 0;
+    const studied = mins.filter(m => m > 0).length;
+    let done = 0, all = 0;
+    days.forEach(d => { const c = taskCounts(d); done += c[0]; all += c[1]; });
+    const mx = Math.max(1, ...mins);
+    const chart = days.map((d, i) => {
+      const m = mins[i];
+      if (!m) return '<button type="button" class="wcol" data-iso="' + d + '"><span class="tt zero">' + (d <= today ? '0h00' : '') + '</span><div class="stack" style="height:4px"></div></button>';
+      const per = subjMinutes(d);
+      return '<button type="button" class="wcol" data-iso="' + d + '"><span class="tt">' + fmtShort(m) + '</span><div class="stack" style="height:' + (m / mx * 82).toFixed(1) + '%">' +
+        subjOrder(per).reverse().map(k => '<i style="height:' + (per[k] / m * 100).toFixed(2) + '%;background:' + subjColor(k) + '"></i>').join('') + '</div></button>';
+    }).join('');
+    const lab = days.map(d => {
+      const c = taskCounts(d);
+      return '<button type="button" class="' + (d === today ? 'today' : '') + (d > today ? ' fut' : '') + '" data-iso="' + d + '"><b>' + U.parseISO(d).getDate() + '</b>' + U.dowName(d) +
+        '<span class="tk">' + (c[1] ? '✓ ' + c[0] + '/' + c[1] : '&nbsp;') + '</span></button>';
+    }).join('');
+    const used = new Set();
+    days.forEach(d => Object.values(getDay(d).cells).forEach(k => used.add(k)));
+    const legend = state.subjects.filter(s => used.has(s.id)).map(s => '<span><span class="dot" style="background:' + s.color + '"></span>' + esc(s.name) + '</span>').join('');
+    const strips = days.map(d => {
+      const cells = getDay(d).cells;
+      let c = '';
+      for (let i = 0; i < 144; i++) c += '<i' + (cells[i] ? ' style="background:' + subjColor(cells[i]) + '"' : '') + '></i>';
+      const dt = U.parseISO(d);
+      return '<button type="button" class="strip' + (d === today ? ' today' : '') + (d > today ? ' fut' : '') + '" data-iso="' + d + '"><span class="dl">' + (dt.getMonth() + 1) + '.' + dt.getDate() +
+        '<em>(' + U.dowName(d) + ')</em></span><div class="cells">' + c + '</div><span class="tot">' + (dayMinutes(d) ? fmtShort(dayMinutes(d)) : '–') + '</span></button>';
+    }).join('');
+    periodEl.innerHTML =
+      '<div class="pstats">' + statBox(ws <= today && today <= days[6] ? '이번 주 총 공부' : '이 주 총 공부', bigHM(total), true) + statBox('하루 평균', bigHM(avg)) +
+      statBox('공부한 날', studied + '<small>/ 7일</small>') + statBox('공부 목록 완료', done + '<small>/ ' + all + '개</small>') + '</div>' +
+      '<div class="pgrid"><div class="card"><div class="sec-head"><p class="sec-label">요일별 공부 시간</p><span class="sec-extra">날짜를 누르면 그날 일간 보기로 가요</span></div>' +
+      '<div class="wchart">' + chart + '</div><div class="wlab">' + lab + '</div>' + (legend ? '<div class="ratio-lg" style="margin-top:12px">' + legend + '</div>' : '') + '</div>' +
+      subjCard(sumSubjects(days), '과목별 주간 합계') +
+      '<div class="card pfull"><div class="sec-head"><p class="sec-label">한 주 텐미닛 한눈에 보기</p><span class="sec-extra">6시 → 다음날 5시</span></div>' +
+      '<div class="strip-head"><span></span><div class="ticks"><span>6</span><span>9</span><span>12</span><span>15</span><span>18</span><span>21</span><span>0</span><span>3</span><span>6</span></div><span></span></div>' + strips + '</div></div>';
+  }
+  function renderMonth() {
+    const today = plannerToday();
+    const ym = U.ymOf(viewDate);
+    const [y, m] = ym.split('-').map(Number);
+    const last = new Date(y, m, 0).getDate();
+    const firstDow = new Date(y, m - 1, 1).getDay();
+    const days = [];
+    for (let d = 1; d <= last; d++) days.push(ym + '-' + U.pad(d));
+    const mins = days.map(dayMinutes);
+    const total = mins.reduce((a, b) => a + b, 0);
+    const past = days.filter(d => d <= today).length;
+    const avg = past ? Math.round(total / past) : 0;
+    const studied = mins.filter(x => x > 0).length;
+    let best = -1;
+    mins.forEach((x, i) => { if (x > 0 && (best < 0 || x > mins[best])) best = i; });
+    const hasToday = days.includes(today);
+    let cal = U.DAYS.map(d => '<div class="mdow">' + d + '</div>').join('');
+    for (let i = 0; i < firstDow; i++) cal += '<div class="mc blank"></div>';
+    days.forEach((d, i) => {
+      const x = mins[i];
+      const fut = d > today;
+      const per = subjMinutes(d);
+      cal += '<button type="button" class="mc ' + (fut ? 'fut' : levelOf(x)) + (d === today ? ' today' : '') + (i === best ? ' best' : '') + '" data-iso="' + d + '"><span class="n">' + (i + 1) + '</span><div>' +
+        (x ? '<div class="t">' + fmtShort(x) + '</div>' + ratioBar(per, x, 'rb') : '') + '</div></button>';
+    });
+    const tail = (7 - (firstDow + last) % 7) % 7;
+    for (let i = 0; i < tail; i++) cal += '<div class="mc blank"></div>';
+    // calendar rows (Sunday-start) clipped to this month
+    const weeks = [];
+    let a = 1;
+    while (a <= last) {
+      const b = Math.min(last, a + (6 - new Date(y, m - 1, a).getDay()));
+      let sum = 0;
+      for (let d = a; d <= b; d++) sum += mins[d - 1];
+      weeks.push([weeks.length + 1, a, b, sum]);
+      a = b + 1;
+    }
+    const wmx = Math.max(1, ...weeks.map(w => w[3]));
+    const wk = '<div class="sub-sep"></div><p class="sec-label" style="margin-bottom:2px">주별 합계</p>' + weeks.map(([i, s, e, sum]) =>
+      '<div class="wk-row"><span>' + i + '주 <em>' + (s === e ? s + '일' : s + '–' + e + '일') + '</em></span><div class="track"><div class="fill" style="width:' + (sum / wmx * 100).toFixed(1) + '%;background:#93a9c4"></div></div><span class="v">' + (sum ? fmtShort(sum) : '–') + '</span></div>').join('');
+    periodEl.innerHTML =
+      '<div class="pstats">' + statBox(m + '월 총 공부', bigHM(total), true) + statBox('하루 평균', bigHM(avg)) +
+      statBox('공부한 날', studied + '<small>일' + (hasToday ? ' · 연속 ' + streakDays() + '일째' : '') + '</small>') +
+      statBox('최고 기록', best >= 0 ? bigHM(mins[best]) : '–') + '</div>' +
+      '<div class="pgrid"><div class="card"><div class="sec-head"><p class="sec-label">' + m + '월 공부 달력</p><span class="sec-extra">날짜를 누르면 그날 일간 보기로 가요</span></div>' +
+      '<div class="mcal">' + cal + '</div>' +
+      '<div class="heat-legend">적음 <i style="background:#eef0f3"></i><i style="background:#dde4ee"></i><i style="background:#b7c6d9"></i><i style="background:#7d97b6"></i><i style="background:#1E3A5F"></i> 많음 <span style="margin-left:12px">칸 아래 색 막대 = 그날 과목 비율</span></div></div>' +
+      subjCard(sumSubjects(days), '과목별 월간 합계', wk) + '</div>';
+  }
+  function renderPeriod() {
+    if (mode === 'week') renderWeek();
+    else if (mode === 'month') renderMonth();
+  }
+  function applyMode() {
+    modeEl.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.mode === mode));
+    dayLayout.hidden = mode !== 'day';
+    periodEl.hidden = mode === 'day';
+  }
+  modeEl.addEventListener('click', e => {
+    const b = e.target.closest('[data-mode]');
+    if (!b || b.dataset.mode === mode) return;
+    flushLine();
+    mode = b.dataset.mode;
+    try { localStorage.setItem(MODE_KEY, mode); } catch (err) {}
+    render();
+  });
+  periodEl.addEventListener('click', e => {
+    const b = e.target.closest('[data-iso]');
+    if (!b) return;
+    viewDate = b.dataset.iso;
+    mode = 'day';
+    try { localStorage.setItem(MODE_KEY, mode); } catch (err) {}
+    render();
+    window.scrollTo(0, 0);
+  });
+
   function renderNav() {
     const today = plannerToday();
+    if (mode === 'week') {
+      const ws = weekStart(viewDate), we = U.addDays(ws, 6);
+      const e = U.parseISO(we);
+      navEl.innerHTML = '<button type="button" class="nav-btn" data-nav="-7" aria-label="이전 주">‹</button>' +
+        '<div class="date-label">' + U.fmtDot(ws) + ' – ' + (e.getMonth() + 1) + '.' + U.pad(e.getDate()) + '</div>' +
+        '<button type="button" class="nav-btn" data-nav="7" aria-label="다음 주">›</button>' +
+        (today < ws || today > we ? '<button type="button" class="jump-today" data-nav="today">이번 주</button>' : '');
+      return;
+    }
+    if (mode === 'month') {
+      const ym = U.ymOf(viewDate);
+      navEl.innerHTML = '<button type="button" class="nav-btn" data-nav="m-1" aria-label="이전 달">‹</button>' +
+        '<div class="date-label">' + U.fmtYmDot(ym) + '</div>' +
+        '<button type="button" class="nav-btn" data-nav="m1" aria-label="다음 달">›</button>' +
+        (U.ymOf(today) !== ym ? '<button type="button" class="jump-today" data-nav="today">이번 달</button>' : '');
+      return;
+    }
     navEl.innerHTML = '<button type="button" class="nav-btn" data-nav="-1" aria-label="이전">‹</button>' +
       '<div class="date-label">' + U.fmtDot(viewDate) + '<em>(' + U.dowName(viewDate) + ')</em></div>' +
       '<button type="button" class="nav-btn" data-nav="1" aria-label="다음">›</button>' +
@@ -4533,12 +4805,16 @@ window.RecordsMemo = {
   }
   function renderDayParts() {
     if (!isVisible()) return;
+    if (mode !== 'day') { renderPeriod(); return; }
     renderBars(); renderTm(); renderHeat();
   }
   function render() {
     renderPill();
     if (!isVisible()) return;
-    renderNav(); renderDdays(); renderTimer(); renderTasks(); renderBars(); renderLine(); renderTm(); renderHeat();
+    applyMode();
+    renderNav(); renderDdays();
+    if (mode !== 'day') { renderPeriod(); return; }
+    renderTimer(); renderTasks(); renderBars(); renderLine(); renderTm(); renderHeat();
   }
 
   /* ----- events ----- */
@@ -4546,8 +4822,10 @@ window.RecordsMemo = {
     const b = e.target.closest('[data-nav]');
     if (!b) return;
     flushLine();
-    if (b.dataset.nav === 'today') viewDate = plannerToday();
-    else viewDate = U.addDays(viewDate, Number(b.dataset.nav));
+    const nv = b.dataset.nav;
+    if (nv === 'today') viewDate = plannerToday();
+    else if (nv === 'm-1' || nv === 'm1') viewDate = U.addMonths(U.ymOf(viewDate), nv === 'm1' ? 1 : -1) + '-01';
+    else viewDate = U.addDays(viewDate, Number(nv));
     lineEl.blur();
     render();
   });
