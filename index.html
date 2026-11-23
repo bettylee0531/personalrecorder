@@ -1458,6 +1458,147 @@
     #study .mc.best::after { content: '★'; background: none; color: #E07A6E; top: 2px; right: 3px; padding: 0; font-size: 10px; }
   }
 
+  /* ===== 일정 (deadlines) ===== */
+  header h1 { cursor: pointer; user-select: none; }
+  .sch-btn { border: 1px solid #1E3A5F; background: #fff; color: #1E3A5F; border-radius: 14px; padding: 4px 12px; font: inherit; font-size: 14px; cursor: pointer; -webkit-text-stroke: calc(1.5px * 14 / 44) #fff; display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
+  .sch-btn:hover { background: #1E3A5F; color: #fff; -webkit-text-stroke-color: #1E3A5F; }
+  .sch-btn svg { width: 14px; height: 14px; }
+  .mday .schs { margin-top: auto; width: 100%; display: flex; flex-direction: column; gap: 2px; padding: 4px 2px 0; box-sizing: border-box; }
+  .mday .sch { display: block; font-size: 11px; line-height: 1.25; padding: 1px 4px; border-radius: 4px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 3px solid; color: #333; -webkit-text-stroke: 0; }
+  .mday .sch.done { opacity: .5; text-decoration: line-through; color: #888; }
+  .mday .sch.miss { text-decoration: line-through; text-decoration-color: rgba(192,96,90,.8); }
+  .mday .sch.miss::before { content: '✕ '; color: #c0605a; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 9px; }
+  .mday .sch-more { font-size: 10px; color: #999; text-align: left; padding-left: 4px; }
+  .mday .sdots { display: none; }
+  @media (max-width: 860px) { .mday .sch { font-size: 10px; padding: 1px 3px; border-left-width: 2px; } }
+  @media (max-width: 600px) {
+    .mday .schs { display: none; }
+    .mday .sdots { display: flex; gap: 2px; margin-top: auto; padding-top: 3px; justify-content: center; flex-wrap: wrap; }
+    .mday .sdots i { width: 5px; height: 5px; border-radius: 50%; display: block; }
+    .mday .sdots i.done { opacity: .35; }
+    .mday .sdots i.miss { background: #fff !important; border: 1.2px solid #c0605a; box-sizing: border-box; }
+    .sch-btn { font-size: 13px; padding: 3px 10px; }
+  }
+  .cal-legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: #888; margin: 10px 2px 0; -webkit-text-stroke: calc(1.5px * 12 / 44) #fdfdfd; }
+  .cal-legend b { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+  .cal-legend:empty { display: none; }
+
+  .sch-back { position: fixed; inset: 0; background: rgba(25,32,44,.32); z-index: 200; display: flex; align-items: center; justify-content: center; }
+  .sch-back[hidden] { display: none; }
+  .sch-sheet { background: #fff; border-radius: 14px; width: min(860px, calc(100vw - 40px)); max-height: calc(100vh - 60px); overflow: auto; box-shadow: 0 18px 50px rgba(20,30,50,.25); padding: 20px 22px 18px; box-sizing: border-box; }
+  .sch-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .sch-head h3 { margin: 0; font-size: 20px; font-weight: 400; -webkit-text-stroke: calc(1.5px * 20 / 44) #fff; }
+  .sch-x { border: 0; background: none; font-size: 20px; color: #999; cursor: pointer; font-family: 'Inter', sans-serif; -webkit-text-stroke: 0; }
+  .sch-tabs.seg2 { display: none; }
+  .sch-cols { display: grid; grid-template-columns: 1.15fr 1fr; gap: 22px; }
+  .sch-form { display: flex; flex-direction: column; gap: 13px; min-width: 0; }
+  .sch-f label.l, .sch-f .l { display: block; font-size: 13px; color: #888; margin-bottom: 5px; -webkit-text-stroke: calc(1.5px * 13 / 44) #fff; }
+  .sch-in { width: 100%; box-sizing: border-box; border: 1px solid #ddd; border-radius: 8px; padding: 9px 11px; font: inherit; font-size: 17px; background: #fff; color: #2b2b2b; -webkit-text-stroke: calc(1.5px * 17 / 44) #fff; outline: none; }
+  .sch-in:focus { border-color: #1E3A5F; }
+  input.sch-in[type=date], input.sch-in[type=time] { font-family: 'Inter', sans-serif; font-size: 15px; -webkit-text-stroke: 0; min-height: 42px; }
+  .sch-row2 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 10px; }
+  .time-wrap { position: relative; }
+  .time-clear { position: absolute; right: 34px; top: 50%; transform: translateY(-50%); border: 0; background: none; color: #bbb; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; -webkit-text-stroke: 0; }
+  .sch-memo { min-height: 52px; resize: vertical; font-size: 15px; -webkit-text-stroke: calc(1.5px * 15 / 44) #fff; }
+  .tchips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; position: relative; }
+  .tchip { border: 1px solid #ddd; border-radius: 16px; padding: 5px 13px; font: inherit; font-size: 15px; background: #fff; color: #555; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; -webkit-text-stroke: calc(1.5px * 15 / 44) #fff; }
+  .tchip i { width: 9px; height: 9px; border-radius: 50%; display: block; }
+  .tchip.on { color: #fff; }
+  .tchip .pen { font-size: 11px; opacity: .9; margin-left: 1px; font-family: 'Inter', sans-serif; -webkit-text-stroke: 0; padding: 0 2px; }
+  .tchip.plus { width: 32px; height: 32px; padding: 0; justify-content: center; border-style: dashed; color: #1E3A5F; border-color: #b9c6d6; font-family: 'Inter', sans-serif; font-size: 17px; -webkit-text-stroke: 0; }
+  .tadd { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #1E3A5F; border-radius: 16px; padding: 3px 4px 3px 10px; background: #fff; }
+  .tadd i { width: 9px; height: 9px; border-radius: 50%; display: block; }
+  .tadd input { border: 0; outline: 0; font: inherit; font-size: 15px; width: 84px; -webkit-text-stroke: calc(1.5px * 15 / 44) #fff; background: transparent; }
+  .tadd .ok { border: 0; background: #1E3A5F; color: #fff; border-radius: 12px; padding: 3px 10px; font: inherit; font-size: 13px; -webkit-text-stroke: 0; cursor: pointer; }
+  .tadd .no { border: 0; background: none; color: #aaa; font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer; padding: 0 4px; }
+  .cdots { display: flex; gap: 6px; margin-top: 8px; flex-wrap: nowrap; }
+  .cdots button { width: 16px; height: 16px; border-radius: 50%; display: block; border: 2px solid #fff; box-shadow: 0 0 0 1px #ddd; padding: 0; cursor: pointer; flex: 0 0 16px; }
+  .cdots button.on { box-shadow: 0 0 0 2px #1E3A5F; }
+  .cdots button:disabled { opacity: .28; cursor: default; }
+  .tpop { position: absolute; z-index: 5; top: calc(100% + 6px); left: 0; background: #fff; border: 1px solid #dfe5ec; border-radius: 10px; box-shadow: 0 8px 24px rgba(30,58,95,.16); padding: 10px 12px; width: max-content; max-width: calc(100vw - 40px); box-sizing: border-box; }
+  .tpop input { width: 100%; box-sizing: border-box; border: 0; border-bottom: 1px solid #ddd; font: inherit; font-size: 16px; padding: 3px 1px; outline: 0; -webkit-text-stroke: calc(1.5px * 16 / 44) #fff; }
+  .tpop .ft { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 8px; }
+  .tpop .tdel { border: 0; background: none; color: #c0605a; font: inherit; font-size: 14px; padding: 0; -webkit-text-stroke: 0; cursor: pointer; }
+  .tpop .tdone { border: 0; background: #1E3A5F; color: #fff; border-radius: 7px; padding: 4px 12px; font: inherit; font-size: 14px; -webkit-text-stroke: 0; cursor: pointer; margin-left: auto; }
+  .tpop .cf { margin-top: 10px; font-size: 13px; color: #a0524c; background: #fdf6f5; border-radius: 7px; padding: 7px 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; -webkit-text-stroke: 0; }
+  .tpop .cf button { border: 0; background: #c0605a; color: #fff; border-radius: 6px; padding: 3px 9px; font: inherit; font-size: 13px; white-space: nowrap; cursor: pointer; }
+  .seg2 { display: inline-flex; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+  .seg2 button { border: 0; background: #fff; padding: 7px 14px; font: inherit; font-size: 15px; color: #666; cursor: pointer; -webkit-text-stroke: calc(1.5px * 15 / 44) #fff; }
+  .seg2 button + button { border-left: 1px solid #eee; }
+  .seg2 button.on { background: #1E3A5F; color: #fff; -webkit-text-stroke-color: #1E3A5F; }
+  .rep-detail { margin-top: 8px; font-size: 14px; color: #555; background: #f6f8fb; border-radius: 8px; padding: 9px 11px; -webkit-text-stroke: calc(1.5px * 14 / 44) #f6f8fb; }
+  .rep-detail:empty { display: none; }
+  .rep-detail small { display: block; color: #8a97a8; font-size: 12px; margin-top: 4px; -webkit-text-stroke: 0; }
+  .rep-detail .dows { display: flex; gap: 5px; margin-bottom: 4px; flex-wrap: wrap; }
+  .rep-detail .dows button { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #d6dde6; display: flex; align-items: center; justify-content: center; font: inherit; font-size: 14px; background: #fff; cursor: pointer; padding: 0; color: #444; }
+  .rep-detail .dows button.on { background: #1E3A5F; color: #fff; border-color: #1E3A5F; }
+  .sch-acts { display: flex; gap: 8px; justify-content: flex-end; align-items: center; margin-top: 4px; flex-wrap: wrap; }
+  .sch-acts button { border-radius: 8px; padding: 9px 18px; font: inherit; font-size: 16px; cursor: pointer; -webkit-text-stroke: calc(1.5px * 16 / 44) #fff; }
+  .sch-acts .cancel { border: 1px solid #ddd; background: #fff; color: #666; }
+  .sch-acts .save { border: 1px solid #1E3A5F; background: #1E3A5F; color: #fff; -webkit-text-stroke-color: #1E3A5F; }
+  .sch-acts .sdelete { margin-right: auto; border: 0; background: none; color: #c0605a; padding-left: 0; padding-right: 0; }
+  .sch-acts .sdel-cf { margin-right: auto; font-size: 13px; color: #a0524c; display: inline-flex; align-items: center; gap: 6px; }
+  .sch-acts .sdel-cf button { background: #c0605a; color: #fff; border: 0; padding: 5px 10px; font-size: 13px; -webkit-text-stroke: 0; }
+  .sch-err { color: #c0605a; font-size: 13px; margin-top: 4px; }
+  .sch-list { border-left: 1px dashed #e5e5e5; padding-left: 20px; min-width: 0; }
+  .sch-list h4 { margin: 0 0 8px; font-weight: 400; font-size: 14px; color: #888; -webkit-text-stroke: calc(1.5px * 14 / 44) #fff; display: flex; justify-content: space-between; align-items: center; }
+  .sch-list h4 button { border: 0; background: none; color: #1E3A5F; font: inherit; font-size: 13px; cursor: pointer; }
+  .sch-empty { color: #aaa; font-size: 14px; padding: 20px 4px; }
+  .sch-item { display: flex; align-items: center; gap: 9px; padding: 9px 8px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 6px; background: #fff; cursor: pointer; width: 100%; text-align: left; font: inherit; box-sizing: border-box; }
+  .sch-item:hover { border-color: #cdd6e2; }
+  .sch-item.edit { border-color: #1E3A5F; box-shadow: 0 0 0 2px rgba(30,58,95,.08); }
+  .sch-item .bar { width: 4px; align-self: stretch; border-radius: 2px; flex: 0 0 4px; }
+  .sch-item .b { flex: 1; min-width: 0; }
+  .sch-item .t { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -webkit-text-stroke: calc(1.5px * 16 / 44) #fff; color: #2b2b2b; }
+  .sch-item.over .t { text-decoration: line-through; text-decoration-color: rgba(192,96,90,.8); color: #888; }
+  .sch-item.fin .t { text-decoration: line-through; color: #999; }
+  .sch-item .s { font-size: 12px; color: #999; margin-top: 2px; -webkit-text-stroke: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sch-item .d { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12px; color: #1E3A5F; white-space: nowrap; -webkit-text-stroke: 0; }
+  .sch-item.over .d { color: #c0605a; }
+  .sch-item.fin .d { color: #aaa; font-weight: 400; }
+  .sch-item .ed { color: #aaa; font-size: 14px; }
+  @media (max-width: 600px) {
+    .sch-back { align-items: flex-end; }
+    .sch-sheet { width: 100%; border-radius: 16px 16px 0 0; max-height: 92vh; padding: 14px 16px 18px; }
+    .sch-sheet::before { content: ''; display: block; width: 40px; height: 4px; border-radius: 2px; background: #ddd; margin: 0 auto 10px; }
+    .sch-tabs.seg2 { display: flex; margin-bottom: 12px; }
+    .sch-tabs button { flex: 1; }
+    .sch-cols { display: block; }
+    .sch-list { display: none; border: 0; padding: 0; }
+    .sch-sheet.show-list .sch-form { display: none; }
+    .sch-sheet.show-list .sch-list { display: block; }
+    .sch-in { font-size: 16px; }
+    .tchip { font-size: 14px; padding: 5px 11px; }
+    .seg2 button { padding: 7px 11px; font-size: 14px; }
+  }
+
+  /* 할 일: 다가오는 마감 줄 + 마감 rows */
+  .due-strip { display: flex; align-items: center; gap: 6px; margin: -2px 0 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; scrollbar-width: none; }
+  .due-strip::-webkit-scrollbar { display: none; }
+  .due-strip .lab { font-size: 13px; color: #1E3A5F; white-space: nowrap; margin-right: 2px; -webkit-text-stroke: calc(1.5px * 13 / 44) #fff; display: inline-flex; align-items: center; gap: 4px; }
+  .due-chip { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; border-radius: 14px; padding: 4px 10px 4px 8px; font: inherit; font-size: 13px; border: 1px solid; cursor: pointer; -webkit-text-stroke: calc(1.5px * 13 / 44) #fff; flex: 0 0 auto; }
+  .due-chip i { width: 7px; height: 7px; border-radius: 50%; display: block; }
+  .due-chip .nm { color: #333; }
+  .due-chip b { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12px; -webkit-text-stroke: 0; }
+  .due-chip.today .nm, .due-chip.today b { color: #fff; }
+  .due-chip.over { border-color: #ecd3cf !important; background: #fdf6f5 !important; color: #c0605a !important; }
+  .due-chip.over .nm { color: #c0605a; }
+  .row.due { border-left: 4px solid var(--dc); padding-left: 7px; }
+  .row.due.moved { border-left: 1px dashed #ddd; padding-left: 10px; }
+  .due-tag { font-size: 12px; line-height: 1; border-radius: 10px; padding: 4px 8px; white-space: nowrap; color: #fff; -webkit-text-stroke: 0; font-weight: 600; }
+  .row.due.missed .due-tag, .row.due.done .due-tag { opacity: .7; }
+  .due-time { font-size: 12px; color: #888; white-space: nowrap; font-family: 'Inter', sans-serif; -webkit-text-stroke: 0; }
+  .mini.due { box-shadow: inset 3px 0 0 var(--dc); padding-left: 7px; }
+  .mini .mini-mark.due-m { color: #fff; border: 0; padding: 2px 6px; }
+  .mini .mini-body .from-tag { margin-left: 3px; }
+  @media (max-width: 600px) { .due-time { display: none; } .due-strip { margin-right: -6px; } .due-strip .lab .tx { display: none; } }
+
+  /* 그누 heart */
+  .meet-toggle.heart { padding: 8px 10px; gap: 0; }
+  .meet-toggle.heart .hrt { width: 24px; height: 24px; display: block; }
+  .meet-toggle.heart .hrt path { fill: #fff; stroke: #c9c9c9; stroke-width: 1.2; }
+  .meet-toggle.heart.on .hrt path { fill: #e08a96; stroke: #e08a96; }
+
 </style>
 </head>
 <body>
@@ -1583,9 +1724,11 @@
 <div class="sheet" id="dailyCalView">
   <div class="toolbar">
     <div class="date-nav" id="dailyCalNav"></div>
+    <button type="button" class="sch-btn" id="schOpenBtn"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" stroke="currentColor" stroke-width="1.5"/></svg>일정</button>
   </div>
   <div class="month-cal" id="dailyCalGrid"></div>
-  <p class="hint">날짜를 누르면 그날 기록을 쓸 수 있어요. 얼굴은 그날 고른 기분, 아래 숫자는 스터디 플래너에 기록된 공부 시간이에요.</p>
+  <div class="cal-legend" id="dailyCalLegend"></div>
+  <p class="hint">날짜를 누르면 그날 기록을 쓸 수 있어요. 얼굴은 그날 고른 기분, 아래 숫자는 스터디 플래너에 기록된 공부 시간, 색 표시는 일정이에요.</p>
 </div>
 <div class="sheet" id="dailyEntryView" hidden>
   <div class="toolbar">
@@ -1603,9 +1746,8 @@
       <section>
         <div class="sec-head"><p class="sec-label">기분</p></div>
         <div class="moods" id="dailyMoods"></div>
-        <button type="button" class="meet-toggle" id="dailyMetBf" aria-pressed="false">
-          <span class="check"></span>
-          <span class="txt">그누</span>
+        <button type="button" class="meet-toggle heart" id="dailyMetBf" aria-pressed="false" aria-label="그누" title="그누">
+          <svg class="hrt" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13.6S2.6 10.2 2.6 7.1C2.6 5.4 3.9 4.1 5.6 4.1c.9 0 1.75.45 2.25 1.16C8.35 4.55 9.2 4.1 10.1 4.1c1.7 0 3 1.3 3 3 0 3.1-5.1 6.5-5.1 6.5z"/></svg>
         </button>
       </section>
       <section>
@@ -2243,7 +2385,7 @@ window.RecordsMemo = {
       '<i></i><i></i><i></i><i></i><i></i><i></i></span>';
   }
 
-  let state = { v: 1, view: 'today', oneoffs: [], routines: [], stickers: [] };
+  let state = { v: 1, view: 'today', oneoffs: [], routines: [], stickers: [], schedules: [], schTypes: [] };
   let viewDate = todayISO();
   let weekAddDate = null;
   let weekRepeatOpen = false;
@@ -2259,7 +2401,17 @@ window.RecordsMemo = {
   let postOpen = null; /* {kind, id, date} of the row whose 미루기 menu is open */
 
   function defaultState() {
-    return { v: 1, view: 'today', oneoffs: [], routines: [], stickers: [] };
+    return { v: 1, view: 'today', oneoffs: [], routines: [], stickers: [], schedules: [], schTypes: [] };
+  }
+  function validSchedule(x) {
+    return x && typeof x.id === 'string' && typeof x.title === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.date);
+  }
+  function validSchType(t) {
+    return t && typeof t.id === 'string' && typeof t.name === 'string' && /^#[0-9a-fA-F]{6}$/.test(t.color);
+  }
+  function readSchedules(data, next) {
+    next.schedules = Array.isArray(data.schedules) ? data.schedules.filter(validSchedule) : [];
+    next.schTypes = Array.isArray(data.schTypes) ? data.schTypes.filter(validSchType) : [];
   }
 
   function load() {
@@ -2275,6 +2427,7 @@ window.RecordsMemo = {
         state.stickers = Array.isArray(data.stickers)
           ? data.stickers.filter(s => /^\d{4}-\d{2}-\d{2}$/.test(s))
           : [];
+        readSchedules(data, state);
       }
     } catch (e) {
       state = defaultState();
@@ -2292,6 +2445,7 @@ window.RecordsMemo = {
     try { localStorage.setItem(KEY, JSON.stringify(state)); }
     catch (e) { alert('저장 공간이 부족해요.'); }
     if ((!opts || !opts.localOnly) && window.RecordsCloud) window.RecordsCloud.onTodosSave(state);
+    try { document.dispatchEvent(new CustomEvent('records-schedule-change')); } catch (e) {}
   }
 
   function applyCloudState(data) {
@@ -2303,11 +2457,13 @@ window.RecordsMemo = {
       next.stickers = Array.isArray(data.stickers)
         ? data.stickers.filter(s => /^\d{4}-\d{2}-\d{2}$/.test(s))
         : [];
+      readSchedules(data, next);
       if (Number.isFinite(data.v)) next.v = data.v;
     }
     state = next;
     save({ localOnly: true });
     render();
+    schRefreshOpen();
   }
 
   const DOW_ORDER = [1, 2, 3, 4, 5, 6, 0];
@@ -2390,7 +2546,9 @@ window.RecordsMemo = {
           kind: 'oneoff', id: t.id, text: t.text, done: !!t.done,
           order: Number.isFinite(t.order) ? t.order : 0,
           movedTo: isISO(t.movedTo) ? t.movedTo : null,
-          movedFrom: isISO(t.movedFrom) ? t.movedFrom : null
+          movedFrom: isISO(t.movedFrom) ? t.movedFrom : null,
+          schType: t.schId ? (t.schType || 'etc') : null,
+          time: t.schId && t.time ? t.time : ''
         });
       }
     }
@@ -2403,6 +2561,15 @@ window.RecordsMemo = {
         const mv = r.moved && isISO(r.moved[dateStr]) ? r.moved[dateStr] : null;
         list.push({ kind: 'routine', id: r.id, text: r.text, done: mv ? false : done, order, movedTo: mv, movedFrom: null });
       }
+    }
+    for (const x of state.schedules || []) {
+      if (!schOnDate(x, dateStr)) continue;
+      const mv = x.moved && isISO(x.moved[dateStr]) ? x.moved[dateStr] : null;
+      const order = (x.ordDay && x.ordDay[dateStr] != null) ? x.ordDay[dateStr] : -1000 + timeRank(x.time);
+      list.push({
+        kind: 'sch', id: x.id, text: x.title, done: mv ? false : !!(x.done && x.done[dateStr]),
+        order, movedTo: mv, movedFrom: null, schType: x.type || 'etc', time: x.time || ''
+      });
     }
     list.sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
     return list;
@@ -2424,11 +2591,19 @@ window.RecordsMemo = {
   }
   function findOneoff(id) { return state.oneoffs.find(t => t.id === id); }
   function findRoutine(id) { return state.routines.find(r => r.id === id); }
+  function findSch(id) { return (state.schedules || []).find(x => x.id === id); }
 
   function setDone(kind, id, dateStr, done) {
     if (kind === 'oneoff') {
       const t = findOneoff(id);
       if (t) t.done = done;
+    } else if (kind === 'sch') {
+      const x = findSch(id);
+      if (x) {
+        x.done = (x.done && typeof x.done === 'object') ? x.done : {};
+        if (done) x.done[dateStr] = true;
+        else delete x.done[dateStr];
+      }
     } else {
       const r = findRoutine(id);
       if (r) {
@@ -2468,6 +2643,12 @@ window.RecordsMemo = {
       if (item.kind === 'oneoff') {
         const t = findOneoff(item.id);
         if (t) t.order = i;
+      } else if (item.kind === 'sch') {
+        const x = findSch(item.id);
+        if (x) {
+          x.ordDay = (x.ordDay && typeof x.ordDay === 'object') ? x.ordDay : {};
+          x.ordDay[dateStr] = i;
+        }
       } else {
         const r = findRoutine(item.id);
         if (r) {
@@ -2512,6 +2693,9 @@ window.RecordsMemo = {
     if (kind === 'oneoff') {
       const t = findOneoff(id);
       if (t) t.text = trimmed;
+    } else if (kind === 'sch') {
+      const x = findSch(id);
+      if (x) x.title = trimmed;
     } else {
       const r = findRoutine(id);
       if (r) r.text = trimmed;
@@ -2526,11 +2710,22 @@ window.RecordsMemo = {
   function moveOne(kind, id, fromDate, toDate, order) {
     if (!isISO(toDate) || toDate === fromDate) return false;
     let text = null;
+    let extra = null;
     if (kind === 'oneoff') {
       const t = findOneoff(id);
       if (!t || t.done || t.movedTo || t.date !== fromDate) return false;
       t.movedTo = toDate;
       text = t.text;
+      if (t.schId) extra = { schId: t.schId, schType: t.schType || 'etc', time: t.time || '' };
+    } else if (kind === 'sch') {
+      const x = findSch(id);
+      if (!x || !schOnDate(x, fromDate)) return false;
+      if (x.done && x.done[fromDate]) return false;
+      x.moved = (x.moved && typeof x.moved === 'object') ? x.moved : {};
+      if (x.moved[fromDate]) return false;
+      x.moved[fromDate] = toDate;
+      text = x.title;
+      extra = { schId: x.id, schType: x.type || 'etc', time: x.time || '' };
     } else {
       const r = findRoutine(id);
       if (!r || !routineOnDate(r, fromDate)) return false;
@@ -2540,10 +2735,10 @@ window.RecordsMemo = {
       r.moved[fromDate] = toDate;
       text = r.text;
     }
-    state.oneoffs.push({
+    state.oneoffs.push(Object.assign({
       id: uid('o'), text, date: toDate, done: false,
       order: order != null ? order : nextOrder(toDate), movedFrom: fromDate
-    });
+    }, extra || {}));
     return true;
   }
   function postpone(kind, id, fromDate, toDate) {
@@ -2674,6 +2869,7 @@ window.RecordsMemo = {
     }
 
     $('#todayView').innerHTML =
+      dueStripHtml(today) +
       '<div class="prog-row">' +
         '<div class="bar' + (complete ? ' done' : '') + '"><i style="width:' + pct + '%"></i></div>' +
         '<div class="prog-label">' + done + '/' + total + '</div>' +
@@ -2705,8 +2901,10 @@ window.RecordsMemo = {
   function todayRow(item, dateStr, today) {
     today = today || todayISO();
     const attrs = '" data-id="' + item.id + '" data-kind="' + item.kind + '" data-date="' + dateStr + '"';
+    const ty = item.schType ? schTypeOf(item.schType) : null;
+    const dueAttr = ty ? ' style="--dc:' + ty.color + '"' : '';
     if (item.movedTo) {
-      return '<div class="row moved' + attrs + ' data-moved-to="' + item.movedTo + '" title="' + fmtMD(item.movedTo) + '로 가기">' +
+      return '<div class="row moved' + (ty ? ' due' : '') + attrs + dueAttr + ' data-moved-to="' + item.movedTo + '" title="' + fmtMD(item.movedTo) + '로 가기">' +
         handleHtml() +
         '<button type="button" class="check" aria-label="' + fmtMD(item.movedTo) + '로 가기">↪</button>' +
         '<span class="txt">' + escapeHtml(item.text) + '</span>' +
@@ -2716,12 +2914,14 @@ window.RecordsMemo = {
     }
     const missed = isMissed(item, dateStr, today);
     const open = postOpen && postOpen.kind === item.kind && postOpen.id === item.id && postOpen.date === dateStr;
-    return '<div class="row' + (item.done ? ' done' : '') + (missed ? ' missed' : '') + (open ? ' menu-open' : '') + attrs + '>' +
+    return '<div class="row' + (item.done ? ' done' : '') + (missed ? ' missed' : '') + (open ? ' menu-open' : '') + (ty ? ' due' : '') + attrs + dueAttr + '>' +
       handleHtml() +
       '<button type="button" class="check" aria-label="' + (item.done ? '완료 취소' : '완료') + '">' +
         (item.done ? '✓' : (missed ? '✕' : '')) + '</button>' +
       '<span class="txt">' + escapeHtml(item.text) + '</span>' +
       (item.movedFrom ? '<span class="from-tag">↪ ' + fmtSlash(item.movedFrom) + '에서 미룸</span>' : '') +
+      (ty && item.time ? '<span class="due-time">' + escapeHtml(item.time) + '까지</span>' : '') +
+      (ty ? '<span class="due-tag" style="background:' + ty.color + '">마감 · ' + escapeHtml(ty.name) + '</span>' : '') +
       (item.kind === 'routine' ? '<span class="mark">' + escapeHtml(badgeText(findRoutine(item.id))) + '</span>' : '') +
       (item.done ? '' : '<button type="button" class="post-btn' + (open ? ' on' : '') + '" aria-expanded="' + !!open + '">↪ 미루기</button>') +
       '<button type="button" class="del" aria-label="삭제">✕</button>' +
@@ -2793,15 +2993,17 @@ window.RecordsMemo = {
 
   function weekRow(item, dateStr, today) {
     const missed = isMissed(item, dateStr, today);
-    const cls = item.movedTo ? ' moved' : (item.done ? ' done' : '') + (missed ? ' missed' : '');
+    const ty = item.schType ? schTypeOf(item.schType) : null;
+    const cls = (item.movedTo ? ' moved' : (item.done ? ' done' : '') + (missed ? ' missed' : '')) + (ty ? ' due' : '');
     return '<div class="mini' + cls + '" data-id="' + item.id +
-      '" data-kind="' + item.kind + '" data-date="' + dateStr + '"' +
+      '" data-kind="' + item.kind + '" data-date="' + dateStr + '"' + (ty ? ' style="--dc:' + ty.color + '"' : '') +
       (item.movedTo ? ' data-moved-to="' + item.movedTo + '"' : '') + '>' +
       '<button type="button" class="check" aria-label="' +
         (item.movedTo ? fmtMD(item.movedTo) + '로 가기' : (item.done ? '완료 취소' : '완료')) + '">' +
         (item.movedTo ? '↪' : item.done ? '✓' : (missed ? '✕' : '')) + '</button>' +
       '<div class="mini-body"><div class="mini-txt">' + escapeHtml(item.text) + '</div>' +
       (item.kind === 'routine' && !item.movedTo ? '<span class="mini-mark">' + escapeHtml(badgeText(findRoutine(item.id))) + '</span>' : '') +
+      (ty && !item.movedTo ? '<span class="mini-mark due-m" style="background:' + ty.color + '">마감</span>' : '') +
       (item.movedTo ? '<span class="from-tag">→ ' + fmtSlash(item.movedTo) + '로 미룸</span>' : '') +
       (item.movedFrom ? '<span class="from-tag">↪ ' + fmtSlash(item.movedFrom) + '에서</span>' : '') + '</div>' +
       '<button type="button" class="mini-del" aria-label="삭제">✕</button>' +
@@ -2896,6 +3098,8 @@ window.RecordsMemo = {
       render();
       return;
     }
+    const dueChip = e.target.closest('.due-chip[data-sch]');
+    if (dueChip) { openSchedule(dueChip.dataset.sch); return; }
     const postBtn = e.target.closest('.post-btn');
     if (postBtn) {
       const row = postBtn.closest('[data-id]');
@@ -3044,7 +3248,20 @@ window.RecordsMemo = {
   function requestDelete(kind, id, dateStr) {
     if (kind === 'oneoff') { deleteOneoff(id); return; }
     pendingDelete = { kind, id, dateStr };
-    $('#modalMsg').textContent = '이 반복 일과를 어떻게 할까요?';
+    const bToday = $('#modal [data-act="today"]'), bAll = $('#modal [data-act="all"]');
+    if (kind === 'sch') {
+      const x = findSch(id);
+      const repeating = x && x.rep && x.rep !== 'none';
+      $('#modalMsg').textContent = repeating ? '이 반복 일정을 어떻게 할까요?' : '이 일정을 지울까요?';
+      bToday.textContent = '이날만 삭제';
+      bToday.hidden = !repeating;
+      bAll.textContent = repeating ? '일정 전체 삭제' : '일정 삭제';
+    } else {
+      $('#modalMsg').textContent = '이 반복 일과를 어떻게 할까요?';
+      bToday.textContent = '오늘만 삭제';
+      bToday.hidden = false;
+      bAll.textContent = '반복 일과 전체 삭제';
+    }
     $('#modal').hidden = false;
   }
   $('#modal').addEventListener('click', e => {
@@ -3057,6 +3274,11 @@ window.RecordsMemo = {
     pendingDelete = null;
     $('#modal').hidden = true;
     if (!p || act === 'cancel') return;
+    if (p.kind === 'sch') {
+      if (act === 'today') hideSchOn(p.id, p.dateStr);
+      else if (act === 'all') deleteSchedule(p.id);
+      return;
+    }
     if (act === 'today') hideRoutineOn(p.id, p.dateStr);
     else if (act === 'all') deleteRoutine(p.id);
   });
@@ -3079,7 +3301,7 @@ window.RecordsMemo = {
 
   $('#card').addEventListener('pointerdown', e => {
     if (e.button != null && e.button !== 0) return;
-    if (e.target.closest('.check, .del, .mini-del, .post-btn, .post-menu, .txt-edit, .mini-edit, input, button.repeat-btn, button.add-col, button.carry, button.nav-btn, button.jump-today, .seg, .week-add, .repeat-panel, .dow-chip, .repeat-modes')) return;
+    if (e.target.closest('.check, .del, .mini-del, .post-btn, .post-menu, .due-strip, .txt-edit, .mini-edit, input, button.repeat-btn, button.add-col, button.carry, button.nav-btn, button.jump-today, .seg, .week-add, .repeat-panel, .dow-chip, .repeat-modes')) return;
     const row = e.target.closest('[data-id][data-date]');
     if (!row) return;
     const onHandle = !!e.target.closest('[data-handle]');
@@ -3189,12 +3411,542 @@ window.RecordsMemo = {
     void idx;
   }
 
+
+  /* ===================== 일정 (deadlines) ===================== */
+  const SCH_PALETTE = ['#4A6FA5', '#B9733A', '#5E8A6E', '#C98BB9', '#D9B44A', '#7FA7C9', '#E07A6E', '#8C9CB0', '#A3B86C', '#B08968'];
+  const DEFAULT_TYPES = [
+    { id: 'hw', name: '과제', color: '#4A6FA5' },
+    { id: 'pay', name: '납부', color: '#B9733A' },
+    { id: 'etc', name: '기타', color: '#5E8A6E' }
+  ];
+  const DOW_KO = ['일', '월', '화', '수', '목', '금', '토'];
+  function schTypes() {
+    const t = (state.schTypes && state.schTypes.length) ? state.schTypes : DEFAULT_TYPES;
+    return t.some(x => x.id === 'etc') ? t : t.concat([DEFAULT_TYPES[2]]);
+  }
+  function schTypeOf(id) {
+    const all = schTypes();
+    return all.find(t => t.id === id) || all.find(t => t.id === 'etc') || DEFAULT_TYPES[2];
+  }
+  function ensureOwnTypes() {
+    if (!state.schTypes || !state.schTypes.length) state.schTypes = DEFAULT_TYPES.map(t => Object.assign({}, t));
+    if (!state.schTypes.some(t => t.id === 'etc')) state.schTypes.push(Object.assign({}, DEFAULT_TYPES[2]));
+  }
+  function tint(hex, a) {
+    const n = parseInt(hex.slice(1), 16);
+    return 'rgba(' + (n >> 16 & 255) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+  function timeRank(t) {
+    const m = /^(\d{1,2}):(\d{2})$/.exec(t || '');
+    return m ? (Number(m[1]) * 60 + Number(m[2])) / 2000 : 0.9;
+  }
+  function lastDay(y, m) { return new Date(y, m + 1, 0).getDate(); }
+  function schWeekdays(x) {
+    const d = Array.isArray(x.days) ? [...new Set(x.days.map(Number).filter(n => n >= 0 && n <= 6))] : [];
+    return d.length ? d : [parseISO(x.date).getDay()];
+  }
+  function schOnDate(x, iso) {
+    if (!x || !isISO(iso) || iso < x.date) return false;
+    if (Array.isArray(x.hidden) && x.hidden.includes(iso)) return false;
+    const rep = x.rep || 'none';
+    if (rep === 'none') return iso === x.date;
+    const d = parseISO(iso), s0 = parseISO(x.date);
+    if (rep === 'weekly') return schWeekdays(x).includes(d.getDay());
+    if (rep === 'monthly') {
+      const n = Number(x.mday) || s0.getDate();
+      return d.getDate() === Math.min(n, lastDay(d.getFullYear(), d.getMonth()));
+    }
+    if (rep === 'yearly') {
+      if (d.getMonth() !== s0.getMonth()) return false;
+      return d.getDate() === Math.min(s0.getDate(), lastDay(d.getFullYear(), d.getMonth()));
+    }
+    return false;
+  }
+  function diffDays(a, b) { return Math.round((parseISO(b) - parseISO(a)) / 86400000); }
+  function dLabel(today, iso) {
+    const n = diffDays(today, iso);
+    return n === 0 ? '오늘' : n > 0 ? 'D-' + n : 'D+' + (-n);
+  }
+  function nextOcc(x, from, days) {
+    if ((x.rep || 'none') === 'none') return (x.date >= from && schOnDate(x, x.date)) ? x.date : null;
+    let d = from < x.date ? x.date : from;
+    for (let i = 0; i < (days || 400); i++) {
+      if (schOnDate(x, d)) return d;
+      d = addDays(d, 1);
+    }
+    return null;
+  }
+  function occDone(x, iso) { return !!(x.done && x.done[iso]); }
+  function occMoved(x, iso) { return !!(x.moved && x.moved[iso]); }
+  function repText(x) {
+    const rep = x.rep || 'none';
+    const d = parseISO(x.date);
+    if (rep === 'weekly') return '매주 ' + DOW_ORDER.filter(n => schWeekdays(x).includes(n)).map(n => DOW_KO[n]).join('·');
+    if (rep === 'monthly') return '매월 ' + (Number(x.mday) || d.getDate()) + '일';
+    if (rep === 'yearly') return '매년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일';
+    return fmtMD(x.date) + ' (' + DOW_KO[d.getDay()] + ')';
+  }
+
+  /* calendar API: what to show in a 매일 기록 date cell */
+  function schOnCalendar(iso) {
+    const today = todayISO();
+    const out = [];
+    for (const x of state.schedules || []) {
+      if (!schOnDate(x, iso) || occMoved(x, iso)) continue;
+      const ty = schTypeOf(x.type);
+      const done = occDone(x, iso);
+      out.push({ title: x.title, color: ty.color, bg: tint(ty.color, .12), st: done ? 'done' : (iso < today ? 'miss' : ''), rank: timeRank(x.time) });
+    }
+    for (const t of state.oneoffs) {
+      if (!t.schId || t.date !== iso || t.movedTo) continue;
+      const ty = schTypeOf(t.schType);
+      out.push({ title: t.text, color: ty.color, bg: tint(ty.color, .12), st: t.done ? 'done' : (iso < today ? 'miss' : ''), rank: timeRank(t.time) });
+    }
+    out.sort((a, b) => a.rank - b.rank);
+    return out;
+  }
+
+  /* 다가오는 마감 줄 */
+  function dueEntries(today) {
+    const end = addDays(today, 13), back = addDays(today, -14);
+    const list = [];
+    for (const x of state.schedules || []) {
+      // nearest upcoming (not done, not moved)
+      let d = x.date > today ? x.date : today;
+      while (d <= end) {
+        if (schOnDate(x, d) && !occDone(x, d) && !occMoved(x, d)) { list.push({ id: x.id, title: x.title, type: x.type, date: d, time: x.time || '', over: false }); break; }
+        d = addDays(d, 1);
+      }
+      // most recent missed in the last 2 weeks
+      d = addDays(today, -1);
+      while (d >= back && d >= x.date) {
+        if (schOnDate(x, d)) {
+          if (!occDone(x, d) && !occMoved(x, d)) list.push({ id: x.id, title: x.title, type: x.type, date: d, time: x.time || '', over: true });
+          break;
+        }
+        d = addDays(d, -1);
+      }
+    }
+    for (const t of state.oneoffs) {
+      if (!t.schId || t.done || t.movedTo || t.date < back || t.date > end) continue;
+      list.push({ id: t.schId, title: t.text, type: t.schType, date: t.date, time: t.time || '', over: t.date < today });
+    }
+    list.sort((a, b) => (b.over - a.over) || (a.date < b.date ? -1 : a.date > b.date ? 1 : 0) || (timeRank(a.time) - timeRank(b.time)));
+    return list;
+  }
+  function dueStripHtml(today) {
+    const list = dueEntries(today);
+    if (!list.length) return '';
+    return '<div class="due-strip"><span class="lab"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" stroke="currentColor" stroke-width="1.5"/></svg><span class="tx">다가오는 마감</span></span>' +
+      list.map(e => {
+        const ty = schTypeOf(e.type);
+        const isToday = !e.over && e.date === today;
+        const style = e.over ? '' : isToday
+          ? 'background:' + ty.color + ';border-color:' + ty.color + ';color:#fff'
+          : 'background:' + tint(ty.color, .1) + ';border-color:' + tint(ty.color, .35) + ';color:' + ty.color;
+        return '<button type="button" class="due-chip' + (e.over ? ' over' : '') + (isToday ? ' today' : '') + '" data-sch="' + escapeHtml(e.id) + '" style="' + style + '" title="' + fmtMD(e.date) + (e.time ? ' ' + escapeHtml(e.time) : '') + '">' +
+          '<i style="background:' + (e.over ? '#c0605a' : isToday ? '#fff' : ty.color) + '"></i><span class="nm">' + escapeHtml(e.title) + '</span> <b>' + (e.over ? '지남' : dLabel(today, e.date)) + '</b></button>';
+      }).join('') + '</div>';
+  }
+
+  function hideSchOn(id, dateStr) {
+    const x = findSch(id);
+    if (!x) return;
+    x.hidden = Array.isArray(x.hidden) ? x.hidden : [];
+    if (!x.hidden.includes(dateStr)) x.hidden.push(dateStr);
+    if (x.done) delete x.done[dateStr];
+    if (x.moved) delete x.moved[dateStr];
+    save();
+    render();
+    schRefreshOpen();
+  }
+  function deleteSchedule(id) {
+    state.schedules = (state.schedules || []).filter(x => x.id !== id);
+    save();
+    render();
+    schRefreshOpen();
+  }
+
+  /* ---------- 일정 window ---------- */
+  let schEl = null;
+  const sf = { id: null, type: 'hw', rep: 'none', days: [], adding: false, addName: '', addColor: null, pop: null, popName: '', popColor: null, popConfirm: false, delConfirm: false, tab: 'form' };
+  function schEnsureDom() {
+    if (schEl) return schEl;
+    schEl = document.createElement('div');
+    schEl.className = 'sch-back';
+    schEl.hidden = true;
+    schEl.innerHTML =
+      '<div class="sch-sheet" role="dialog" aria-modal="true" aria-labelledby="schHeadTitle">' +
+        '<div class="sch-head"><h3 id="schHeadTitle">일정 추가</h3><button type="button" class="sch-x" aria-label="닫기">✕</button></div>' +
+        '<div class="sch-tabs seg2"><button type="button" data-schtab="form">＋ 일정 추가</button><button type="button" data-schtab="list">일정 목록</button></div>' +
+        '<div class="sch-cols">' +
+          '<div class="sch-form">' +
+            '<div class="sch-f"><label class="l" for="schTitleIn">제목</label><input id="schTitleIn" class="sch-in" type="text" maxlength="100" autocomplete="off" placeholder="예: 과제 제출, 통신비 납부"><div class="sch-err" id="schErr" hidden></div></div>' +
+            '<div class="sch-row2">' +
+              '<div class="sch-f"><label class="l" for="schDateIn">날짜</label><input id="schDateIn" class="sch-in" type="date"></div>' +
+              '<div class="sch-f"><label class="l" for="schTimeIn">시간 (선택)</label><div class="time-wrap"><input id="schTimeIn" class="sch-in" type="time"><button type="button" class="time-clear" aria-label="시간 지우기" hidden>✕</button></div></div>' +
+            '</div>' +
+            '<div class="sch-f"><span class="l">종류</span><div class="tchips" id="schTypeChips"></div><div id="schTypeDots"></div></div>' +
+            '<div class="sch-f"><span class="l">반복</span><div class="seg2" id="schRepSeg">' +
+              [['none', '없음'], ['weekly', '매주'], ['monthly', '매월'], ['yearly', '매년']].map(r => '<button type="button" data-rep="' + r[0] + '">' + r[1] + '</button>').join('') +
+            '</div><div class="rep-detail" id="schRepDetail"></div></div>' +
+            '<div class="sch-f"><label class="l" for="schMemoIn">메모 (선택)</label><textarea id="schMemoIn" class="sch-in sch-memo" rows="2" maxlength="500" placeholder="메모를 적어 두세요"></textarea></div>' +
+            '<div class="sch-acts" id="schActs"></div>' +
+          '</div>' +
+          '<div class="sch-list" id="schList"></div>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(schEl);
+    schEl.addEventListener('click', schOnClick);
+    schEl.addEventListener('input', e => {
+      if (e.target.id === 'schDateIn') schRenderRep();
+      if (e.target.id === 'schTimeIn') schEl.querySelector('.time-clear').hidden = !e.target.value;
+      if (e.target.id === 'schTitleIn') schEl.querySelector('#schErr').hidden = true;
+    });
+    schEl.addEventListener('change', e => { if (e.target.id === 'schDateIn') schRenderRep(); });
+    schEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !window.RecordsIme.isEventComposing(e)) {
+        if (e.target.closest('.tadd input')) { e.preventDefault(); schAddType(); }
+        else if (e.target.closest('.tpop input')) { e.preventDefault(); schPopDone(); }
+      }
+    });
+    return schEl;
+  }
+  function schIsOpen() { return !!(schEl && !schEl.hidden); }
+  function openSchedule(id, opts) {
+    schEnsureDom();
+    schEl.hidden = false;
+    schLoadForm(id || null, opts);
+    schRenderList();
+    sf.tab = 'form';
+    schApplyTab();
+    if (!id) setTimeout(() => { const t = schEl.querySelector('#schTitleIn'); if (t && window.matchMedia('(pointer: fine)').matches) t.focus(); }, 30);
+  }
+  function closeSchedule() {
+    if (!schEl) return;
+    schEl.hidden = true;
+    sf.pop = null; sf.adding = false;
+  }
+  function schApplyTab() {
+    const sheet = schEl.querySelector('.sch-sheet');
+    sheet.classList.toggle('show-list', sf.tab === 'list');
+    schEl.querySelectorAll('[data-schtab]').forEach(b => b.classList.toggle('on', b.dataset.schtab === sf.tab));
+    schEl.querySelector('#schHeadTitle').textContent = sf.tab === 'list' && window.matchMedia('(max-width: 600px)').matches ? '일정' : (sf.id ? '일정 수정' : '일정 추가');
+  }
+  function schLoadForm(id, opts) {
+    const x = id ? findSch(id) : null;
+    sf.id = x ? x.id : null;
+    sf.type = x ? (x.type || 'etc') : (schTypes()[0] || DEFAULT_TYPES[0]).id;
+    if (!schTypes().some(t => t.id === sf.type)) sf.type = 'etc';
+    sf.rep = x ? (x.rep || 'none') : 'none';
+    sf.days = x && Array.isArray(x.days) ? x.days.slice() : [];
+    sf.adding = false; sf.pop = null; sf.popConfirm = false; sf.delConfirm = false;
+    schEl.querySelector('#schTitleIn').value = x ? x.title : '';
+    schEl.querySelector('#schDateIn').value = x ? x.date : ((opts && isISO(opts.date)) ? opts.date : todayISO());
+    schEl.querySelector('#schTimeIn').value = x && x.time ? x.time : '';
+    schEl.querySelector('.time-clear').hidden = !(x && x.time);
+    schEl.querySelector('#schMemoIn').value = x && x.memo ? x.memo : '';
+    schEl.querySelector('#schErr').hidden = true;
+    schRenderTypes();
+    schRenderRep();
+    schRenderActs();
+    schApplyTab();
+    schEl.querySelectorAll('.sch-item').forEach(b => b.classList.toggle('edit', b.dataset.schId === sf.id));
+  }
+  function schUsedColors(exceptId) {
+    return new Set(schTypes().filter(t => t.id !== exceptId).map(t => t.color.toLowerCase()));
+  }
+  function dotsHtml(attr, cur, used) {
+    return '<div class="cdots">' + SCH_PALETTE.map(c => {
+      const isUsed = used.has(c.toLowerCase()) && c.toLowerCase() !== String(cur).toLowerCase();
+      return '<button type="button" ' + attr + '="' + c + '" style="background:' + c + '"' + (c.toLowerCase() === String(cur).toLowerCase() ? ' class="on"' : '') + (isUsed ? ' disabled' : '') + ' aria-label="색"></button>';
+    }).join('') + '</div>';
+  }
+  function schRenderTypes() {
+    const box = schEl.querySelector('#schTypeChips');
+    const below = schEl.querySelector('#schTypeDots');
+    const types = schTypes();
+    let h = types.map(t => {
+      const on = t.id === sf.type;
+      return '<button type="button" class="tchip' + (on ? ' on' : '') + '" data-type="' + escapeHtml(t.id) + '" style="' + (on ? 'background:' + t.color + ';border-color:' + t.color : '') + '">' +
+        '<i style="background:' + (on ? '#fff' : t.color) + '"></i>' + escapeHtml(t.name) + (on ? '<span class="pen" data-pen="1" role="button" aria-label="종류 편집">✎</span>' : '') + '</button>';
+    }).join('');
+    if (sf.adding) {
+      const used = schUsedColors(null);
+      if (!sf.addColor || used.has(sf.addColor.toLowerCase())) sf.addColor = SCH_PALETTE.find(c => !used.has(c.toLowerCase())) || SCH_PALETTE[0];
+      h += '<span class="tadd"><i style="background:' + sf.addColor + '"></i><input type="text" maxlength="12" placeholder="종류 이름" value="' + escapeHtml(sf.addName) + '"><button type="button" class="ok">추가</button><button type="button" class="no" aria-label="취소">✕</button></span>';
+      below.innerHTML = dotsHtml('data-addc', sf.addColor, used);
+    } else {
+      h += '<button type="button" class="tchip plus" aria-label="종류 추가">＋</button>';
+      below.innerHTML = '';
+    }
+    if (sf.pop) {
+      const t = types.find(x => x.id === sf.pop);
+      if (t) {
+        const used = schUsedColors(t.id);
+        const cur = sf.popColor || t.color;
+        const cnt = (state.schedules || []).filter(x => (x.type || 'etc') === t.id).length;
+        h += '<div class="tpop" role="dialog" aria-label="종류 편집"><input type="text" maxlength="12" value="' + escapeHtml(sf.popName) + '" aria-label="종류 이름">' +
+          dotsHtml('data-popc', cur, used) +
+          (sf.popConfirm
+            ? '<div class="cf">' + (cnt ? '일정 ' + cnt + '개는 \'기타\'로 옮겨져요' : '이 종류를 지울까요?') + ' <button type="button" class="tdel-yes">지우기</button></div>'
+            : '<div class="ft">' + (t.id === 'etc' ? '' : '<button type="button" class="tdel">삭제</button>') + '<button type="button" class="tdone">완료</button></div>') +
+          '</div>';
+      } else sf.pop = null;
+    }
+    box.innerHTML = h;
+    if (sf.pop) {
+      const chip = box.querySelector('[data-type="' + CSS.escape(sf.pop) + '"]');
+      const pop = box.querySelector('.tpop');
+      if (chip && pop) {
+        const maxLeft = Math.max(0, box.clientWidth - pop.offsetWidth);
+        pop.style.left = Math.min(chip.offsetLeft, maxLeft) + 'px';
+      }
+    }
+  }
+  function schRenderRep() {
+    schEl.querySelectorAll('[data-rep]').forEach(b => b.classList.toggle('on', b.dataset.rep === sf.rep));
+    const det = schEl.querySelector('#schRepDetail');
+    const date = schEl.querySelector('#schDateIn').value;
+    const d = isISO(date) ? parseISO(date) : new Date();
+    if (sf.rep === 'weekly') {
+      if (!sf.days.length) sf.days = [d.getDay()];
+      det.innerHTML = '<div class="dows">' + DOW_ORDER.map(n => '<button type="button" data-sdow="' + n + '"' + (sf.days.includes(n) ? ' class="on"' : '') + '>' + DOW_KO[n] + '</button>').join('') + '</div>' +
+        '<small>매주 ' + DOW_ORDER.filter(n => sf.days.includes(n)).map(n => DOW_KO[n] + '요일').join(', ') + '</small>';
+    } else if (sf.rep === 'monthly') {
+      const n = d.getDate();
+      det.innerHTML = '매월 <b>' + n + '일</b>에 반복' + (n >= 29 ? '<small>' + n + '일이 없는 달은 그달 마지막 날에 표시돼요.</small>' : '');
+    } else if (sf.rep === 'yearly') {
+      det.innerHTML = '매년 <b>' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일</b>에 반복' + (d.getMonth() === 1 && d.getDate() === 29 ? '<small>윤년이 아닌 해에는 2월 28일에 표시돼요.</small>' : '');
+    } else det.innerHTML = '';
+  }
+  function schRenderActs() {
+    const acts = schEl.querySelector('#schActs');
+    acts.innerHTML = (sf.id ? (sf.delConfirm
+        ? '<span class="sdel-cf">지울까요? <button type="button" class="sdel-yes">지우기</button></span>'
+        : '<button type="button" class="sdelete">삭제</button>') : '') +
+      '<button type="button" class="cancel">취소</button><button type="button" class="save">저장</button>';
+  }
+  function schListEntries() {
+    const today = todayISO();
+    return (state.schedules || []).map(x => {
+      const ty = schTypeOf(x.type);
+      const nx = nextOcc(x, today);
+      let label, cls = '', key;
+      if ((x.rep || 'none') === 'none') {
+        if (occDone(x, x.date)) { label = '완료'; cls = 'fin'; key = '3' + x.date; }
+        else if (occMoved(x, x.date)) { label = '미룸'; cls = 'fin'; key = '3' + x.date; }
+        else if (x.date < today) { label = '✕'; cls = 'over'; key = '2' + x.date; }
+        else { label = dLabel(today, x.date); key = '1' + x.date; }
+      } else {
+        label = nx ? dLabel(today, nx) : '';
+        key = '1' + (nx || '9999');
+      }
+      return { x, ty, label, cls, key: key + timeRank(x.time).toFixed(3) };
+    }).sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
+  }
+  function schRenderList() {
+    if (!schEl) return;
+    const list = schListEntries();
+    const tabBtn = schEl.querySelector('[data-schtab="list"]');
+    tabBtn.textContent = '일정 목록 (' + list.length + ')';
+    schEl.querySelector('#schList').innerHTML =
+      '<h4><span>등록된 일정 ' + list.length + '개</span><button type="button" class="sch-new">＋ 새 일정</button></h4>' +
+      (list.length ? list.map(({ x, ty, label, cls }) =>
+        '<button type="button" class="sch-item' + (cls ? ' ' + cls : '') + (x.id === sf.id ? ' edit' : '') + '" data-sch-id="' + escapeHtml(x.id) + '">' +
+          '<span class="bar" style="background:' + ty.color + '"></span>' +
+          '<span class="b"><span class="t" style="display:block">' + escapeHtml(x.title) + '</span><span class="s" style="display:block">' + escapeHtml(ty.name) + ' · ' + escapeHtml(repText(x)) + (x.time ? ' · ' + escapeHtml(x.time) : '') + '</span></span>' +
+          '<span class="d">' + label + '</span><span class="ed">›</span></button>').join('')
+        : '<div class="sch-empty">아직 등록된 일정이 없어요.</div>');
+  }
+  function schRefreshOpen() {
+    if (!schIsOpen()) return;
+    if (sf.id && !findSch(sf.id)) schLoadForm(null);
+    else if (!schEl.querySelector('.tadd input, .tpop input')) schRenderTypes();
+    schRenderList();
+  }
+  function schReadInline() {
+    const a = schEl.querySelector('.tadd input');
+    if (a) sf.addName = a.value;
+    const p = schEl.querySelector('.tpop input');
+    if (p) sf.popName = p.value;
+  }
+  function schAddType() {
+    schReadInline();
+    const name = window.RecordsIme.nfc(sf.addName).replace(/\s+/g, ' ').trim();
+    if (!name) { const i = schEl.querySelector('.tadd input'); if (i) i.focus(); return; }
+    ensureOwnTypes();
+    const id = uid('ty');
+    state.schTypes.push({ id, name, color: sf.addColor || SCH_PALETTE[3] });
+    sf.type = id; sf.adding = false; sf.addName = ''; sf.addColor = null;
+    save();
+    schRenderTypes();
+  }
+  function schPopDone() {
+    schReadInline();
+    const name = window.RecordsIme.nfc(sf.popName).replace(/\s+/g, ' ').trim();
+    ensureOwnTypes();
+    const t = state.schTypes.find(x => x.id === sf.pop);
+    if (t) {
+      if (name) t.name = name;
+      if (sf.popColor) t.color = sf.popColor;
+      save();
+      render();
+    }
+    sf.pop = null; sf.popConfirm = false; sf.popColor = null;
+    schRenderTypes();
+    schRenderList();
+  }
+  function schDeleteType(id) {
+    if (id === 'etc') return;
+    ensureOwnTypes();
+    state.schTypes = state.schTypes.filter(t => t.id !== id);
+    (state.schedules || []).forEach(x => { if ((x.type || 'etc') === id) x.type = 'etc'; });
+    state.oneoffs.forEach(t => { if (t.schId && t.schType === id) t.schType = 'etc'; });
+    if (sf.type === id) sf.type = 'etc';
+    sf.pop = null; sf.popConfirm = false;
+    save();
+    render();
+    schRenderTypes();
+    schRenderList();
+  }
+  function schSave() {
+    const titleIn = schEl.querySelector('#schTitleIn');
+    if (window.RecordsIme.isElComposing(titleIn)) return;
+    const title = window.RecordsIme.nfc(titleIn.value).replace(/\s+/g, ' ').trim();
+    const date = schEl.querySelector('#schDateIn').value;
+    const err = schEl.querySelector('#schErr');
+    if (!title) { err.textContent = '제목을 적어 주세요.'; err.hidden = false; titleIn.focus(); return; }
+    if (!isISO(date)) { err.textContent = '날짜를 골라 주세요.'; err.hidden = false; return; }
+    const time = schEl.querySelector('#schTimeIn').value || '';
+    const memo = window.RecordsIme.nfc(schEl.querySelector('#schMemoIn').value).trim();
+    const fields = { title, date, time, type: sf.type, rep: sf.rep, memo };
+    if (sf.rep === 'weekly') fields.days = (sf.days.length ? sf.days : [parseISO(date).getDay()]).slice().sort((a, b) => a - b);
+    else fields.days = [];
+    if (sf.rep === 'monthly') fields.mday = parseISO(date).getDate(); else fields.mday = null;
+    if (sf.id) {
+      const x = findSch(sf.id);
+      if (x) Object.assign(x, fields);
+    } else {
+      state.schedules = state.schedules || [];
+      state.schedules.push(Object.assign({ id: uid('s'), done: {}, moved: {}, hidden: [], ordDay: {} }, fields));
+    }
+    if (!state.schTypes || !state.schTypes.length) ensureOwnTypes();
+    save();
+    render();
+    closeSchedule();
+    const el = document.getElementById('toast');
+    if (el) {
+      el.textContent = '일정을 저장했어요.';
+      el.classList.add('show');
+      clearTimeout(schSave._t);
+      schSave._t = setTimeout(() => el.classList.remove('show'), 2200);
+    }
+  }
+  function schOnClick(e) {
+    const t = e.target;
+    if (t === schEl) { closeSchedule(); return; }
+    if (t.closest('.sch-x') || t.closest('.sch-acts .cancel')) { closeSchedule(); return; }
+    const tabB = t.closest('[data-schtab]');
+    if (tabB) { sf.tab = tabB.dataset.schtab; schApplyTab(); return; }
+    if (t.closest('.sch-new')) { schLoadForm(null); sf.tab = 'form'; schApplyTab(); return; }
+    const item = t.closest('[data-sch-id]');
+    if (item) { schLoadForm(item.dataset.schId); sf.tab = 'form'; schApplyTab(); return; }
+    if (t.closest('.time-clear')) { const ti = schEl.querySelector('#schTimeIn'); ti.value = ''; t.closest('.time-clear').hidden = true; return; }
+    // types
+    if (t.closest('.tpop')) {
+      const pc = t.closest('[data-popc]');
+      if (pc && !pc.disabled) { schReadInline(); sf.popColor = pc.dataset.popc; schRenderTypes(); return; }
+      if (t.closest('.tdel')) { schReadInline(); sf.popConfirm = true; schRenderTypes(); return; }
+      if (t.closest('.tdel-yes')) { schDeleteType(sf.pop); return; }
+      if (t.closest('.tdone')) { schPopDone(); return; }
+      return;
+    }
+    const ac = t.closest('[data-addc]');
+    if (ac && !ac.disabled) { schReadInline(); sf.addColor = ac.dataset.addc; schRenderTypes(); const i = schEl.querySelector('.tadd input'); if (i) i.focus(); return; }
+    if (t.closest('.tadd .ok')) { schAddType(); return; }
+    if (t.closest('.tadd .no')) { sf.adding = false; sf.addName = ''; schRenderTypes(); return; }
+    if (t.closest('.tadd')) return;
+    if (t.closest('.tchip.plus')) {
+      sf.adding = true; sf.pop = null; sf.addName = '';
+      schRenderTypes();
+      const i = schEl.querySelector('.tadd input'); if (i) i.focus();
+      return;
+    }
+    const chip = t.closest('[data-type]');
+    if (chip) {
+      const id = chip.dataset.type;
+      if (t.closest('[data-pen]') && id === sf.type) {
+        if (sf.pop === id) { sf.pop = null; }
+        else { const ty = schTypeOf(id); sf.pop = id; sf.popName = ty.name; sf.popColor = null; sf.popConfirm = false; sf.adding = false; }
+      } else {
+        sf.type = id;
+        sf.pop = null;
+      }
+      schReadInline();
+      schRenderTypes();
+      return;
+    }
+    if (sf.pop && !t.closest('.tpop')) { sf.pop = null; sf.popConfirm = false; schRenderTypes(); }
+    const repB = t.closest('[data-rep]');
+    if (repB) { sf.rep = repB.dataset.rep; schRenderRep(); return; }
+    const dowB = t.closest('[data-sdow]');
+    if (dowB) {
+      const n = Number(dowB.dataset.sdow);
+      const i = sf.days.indexOf(n);
+      if (i >= 0) { if (sf.days.length > 1) sf.days.splice(i, 1); }
+      else sf.days.push(n);
+      schRenderRep();
+      return;
+    }
+    if (t.closest('.sdelete')) { sf.delConfirm = true; schRenderActs(); return; }
+    if (t.closest('.sdel-yes')) { const id = sf.id; closeSchedule(); deleteSchedule(id); return; }
+    if (t.closest('.sch-acts .save')) { schSave(); return; }
+    if (sf.delConfirm && !t.closest('.sch-acts')) { sf.delConfirm = false; schRenderActs(); }
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || !schIsOpen()) return;
+    if (window.RecordsIme.isEventComposing(e)) return;
+    if (sf.pop) { sf.pop = null; schRenderTypes(); return; }
+    if (sf.adding) { sf.adding = false; schRenderTypes(); return; }
+    closeSchedule();
+  });
+  function schLegendHtml() {
+    return schTypes().map(t => '<span><b style="background:' + t.color + '"></b>' + escapeHtml(t.name) + '</span>').join('') + '<span>✕ 기한 지남</span>';
+  }
+
+  /* 'records' logo → 매일 기록 달력 (이번 달) */
+  (function () {
+    const logo = document.querySelector('header h1');
+    if (!logo) return;
+    logo.setAttribute('role', 'link');
+    logo.setAttribute('tabindex', '0');
+    logo.title = '매일 기록 달력';
+    const go = () => {
+      const tab = document.querySelector('.tabs a[data-panel="daily"]');
+      if (tab) tab.click();
+      if (window.RecordsDaily) {
+        if (window.RecordsDaily._setViewDate) window.RecordsDaily._setViewDate(todayISO());
+        window.RecordsDaily.showCal();
+      }
+      try { window.scrollTo(0, 0); } catch (e) {}
+    };
+    logo.addEventListener('click', go);
+    logo.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  })();
+  document.addEventListener('click', e => {
+    if (e.target.closest && e.target.closest('#schOpenBtn')) openSchedule(null);
+  });
+
   load();
   render();
 
   window.RecordsTodo = {
     getState: () => state,
-    applyCloud: applyCloudState
+    applyCloud: applyCloudState,
+    schOnCalendar,
+    schLegendHtml,
+    openSchedule
   };
 })();
 
@@ -3681,14 +4433,28 @@ window.RecordsMemo = {
       const heart = day && day.metBf ? '<svg class="heart" viewBox="0 0 16 16" aria-hidden="true"><path fill="#e08a96" d="M8 13.6S2.6 10.2 2.6 7.1C2.6 5.4 3.9 4.1 5.6 4.1c.9 0 1.75.45 2.25 1.16C8.35 4.55 9.2 4.1 10.1 4.1c1.7 0 3 1.3 3 3 0 3.1-5.1 6.5-5.1 6.5z"/></svg>' : '';
       const cls = 'mday' + (c.mute ? ' mute' : '') + (c.iso === today ? ' today' : '');
       const studyMin = (!c.mute && window.RecordsStudy) ? window.RecordsStudy.dayMinutes(c.iso) : 0;
-      return '<button type="button" class="' + cls + '" data-iso="' + c.iso + '">' +
+      const schs = (!c.mute && window.RecordsTodo && window.RecordsTodo.schOnCalendar) ? window.RecordsTodo.schOnCalendar(c.iso) : [];
+      let schHtml = '';
+      if (schs.length) {
+        schHtml = '<span class="schs">' + schs.slice(0, 2).map(x =>
+            '<span class="sch' + (x.st ? ' ' + x.st : '') + '" style="background:' + x.bg + ';border-color:' + x.color + '">' + U.escapeHtml(x.title) + '</span>').join('') +
+          (schs.length > 2 ? '<span class="sch-more">+' + (schs.length - 2) + '개</span>' : '') + '</span>' +
+          '<span class="sdots">' + schs.slice(0, 6).map(x => '<i class="' + x.st + '" style="background:' + x.color + '"></i>').join('') + '</span>';
+      }
+      return '<button type="button" class="' + cls + '" data-iso="' + c.iso + '"' + (schs.length ? ' aria-label="' + c.day + '일, 일정 ' + schs.length + '개"' : '') + '>' +
         heart +
         '<span class="num">' + c.day + '</span>' +
         (mood ? '<span class="face">' + mood.face + '</span>' : (studyMin ? '<span class="face blank"></span>' : '')) +
         (studyMin ? '<span class="study">' + window.RecordsStudy.fmtShort(studyMin) + '</span>' : '') +
+        schHtml +
         '</button>';
     }).join('');
     calGrid.innerHTML = dows + cells;
+    const legend = document.getElementById('dailyCalLegend');
+    if (legend) {
+      const st = window.RecordsTodo && window.RecordsTodo.getState ? window.RecordsTodo.getState() : null;
+      legend.innerHTML = (st && st.schedules && st.schedules.length && window.RecordsTodo.schLegendHtml) ? window.RecordsTodo.schLegendHtml() : '';
+    }
   }
 
   function renderEntry() {
@@ -3985,6 +4751,10 @@ window.RecordsMemo = {
     if (ev.detail === 'daily') render();
   });
   document.addEventListener('records-study-change', () => {
+    if (document.getElementById('daily').hidden || entryOpen) return;
+    renderCal();
+  });
+  document.addEventListener('records-schedule-change', () => {
     if (document.getElementById('daily').hidden || entryOpen) return;
     renderCal();
   });
@@ -5490,6 +6260,8 @@ function todosPayload(state) {
     oneoffs: Array.isArray(s.oneoffs) ? s.oneoffs : [],
     routines: Array.isArray(s.routines) ? s.routines : [],
     stickers: Array.isArray(s.stickers) ? s.stickers : [],
+    schedules: Array.isArray(s.schedules) ? s.schedules : [],
+    schTypes: Array.isArray(s.schTypes) ? s.schTypes : [],
     updatedAt: new Date().toISOString()
   });
 }
@@ -5520,7 +6292,7 @@ function emptyTodos() { return { v: 1, view: "today", oneoffs: [], routines: [],
 
 function todosHasData(s) {
   if (!s) return false;
-  return (s.oneoffs && s.oneoffs.length) || (s.routines && s.routines.length) || (s.stickers && s.stickers.length);
+  return (s.oneoffs && s.oneoffs.length) || (s.routines && s.routines.length) || (s.stickers && s.stickers.length) || (s.schedules && s.schedules.length);
 }
 
 function notesFromSnapshot(snap) {
@@ -5629,12 +6401,30 @@ function mergeTodos(cloud, local) {
   });
 
   const stickerSet = new Set([].concat(c.stickers || [], l.stickers || []).filter(s => /^\d{4}-\d{2}-\d{2}$/.test(s)));
+  const sById = new Map();
+  (c.schedules || []).forEach(x => { if (x && x.id) sById.set(x.id, Object.assign({}, x)); });
+  (l.schedules || []).forEach(x => {
+    if (!x || !x.id) return;
+    const prev = sById.get(x.id);
+    if (!prev) { sById.set(x.id, Object.assign({}, x)); return; }
+    sById.set(x.id, Object.assign({}, prev, x, {
+      done: mergeDone(prev.done, x.done),
+      moved: Object.assign({}, prev.moved || {}, x.moved || {}),
+      hidden: Array.from(new Set([].concat(prev.hidden || [], x.hidden || []))),
+      ordDay: Object.assign({}, prev.ordDay || {}, x.ordDay || {})
+    }));
+  });
+  const tById = new Map();
+  (c.schTypes || []).forEach(t => { if (t && t.id) tById.set(t.id, Object.assign({}, t)); });
+  (l.schTypes || []).forEach(t => { if (t && t.id) tById.set(t.id, Object.assign({}, tById.get(t.id) || {}, t)); });
   return {
     v: Math.max(c.v || 1, l.v || 1),
     view: l.view || c.view || "today",
     oneoffs,
     routines,
-    stickers: Array.from(stickerSet).sort()
+    stickers: Array.from(stickerSet).sort(),
+    schedules: Array.from(sById.values()),
+    schTypes: Array.from(tById.values())
   };
 }
 
@@ -6100,7 +6890,8 @@ function todoKeys(s) {
   s = s || {};
   return [].concat(
     (s.oneoffs || []).filter(t => t && t.id).map(t => "t:" + t.id),
-    (s.routines || []).filter(r => r && r.id).map(r => "r:" + r.id)
+    (s.routines || []).filter(r => r && r.id).map(r => "r:" + r.id),
+    (s.schedules || []).filter(x => x && x.id).map(x => "sc:" + x.id)
   );
 }
 function moneyKeys(s) {
@@ -6133,7 +6924,7 @@ function photoKeys(map) { return Object.keys(map || {}).map(iso => "d:" + iso); 
 /* items present in `local` but not in `cloud` and never seen in this account on this browser */
 function findLocalOnly(cloud, local, synced) {
   const seen = k => synced.has(k);
-  const out = { notes: [], oneoffs: [], routines: [], entries: [], opening: null, days: {}, habits: [], ddays: [], studyDays: {}, subjects: [], timer: null, keys: [] };
+  const out = { notes: [], oneoffs: [], routines: [], entries: [], opening: null, days: {}, habits: [], ddays: [], schedules: [], schTypes: [], studyDays: {}, subjects: [], timer: null, keys: [] };
 
   const cNoteIds = new Set((cloud.notes || []).map(n => String(n.id)));
   const cNoteContent = new Set((cloud.notes || []).map(noteContentKey));
@@ -6160,6 +6951,18 @@ function findLocalOnly(cloud, local, synced) {
     if (cRIds.has(r.id) || cRKeys.has((r.start || "") + "\0" + (r.text || "")) || seen(k)) return;
     out.routines.push(r); out.keys.push(k);
   });
+  const cSchIds = new Set((ct.schedules || []).map(x => x && x.id));
+  const cSchKeys = new Set((ct.schedules || []).map(x => x && ((x.date || "") + "\0" + (x.title || ""))));
+  (lt.schedules || []).forEach(x => {
+    if (!x || !x.id) return;
+    const k = "sc:" + x.id;
+    if (cSchIds.has(x.id) || cSchKeys.has((x.date || "") + "\0" + (x.title || "")) || seen(k)) return;
+    out.schedules.push(x); out.keys.push(k);
+  });
+  if (out.schedules.length) {
+    const cTIds = new Set((ct.schTypes || []).map(t => t && t.id));
+    out.schTypes = (lt.schTypes || []).filter(t => t && t.id && !cTIds.has(t.id));
+  }
 
   const cm = cloud.money || {}, lm = local.money || {};
   const mKeyOf = e => (e.date || "") + "\0" + (e.type || "") + "\0" + (e.name || "") + "\0" + String(e.amount);
@@ -6237,7 +7040,16 @@ function appendLocalOnly(base, lo) {
   const routines = (bt.routines || []).slice();
   const rIds = new Set(routines.map(r => r.id));
   (lo.routines || []).forEach(r => { if (!rIds.has(r.id)) { rIds.add(r.id); routines.push(r); } });
-  const todos = Object.assign({}, emptyTodos(), bt, { oneoffs, routines, stickers: (bt.stickers || []).slice() });
+  const schedules = (bt.schedules || []).slice();
+  const schIdSet = new Set(schedules.map(x => x.id));
+  (lo.schedules || []).forEach(x => { if (!schIdSet.has(x.id)) { schIdSet.add(x.id); schedules.push(x); } });
+  let schTypes = (bt.schTypes || []).slice();
+  if ((lo.schTypes || []).length) {
+    if (!schTypes.length) schTypes = [{ id: "hw", name: "과제", color: "#4A6FA5" }, { id: "pay", name: "납부", color: "#B9733A" }, { id: "etc", name: "기타", color: "#5E8A6E" }];
+    const tIds = new Set(schTypes.map(t => t.id));
+    lo.schTypes.forEach(t => { if (!tIds.has(t.id)) { tIds.add(t.id); schTypes.push(t); } });
+  }
+  const todos = Object.assign({}, emptyTodos(), bt, { oneoffs, routines, stickers: (bt.stickers || []).slice(), schedules, schTypes });
   delete todos.updatedAt;
 
   const mh = window.RecordsMoney && window.RecordsMoney.hydrate;
@@ -6302,7 +7114,7 @@ function appendLocalOnly(base, lo) {
 }
 
 function emptyLocalOnly() {
-  return { notes: [], oneoffs: [], routines: [], entries: [], opening: null, days: {}, habits: [], ddays: [], studyDays: {}, subjects: [], timer: null, keys: [] };
+  return { notes: [], oneoffs: [], routines: [], entries: [], opening: null, days: {}, habits: [], ddays: [], schedules: [], schTypes: [], studyDays: {}, subjects: [], timer: null, keys: [] };
 }
 
 /* Keep items the user chose not to move, so they come back after logging out
@@ -6322,6 +7134,9 @@ function stashLocalOnly(lo) {
   add(cur.entries, lo.entries || [], e => e.id);
   add(cur.habits, lo.habits || [], h => h.id);
   add(cur.ddays, lo.ddays || [], i => i.id);
+  cur.schedules = cur.schedules || []; cur.schTypes = cur.schTypes || [];
+  add(cur.schedules, lo.schedules || [], x => x.id);
+  add(cur.schTypes, lo.schTypes || [], t => t.id);
   cur.subjects = cur.subjects || []; cur.studyDays = cur.studyDays || {};
   add(cur.subjects, lo.subjects || [], x => x.id);
   Object.keys(lo.studyDays || {}).forEach(iso => { if (!cur.studyDays[iso]) cur.studyDays[iso] = lo.studyDays[iso]; });
@@ -6410,6 +7225,7 @@ async function maybeMigrate(uid, bag) {
   if (lo.entries.length) parts.push("수입·지출 " + lo.entries.length + "개");
   if (lo.opening) parts.push("가계부 시작 잔액");
   if (lo.ddays.length) parts.push("디데이 " + lo.ddays.length + "개");
+  if ((lo.schedules || []).length) parts.push("일정 " + lo.schedules.length + "개");
   const sdCount = Object.keys(lo.studyDays || {}).length;
   if (sdCount) parts.push("스터디 플래너 " + sdCount + "일");
   if ((lo.subjects || []).length) parts.push("과목 " + lo.subjects.length + "개");
@@ -6424,7 +7240,7 @@ async function maybeMigrate(uid, bag) {
     try {
       const merged = appendLocalOnly(cloud, lo);
       if (lo.notes.length) await uploadNotes(uid, lo.notes);
-      if (lo.oneoffs.length || lo.routines.length) await uploadTodos(uid, merged.todos);
+      if (lo.oneoffs.length || lo.routines.length || (lo.schedules || []).length) await uploadTodos(uid, merged.todos);
       if (lo.entries.length || lo.opening) await uploadMoney(uid, merged.money);
       if (dCount || lo.habits.length) await uploadDaily(uid, merged.daily);
       for (const iso of Object.keys(lo.days)) {
