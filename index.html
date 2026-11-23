@@ -351,6 +351,24 @@
     .mini .post-btn.mini-post.on { color: #fff; }
   }
 
+
+  /* 반복 바꾸기 popover + rename/delete scope */
+  button.mark.rep-edit, button.mini-mark.rep-edit { font-family: inherit; background: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; }
+  button.mini-mark.rep-edit { background: transparent; }
+  .mark.rep-edit svg { width: 10px; height: 10px; opacity: .55; }
+  .mark.rep-edit:hover, .mark.rep-edit.on, .mini-mark.rep-edit:hover, .mini-mark.rep-edit.on { border-color: #1E3A5F; color: #1E3A5F; background: #f3f6fa; -webkit-text-stroke-color: #f3f6fa; }
+  .rep-pop { position: absolute; right: 8px; top: calc(100% + 6px); z-index: 30; background: #fff; border: 1px solid #dfe5ec; border-radius: 10px; box-shadow: 0 8px 24px rgba(30,58,95,.16); padding: 12px; width: 300px; cursor: default; text-align: left; }
+  .rep-pop.float { position: fixed; right: auto; z-index: 60; }
+  .rep-pop .ttl { font-size: 13px; color: #888; margin-bottom: 8px; -webkit-text-stroke: calc(1.5px * 13 / 44) #fff; }
+  .rep-pop .repeat-modes { margin: 0; }
+  .rep-pop .dow-row { margin-top: 10px; gap: 5px; flex-wrap: nowrap; }
+  .rep-pop .dow-chip { flex: 1; min-width: 0; width: auto; aspect-ratio: 1; max-width: 34px; height: auto; line-height: 1; padding: 0; text-align: center; }
+  .rep-pop .note { font-size: 12px; color: #8a97a8; margin: 10px 2px 0; -webkit-text-stroke: 0; line-height: 1.4; }
+  .rep-pop .acts { display: flex; justify-content: flex-end; gap: 6px; margin-top: 10px; }
+  .rep-pop .acts button { border: 1px solid #ddd; background: #fff; border-radius: 8px; padding: 5px 12px; font: inherit; font-size: 14px; cursor: pointer; -webkit-text-stroke: calc(1.5px * 14 / 44) #fff; }
+  .rep-pop .acts .go { background: #1E3A5F; border-color: #1E3A5F; color: #fff; -webkit-text-stroke-color: #1E3A5F; }
+  .rep-pop .acts .go:disabled { background: #b8c2cf; border-color: #b8c2cf; -webkit-text-stroke-color: #b8c2cf; cursor: default; }
+  @media (max-width: 600px) { .rep-pop:not(.float) { left: 0; right: 0; width: auto; } }
   .hint {
     margin: 10px 2px 0; font-size: 13px; color: #aaa;
     -webkit-text-stroke: calc(1.5px * 13 / 44) #fdfdfd;
@@ -602,6 +620,11 @@
   .modal-actions button:hover { background: #f6f6f6; }
   .modal-actions button.danger { color: #b85c4a; }
   .modal-actions button.ghost { color: #888; }
+  .modal .sub[hidden] { display: none; }
+  .modal .sub { font-size: 13px; color: #999; margin: -10px 0 14px; -webkit-text-stroke: 0; line-height: 1.4; }
+  .modal .sub b { color: #555; font-weight: 400; }
+  .modal .sub .arr { color: #bbb; margin: 0 4px; }
+  .modal-actions button.main { color: #1E3A5F; }
 
   @media (max-width: 860px) {
     header { margin: 0 12px; padding: 16px 4px 10px; }
@@ -1878,6 +1901,7 @@
 <div class="backdrop" id="modal" hidden>
   <div class="modal" role="dialog" aria-modal="true">
     <p id="modalMsg">이 반복 일과를 어떻게 할까요?</p>
+    <p class="sub" id="modalSub" hidden></p>
     <div class="modal-actions">
       <button type="button" data-act="today">오늘만 삭제</button>
       <button type="button" data-act="all" class="danger">반복 일과 전체 삭제</button>
@@ -2517,6 +2541,7 @@ window.RecordsMemo = {
   }
   function routineOnDate(r, dateStr) {
     if (r.start > dateStr) return false;
+    if (isISO(r.end) && dateStr > r.end) return false;
     if ((r.hidden || []).includes(dateStr)) return false;
     const days = weekdayList(r);
     if (!days) return true;
@@ -2600,7 +2625,7 @@ window.RecordsMemo = {
           ? r.ordDay[dateStr]
           : (Number.isFinite(r.ord) ? r.ord : 0);
         const mv = r.moved && isISO(r.moved[dateStr]) ? r.moved[dateStr] : null;
-        list.push({ kind: 'routine', id: r.id, text: r.text, done: mv ? false : done, order, movedTo: mv, movedFrom: null });
+        list.push({ kind: 'routine', id: r.id, text: routineName(r, dateStr), done: mv ? false : done, order, movedTo: mv, movedFrom: null });
       }
     }
     for (const x of state.schedules || []) {
@@ -2608,7 +2633,7 @@ window.RecordsMemo = {
       const mv = x.moved && isISO(x.moved[dateStr]) ? x.moved[dateStr] : null;
       const order = (x.ordDay && x.ordDay[dateStr] != null) ? x.ordDay[dateStr] : -1000 + timeRank(x.time);
       list.push({
-        kind: 'sch', id: x.id, text: x.title, done: mv ? false : !!(x.done && x.done[dateStr]),
+        kind: 'sch', id: x.id, text: schTitleOn(x, dateStr), done: mv ? false : !!(x.done && x.done[dateStr]),
         order, movedTo: mv, movedFrom: null, schType: x.type || 'etc', time: x.time || ''
       });
     }
@@ -2631,6 +2656,28 @@ window.RecordsMemo = {
     return Math.max(...list.map(i => i.order)) + 1;
   }
   function findOneoff(id) { return state.oneoffs.find(t => t.id === id); }
+  /* per-date name ("이번 할 일만 변경") and, for 일정, names from a date on ("이후 모두 변경") */
+  function routineName(r, d) {
+    return (r.names && typeof r.names[d] === 'string' && r.names[d]) || r.text;
+  }
+  function schTitleOn(x, d) {
+    if (x.names && typeof x.names[d] === 'string' && x.names[d]) return x.names[d];
+    return schBaseTitle(x, d);
+  }
+  /* the name the 일정 window shows: as of its next date (ignores one-day names) */
+  function schCurTitle(x) {
+    const t = todayISO();
+    return schBaseTitle(x, nextOcc(x, t, 400) || t);
+  }
+  function schBaseTitle(x, d) {
+    let t = x.title, best = '';
+    if (x.retitle && typeof x.retitle === 'object') {
+      for (const k in x.retitle) {
+        if (isISO(k) && k <= d && k > best && typeof x.retitle[k] === 'string' && x.retitle[k]) { best = k; t = x.retitle[k]; }
+      }
+    }
+    return t;
+  }
   function findRoutine(id) { return state.routines.find(r => r.id === id); }
   function findSch(id) { return (state.schedules || []).find(x => x.id === id); }
 
@@ -2736,7 +2783,7 @@ window.RecordsMemo = {
       if (t) t.text = trimmed;
     } else if (kind === 'sch') {
       const x = findSch(id);
-      if (x) x.title = trimmed;
+      if (x) { x.title = trimmed; delete x.retitle; delete x.names; }
     } else {
       const r = findRoutine(id);
       if (r) r.text = trimmed;
@@ -2765,7 +2812,7 @@ window.RecordsMemo = {
       x.moved = (x.moved && typeof x.moved === 'object') ? x.moved : {};
       if (x.moved[fromDate]) return false;
       x.moved[fromDate] = toDate;
-      text = x.title;
+      text = schTitleOn(x, fromDate);
       extra = { schId: x.id, schType: x.type || 'etc', time: x.time || '' };
     } else {
       const r = findRoutine(id);
@@ -2774,7 +2821,7 @@ window.RecordsMemo = {
       r.moved = (r.moved && typeof r.moved === 'object') ? r.moved : {};
       if (r.moved[fromDate]) return false;
       r.moved[fromDate] = toDate;
-      text = r.text;
+      text = routineName(r, fromDate);
     }
     state.oneoffs.push(Object.assign({
       id: uid('o'), text, date: toDate, done: false,
@@ -2821,6 +2868,109 @@ window.RecordsMemo = {
     if (!r.hidden.includes(dateStr)) r.hidden.push(dateStr);
     if (r.done) delete r.done[dateStr];
     if (r.moved) delete r.moved[dateStr];
+    save();
+    render();
+  }
+  function pickFrom(o, D) {
+    const out = {};
+    if (o && typeof o === 'object') for (const k in o) if (k >= D) out[k] = o[k];
+    return out;
+  }
+  function dropFrom(o, D) {
+    if (o && typeof o === 'object') for (const k of Object.keys(o)) if (k >= D) delete o[k];
+  }
+  /* end routine r on the day before D; the part from D on becomes a new routine (returned) */
+  function splitRoutine(r, D, patch) {
+    const nr = Object.assign({
+      id: uid('r'), text: r.text, start: D, freq: r.freq === 'weekly' ? 'weekly' : 'daily',
+      hidden: (r.hidden || []).filter(d => d >= D), done: pickFrom(r.done, D), moved: pickFrom(r.moved, D),
+      names: pickFrom(r.names, D), ord: r.ord, ordDay: pickFrom(r.ordDay, D)
+    }, r.freq === 'weekly' ? { weekdays: (weekdayList(r) || []).slice() } : {}, patch || {});
+    if (nr.freq !== 'weekly') delete nr.weekdays;
+    if (isISO(r.end) && r.end >= D) nr.end = r.end;
+    endRoutineBefore(r, D);
+    const i = state.routines.indexOf(r);
+    state.routines.splice(i + 1, 0, nr);
+    return nr;
+  }
+  function endRoutineBefore(r, D) {
+    r.end = addDays(D, -1);
+    r.hidden = (r.hidden || []).filter(d => d < D);
+    dropFrom(r.done, D); dropFrom(r.moved, D); dropFrom(r.names, D); dropFrom(r.ordDay, D);
+  }
+  function routineOrderOn(r, D) {
+    return (r.ordDay && r.ordDay[D] != null) ? r.ordDay[D] : (Number.isFinite(r.ord) ? r.ord : 0);
+  }
+  /* 반복 바꾸기: applies from D (the edited date); earlier dates keep the old repeat */
+  function changeRepeat(id, D, mode, days) {
+    const r = findRoutine(id);
+    if (!r || !isISO(D)) return false;
+    if (mode === 'none') {
+      if (routineOnDate(r, D) && !(r.moved && r.moved[D])) {
+        state.oneoffs.push({ id: uid('o'), text: routineName(r, D), date: D, done: !!(r.done && r.done[D]), order: routineOrderOn(r, D) });
+      }
+      if (D <= r.start) state.routines = state.routines.filter(x => x !== r);
+      else endRoutineBefore(r, D);
+    } else {
+      const spec = mode === 'weekly'
+        ? { freq: 'weekly', weekdays: [...new Set((days || []).map(Number).filter(d => d >= 0 && d <= 6))].sort((a, b) => a - b) }
+        : { freq: 'daily' };
+      if (spec.freq === 'weekly' && !spec.weekdays.length) return false;
+      const cur = weekdayList(r);
+      if (spec.freq === (cur ? 'weekly' : 'daily') && (!cur || cur.slice().sort((a, b) => a - b).join() === spec.weekdays.join())) return false;
+      if (D <= r.start) {
+        r.freq = spec.freq;
+        if (spec.freq === 'weekly') r.weekdays = spec.weekdays; else delete r.weekdays;
+      } else {
+        splitRoutine(r, D, spec);
+      }
+    }
+    save();
+    render();
+    return true;
+  }
+  function renameRepeat(kind, id, D, text, scope) {
+    const t = window.RecordsIme.nfc(text).replace(/\s+/g, ' ').trim();
+    if (!t) return false;
+    if (kind === 'routine') {
+      const r = findRoutine(id);
+      if (!r) return false;
+      if (scope === 'one') {
+        r.names = (r.names && typeof r.names === 'object') ? r.names : {};
+        if (t === r.text) delete r.names[D]; else r.names[D] = t;
+      } else if (D <= r.start) {
+        r.text = t;
+        if (r.names) delete r.names[D];
+      } else {
+        const nr = splitRoutine(r, D, { text: t });
+        delete nr.names[D];
+      }
+    } else if (kind === 'sch') {
+      const x = findSch(id);
+      if (!x) return false;
+      if (scope === 'one') {
+        x.names = (x.names && typeof x.names === 'object') ? x.names : {};
+        x.names[D] = t;
+      } else if (D <= x.date) {
+        x.title = t;
+        delete x.retitle;
+        if (x.names) delete x.names[D];
+      } else {
+        x.retitle = (x.retitle && typeof x.retitle === 'object') ? x.retitle : {};
+        for (const k of Object.keys(x.retitle)) if (k > D) delete x.retitle[k];
+        x.retitle[D] = t;
+        if (x.names) delete x.names[D];
+      }
+    }
+    save();
+    render();
+    return true;
+  }
+  function deleteRoutineFrom(id, D) {
+    const r = findRoutine(id);
+    if (!r) return;
+    if (D <= r.start) { deleteRoutine(id); return; }
+    endRoutineBefore(r, D);
     save();
     render();
   }
@@ -2955,7 +3105,8 @@ window.RecordsMemo = {
     }
     const missed = isMissed(item, dateStr, today);
     const open = postOpen && postOpen.kind === item.kind && postOpen.id === item.id && postOpen.date === dateStr;
-    return '<div class="row' + (item.done ? ' done' : '') + (missed ? ' missed' : '') + (open ? ' menu-open' : '') + (ty ? ' due' : '') + attrs + dueAttr + '>' +
+    const rOpen = item.kind === 'routine' && repOpen && repOpen.id === item.id && repOpen.date === dateStr;
+    return '<div class="row' + (item.done ? ' done' : '') + (missed ? ' missed' : '') + ((open || rOpen) ? ' menu-open' : '') + (ty ? ' due' : '') + attrs + dueAttr + '>' +
       handleHtml() +
       '<button type="button" class="check" aria-label="' + (item.done ? '완료 취소' : '완료') + '">' +
         (item.done ? '✓' : (missed ? '✕' : '')) + '</button>' +
@@ -2963,13 +3114,37 @@ window.RecordsMemo = {
       (item.movedFrom ? '<span class="from-tag">↪ ' + fmtSlash(item.movedFrom) + '에서 미룸</span>' : '') +
       (ty && item.time ? '<span class="due-time">' + escapeHtml(item.time) + '까지</span>' : '') +
       (ty ? '<span class="due-tag" style="' + tagStyle(ty.color) + '">마감 · ' + escapeHtml(ty.name) + '</span>' : '') +
-      (item.kind === 'routine' ? '<span class="mark">' + escapeHtml(badgeText(findRoutine(item.id))) + '</span>' : '') +
+      (item.kind === 'routine' ? repBadgeHtml(item, dateStr, false) : '') +
       (item.done ? '' : '<button type="button" class="post-btn ico' + (open ? ' on' : '') + '" aria-expanded="' + !!open + '" aria-label="미루기" data-tip="미루기"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>') +
       '<button type="button" class="del" aria-label="삭제">✕</button>' +
       (open ? postMenuHtml(dateStr, today) : '') +
+      (rOpen ? repPopHtml(dateStr, today, false) : '') +
     '</div>';
   }
 
+  let repOpen = null; /* {id, date, mode, days} for the 반복 바꾸기 popover */
+  const PEN_SVG = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M10.5 2.5l3 3L6 13H3v-3z"/></svg>';
+  function repBadgeHtml(item, dateStr, mini) {
+    const on = repOpen && repOpen.id === item.id && repOpen.date === dateStr;
+    return '<button type="button" class="' + (mini ? 'mini-mark' : 'mark') + ' rep-edit' + (on ? ' on' : '') + '" title="반복 수정" aria-label="반복 수정: ' +
+      escapeHtml(badgeText(findRoutine(item.id))) + '" aria-expanded="' + !!on + '">' + escapeHtml(badgeText(findRoutine(item.id))) + (mini ? '' : PEN_SVG) + '</button>';
+  }
+  function repPopHtml(dateStr, today, float) {
+    const o = repOpen;
+    const when = dateStr === today ? '오늘(' + fmtSlash(dateStr) + ')' : fmtSlash(dateStr);
+    const modes = [['none', '반복 없음'], ['daily', '매일'], ['weekly', '요일 지정']];
+    const note = o.mode === 'none' ? when + ' 한 번만 하는 할 일로 바뀌어요 · 지난 기록은 그대로 남아요'
+      : o.mode === 'daily' ? when + '부터 매일 반복해요 · 지난 기록은 그대로 남아요'
+      : when + '부터 바뀌어요 · 지난 기록은 그대로 남아요';
+    const ok = o.mode !== 'weekly' || o.days.length > 0;
+    return '<div class="rep-pop' + (float ? ' float' : '') + '" role="dialog" aria-label="반복 바꾸기">' +
+      '<div class="ttl">반복 바꾸기</div>' +
+      '<div class="repeat-modes">' + modes.map(([k, n]) => '<button type="button" data-rmode="' + k + '"' + (o.mode === k ? ' class="on"' : '') + '>' + n + '</button>').join('') + '</div>' +
+      (o.mode === 'weekly' ? '<div class="dow-row">' + DOW_ORDER.map(d => '<button type="button" class="dow-chip' + (o.days.includes(d) ? ' on' : '') + '" data-rdow="' + d + '" aria-pressed="' + o.days.includes(d) + '">' + DOW_NAMES[d] + '</button>').join('') + '</div>' : '') +
+      '<p class="note">' + note + '</p>' +
+      '<div class="acts"><button type="button" data-rcancel="1">취소</button><button type="button" class="go" data-rsave="1"' + (ok ? '' : ' disabled') + '>저장</button></div>' +
+    '</div>';
+  }
   function postOptions(dateStr, today) {
     const rel = d => d === today ? '오늘' : d === addDays(today, 1) ? '내일' : d === addDays(today, 2) ? '모레' : '';
     const sub = d => DAYS[parseISO(d).getDay()] + (rel(d) ? ' · ' + rel(d) : '');
@@ -3038,7 +3213,8 @@ window.RecordsMemo = {
     const missed = isMissed(item, dateStr, today);
     const ty = item.schType ? schTypeOf(item.schType) : null;
     const wOpen = !item.movedTo && postOpen && postOpen.kind === item.kind && postOpen.id === item.id && postOpen.date === dateStr;
-    const cls = (wOpen ? ' menu-open' : '') + (item.movedTo ? ' moved' : (item.done ? ' done' : '') + (missed ? ' missed' : '')) + (ty ? ' due' : '');
+    const rOpen = !item.movedTo && item.kind === 'routine' && repOpen && repOpen.id === item.id && repOpen.date === dateStr;
+    const cls = ((wOpen || rOpen) ? ' menu-open' : '') + (item.movedTo ? ' moved' : (item.done ? ' done' : '') + (missed ? ' missed' : '')) + (ty ? ' due' : '');
     return '<div class="mini' + cls + '" data-id="' + item.id +
       '" data-kind="' + item.kind + '" data-date="' + dateStr + '"' + (ty ? ' style="--dc:' + ty.color + '"' : '') +
       (item.movedTo ? ' data-moved-to="' + item.movedTo + '"' : '') + '>' +
@@ -3046,23 +3222,25 @@ window.RecordsMemo = {
         (item.movedTo ? fmtMD(item.movedTo) + '로 가기' : (item.done ? '완료 취소' : '완료')) + '">' +
         (item.movedTo ? '↪' : item.done ? '✓' : (missed ? '✕' : '')) + '</button>' +
       '<div class="mini-body"><div class="mini-txt">' + escapeHtml(item.text) + '</div>' +
-      (item.kind === 'routine' && !item.movedTo ? '<span class="mini-mark">' + escapeHtml(badgeText(findRoutine(item.id))) + '</span>' : '') +
+      (item.kind === 'routine' && !item.movedTo ? repBadgeHtml(item, dateStr, true) : '') +
       (ty && !item.movedTo ? '<span class="mini-mark due-m" style="' + tagStyle(ty.color) + '">마감</span>' : '') +
       (item.movedTo ? '<span class="from-tag">→ ' + fmtSlash(item.movedTo) + '로 미룸</span>' : '') +
       (item.movedFrom ? '<span class="from-tag">↪ ' + fmtSlash(item.movedFrom) + '에서</span>' : '') + '</div>' +
       (item.movedTo || item.done ? '' : '<button type="button" class="post-btn ico mini-post' + (wOpen ? ' on' : '') + '" aria-expanded="' + !!wOpen + '" aria-label="미루기" data-tip="미루기"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>') +
       '<button type="button" class="mini-del" aria-label="삭제">✕</button>' +
       (wOpen ? postMenuHtml(dateStr, today).replace('class="post-menu"', 'class="post-menu float"') : '') +
+      (rOpen ? repPopHtml(dateStr, today, true) : '') +
     '</div>';
   }
   function placeWeekMenu() {
-    const m = document.querySelector('#weekView .post-menu.float');
+    const m = document.querySelector('#weekView .post-menu.float, #weekView .rep-pop.float');
     if (!m) return;
-    const btn = m.parentElement.querySelector('.mini-post');
+    const btn = m.parentElement.querySelector(m.classList.contains('rep-pop') ? '.rep-edit' : '.mini-post');
+    if (!btn) return;
     const r = btn.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
-    const w = Math.min(280, vw - 16);
+    const w = Math.min(m.classList.contains('rep-pop') ? 300 : 280, vw - 16);
     m.style.width = w + 'px';
-    let left = r.right - w; if (left < 8) left = 8; if (left + w > vw - 8) left = vw - 8 - w;
+    let left = m.classList.contains('rep-pop') ? r.left - 10 : r.right - w; if (left < 8) left = 8; if (left + w > vw - 8) left = vw - 8 - w;
     const h = m.offsetHeight;
     let top = r.bottom + 6; if (top + h > vh - 8 && r.top - h - 6 > 8) top = r.top - h - 6;
     m.style.left = left + 'px'; m.style.top = top + 'px';
@@ -3160,6 +3338,52 @@ window.RecordsMemo = {
     }
     const dueChip = e.target.closest('.due-chip[data-sch]');
     if (dueChip) { openSchedule(dueChip.dataset.sch); return; }
+    const repBtn = e.target.closest('.rep-edit');
+    if (repBtn) {
+      const row = repBtn.closest('[data-id]');
+      if (!row) return;
+      const r = findRoutine(row.dataset.id);
+      if (!r) return;
+      const same = repOpen && repOpen.id === r.id && repOpen.date === row.dataset.date;
+      const wd = weekdayList(r);
+      repOpen = same ? null : { id: r.id, date: row.dataset.date, mode: wd ? 'weekly' : 'daily', days: wd ? wd.slice() : [] };
+      postOpen = null;
+      render();
+      return;
+    }
+    if (e.target.closest('.rep-pop')) {
+      if (!repOpen) return;
+      const m = e.target.closest('[data-rmode]');
+      if (m) {
+        repOpen.mode = m.dataset.rmode;
+        if (repOpen.mode === 'weekly' && !repOpen.days.length) repOpen.days = [parseISO(repOpen.date).getDay()];
+        render(); return;
+      }
+      const dw = e.target.closest('[data-rdow]');
+      if (dw) {
+        const d = Number(dw.dataset.rdow);
+        repOpen.days = repOpen.days.includes(d) ? repOpen.days.filter(x => x !== d) : repOpen.days.concat(d);
+        render(); return;
+      }
+      if (e.target.closest('[data-rcancel]')) { repOpen = null; render(); return; }
+      if (e.target.closest('[data-rsave]')) {
+        const o = repOpen;
+        if (o.mode === 'weekly' && !o.days.length) return;
+        repOpen = null;
+        if (!changeRepeat(o.id, o.date, o.mode, o.days)) render();
+        else {
+          const el = document.getElementById('toast');
+          if (el) {
+            el.textContent = o.mode === 'none' ? '반복을 끝냈어요.' : '반복을 바꿨어요.';
+            el.classList.add('show');
+            clearTimeout(changeRepeat._t);
+            changeRepeat._t = setTimeout(() => el.classList.remove('show'), 2200);
+          }
+        }
+        return;
+      }
+      return;
+    }
     const postBtn = e.target.closest('.post-btn');
     if (postBtn) {
       const row = postBtn.closest('[data-id]');
@@ -3218,8 +3442,15 @@ window.RecordsMemo = {
     postOpen = null;
     render();
   }, true);
+  document.addEventListener('click', e => {
+    if (!repOpen) return;
+    if (e.target.closest && e.target.closest('.rep-pop, .rep-edit')) return;
+    repOpen = null;
+    render();
+  }, true);
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && postOpen) { postOpen = null; render(); }
+    if (e.key === 'Escape' && repOpen) { repOpen = null; render(); }
   });
   $('#card').addEventListener('input', e => {
     const inp = e.target.closest('.pick-date');
@@ -3291,11 +3522,15 @@ window.RecordsMemo = {
     input.focus();
     input.select();
     let saved = false;
+    const dateStr = row.dataset.date;
     const finish = (ok) => {
       if (saved) return;
       saved = true;
-      if (ok) editText(kind, id, input.value);
-      else render();
+      if (!ok) { render(); return; }
+      const next = window.RecordsIme.nfc(input.value).replace(/\s+/g, ' ').trim();
+      if (!next || next === current) { render(); return; }
+      if (isRepeatingItem(kind, id)) requestRename(kind, id, dateStr, current, next);
+      else editText(kind, id, input.value);
     };
     input.addEventListener('keydown', ev => {
       if (ev.key === 'Enter' && !window.RecordsIme.isEventComposing(ev)) { ev.preventDefault(); finish(true); }
@@ -3305,29 +3540,70 @@ window.RecordsMemo = {
   }
 
   /* delete / modal */
+  let pendingRename = null;
+  function isRepeatingItem(kind, id) {
+    if (kind === 'routine') return !!findRoutine(id);
+    if (kind === 'sch') { const x = findSch(id); return !!(x && x.rep && x.rep !== 'none'); }
+    return false;
+  }
+  function setModalSub(html) {
+    const sub = $('#modalSub');
+    if (!sub) return;
+    sub.innerHTML = html || '';
+    sub.hidden = !html;
+  }
+  function requestRename(kind, id, dateStr, from, to) {
+    pendingDelete = null;
+    pendingRename = { kind, id, dateStr, text: to };
+    const bToday = $('#modal [data-act="today"]'), bAll = $('#modal [data-act="all"]');
+    $('#modalMsg').textContent = '이름을 어떻게 바꿀까요?';
+    setModalSub('<b>' + escapeHtml(from) + '</b><span class="arr">→</span><b>' + escapeHtml(to) + '</b>');
+    bToday.textContent = '이번 할 일만 변경 (' + fmtSlash(dateStr) + ')';
+    bToday.hidden = false;
+    bAll.textContent = '이후 모두 변경';
+    bAll.className = 'main';
+    $('#modal').hidden = false;
+  }
   function requestDelete(kind, id, dateStr) {
     if (kind === 'oneoff') { deleteOneoff(id); return; }
+    pendingRename = null;
     pendingDelete = { kind, id, dateStr };
     const bToday = $('#modal [data-act="today"]'), bAll = $('#modal [data-act="all"]');
+    bAll.className = 'danger';
     if (kind === 'sch') {
       const x = findSch(id);
       const repeating = x && x.rep && x.rep !== 'none';
       $('#modalMsg').textContent = repeating ? '이 반복 일정을 어떻게 할까요?' : '이 일정을 지울까요?';
-      bToday.textContent = '이날만 삭제';
+      setModalSub(repeating ? '지난 기록은 그대로 남아요' : '');
+      bToday.textContent = '이번 일정만 삭제 (' + fmtSlash(dateStr) + ')';
       bToday.hidden = !repeating;
-      bAll.textContent = repeating ? '일정 전체 삭제' : '일정 삭제';
+      bAll.textContent = repeating ? '이후 일정 모두 삭제' : '일정 삭제';
     } else {
       $('#modalMsg').textContent = '이 반복 일과를 어떻게 할까요?';
-      bToday.textContent = '오늘만 삭제';
+      setModalSub('지난 기록은 그대로 남아요');
+      bToday.textContent = '이번 일정만 삭제 (' + fmtSlash(dateStr) + ')';
       bToday.hidden = false;
-      bAll.textContent = '반복 일과 전체 삭제';
+      bAll.textContent = '이후 일정 모두 삭제';
     }
     $('#modal').hidden = false;
   }
   $('#modal').addEventListener('click', e => {
     const act = e.target.dataset && e.target.dataset.act;
     if (!act) {
-      if (e.target === $('#modal')) { pendingDelete = null; $('#modal').hidden = true; }
+      if (e.target === $('#modal')) {
+        const hadRename = !!pendingRename;
+        pendingDelete = null; pendingRename = null; $('#modal').hidden = true;
+        if (hadRename) render();
+      }
+      return;
+    }
+    const rn = pendingRename;
+    pendingRename = null;
+    if (rn) {
+      $('#modal').hidden = true;
+      if (act === 'today') renameRepeat(rn.kind, rn.id, rn.dateStr, rn.text, 'one');
+      else if (act === 'all') renameRepeat(rn.kind, rn.id, rn.dateStr, rn.text, 'after');
+      else render();
       return;
     }
     const p = pendingDelete;
@@ -3335,17 +3611,22 @@ window.RecordsMemo = {
     $('#modal').hidden = true;
     if (!p || act === 'cancel') return;
     if (p.kind === 'sch') {
+      const x = findSch(p.id);
+      const repeating = x && x.rep && x.rep !== 'none';
       if (act === 'today') hideSchOn(p.id, p.dateStr);
-      else if (act === 'all') deleteSchedule(p.id);
+      else if (act === 'all') { if (repeating) deleteSchFrom(p.id, p.dateStr); else deleteSchedule(p.id); }
       return;
     }
     if (act === 'today') hideRoutineOn(p.id, p.dateStr);
-    else if (act === 'all') deleteRoutine(p.id);
+    else if (act === 'all') deleteRoutineFrom(p.id, p.dateStr);
   });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && !$('#modal').hidden) {
+      const hadRename = !!pendingRename;
       pendingDelete = null;
+      pendingRename = null;
       $('#modal').hidden = true;
+      if (hadRename) render();
     }
   });
 
@@ -3361,7 +3642,7 @@ window.RecordsMemo = {
 
   $('#card').addEventListener('pointerdown', e => {
     if (e.button != null && e.button !== 0) return;
-    if (e.target.closest('.check, .del, .mini-del, .post-btn, .post-menu, .due-strip, .txt-edit, .mini-edit, input, button.repeat-btn, button.add-col, button.carry, button.nav-btn, button.jump-today, .seg, .week-add, .repeat-panel, .dow-chip, .repeat-modes')) return;
+    if (e.target.closest('.check, .del, .mini-del, .post-btn, .post-menu, .rep-edit, .rep-pop, .due-strip, .txt-edit, .mini-edit, input, button.repeat-btn, button.add-col, button.carry, button.nav-btn, button.jump-today, .seg, .week-add, .repeat-panel, .dow-chip, .repeat-modes')) return;
     const row = e.target.closest('[data-id][data-date]');
     if (!row) return;
     const onHandle = !!e.target.closest('[data-handle]');
@@ -3515,6 +3796,7 @@ window.RecordsMemo = {
   }
   function schOnDate(x, iso) {
     if (!x || !isISO(iso) || iso < x.date) return false;
+    if (isISO(x.end) && iso > x.end) return false;
     if (Array.isArray(x.hidden) && x.hidden.includes(iso)) return false;
     const rep = x.rep || 'none';
     if (rep === 'none') return iso === x.date;
@@ -3563,7 +3845,7 @@ window.RecordsMemo = {
       if (!schOnDate(x, iso) || occMoved(x, iso)) continue;
       const ty = schTypeOf(x.type);
       const done = occDone(x, iso);
-      out.push({ title: x.title, color: ty.color, bg: tint(ty.color, .12), st: done ? 'done' : (iso < today ? 'miss' : ''), rank: timeRank(x.time) });
+      out.push({ title: schTitleOn(x, iso), color: ty.color, bg: tint(ty.color, .12), st: done ? 'done' : (iso < today ? 'miss' : ''), rank: timeRank(x.time) });
     }
     for (const t of state.oneoffs) {
       if (!t.schId || t.date !== iso || t.movedTo) continue;
@@ -3582,14 +3864,14 @@ window.RecordsMemo = {
       // nearest upcoming (not done, not moved)
       let d = x.date > today ? x.date : today;
       while (d <= end) {
-        if (schOnDate(x, d) && !occDone(x, d) && !occMoved(x, d)) { list.push({ id: x.id, title: x.title, type: x.type, date: d, time: x.time || '', over: false }); break; }
+        if (schOnDate(x, d) && !occDone(x, d) && !occMoved(x, d)) { list.push({ id: x.id, title: schTitleOn(x, d), type: x.type, date: d, time: x.time || '', over: false }); break; }
         d = addDays(d, 1);
       }
       // most recent missed in the last 2 weeks
       d = addDays(today, -1);
       while (d >= back && d >= x.date) {
         if (schOnDate(x, d)) {
-          if (!occDone(x, d) && !occMoved(x, d)) list.push({ id: x.id, title: x.title, type: x.type, date: d, time: x.time || '', over: true });
+          if (!occDone(x, d) && !occMoved(x, d)) list.push({ id: x.id, title: schTitleOn(x, d), type: x.type, date: d, time: x.time || '', over: true });
           break;
         }
         d = addDays(d, -1);
@@ -3624,6 +3906,15 @@ window.RecordsMemo = {
     if (!x.hidden.includes(dateStr)) x.hidden.push(dateStr);
     if (x.done) delete x.done[dateStr];
     if (x.moved) delete x.moved[dateStr];
+    save();
+    render();
+    schRefreshOpen();
+  }
+  function deleteSchFrom(id, D) {
+    const x = findSch(id);
+    if (!x) return;
+    if ((x.rep || 'none') === 'none' || D <= x.date) { deleteSchedule(id); return; }
+    x.end = addDays(D, -1);
     save();
     render();
     schRefreshOpen();
@@ -3709,7 +4000,7 @@ window.RecordsMemo = {
     sf.rep = x ? (x.rep || 'none') : 'none';
     sf.days = x && Array.isArray(x.days) ? x.days.slice() : [];
     sf.adding = false; sf.pop = null; sf.popConfirm = false; sf.delConfirm = false;
-    schEl.querySelector('#schTitleIn').value = x ? x.title : '';
+    schEl.querySelector('#schTitleIn').value = x ? schCurTitle(x) : '';
     schEl.querySelector('#schDateIn').value = x ? x.date : ((opts && isISO(opts.date)) ? opts.date : todayISO());
     schEl.querySelector('#schTimeIn').value = x && x.time ? x.time : '';
     schEl.querySelector('.time-clear').hidden = !(x && x.time);
@@ -3823,7 +4114,7 @@ window.RecordsMemo = {
       (list.length ? list.map(({ x, ty, label, cls }) =>
         '<button type="button" class="sch-item' + (cls ? ' ' + cls : '') + (x.id === sf.id ? ' edit' : '') + '" data-sch-id="' + escapeHtml(x.id) + '">' +
           '<span class="bar" style="background:' + ty.color + '"></span>' +
-          '<span class="b"><span class="t" style="display:block">' + escapeHtml(x.title) + '</span><span class="s" style="display:block">' + escapeHtml(ty.name) + ' · ' + escapeHtml(repText(x)) + (x.time ? ' · ' + escapeHtml(x.time) : '') + '</span></span>' +
+          '<span class="b"><span class="t" style="display:block">' + escapeHtml(schCurTitle(x)) + '</span><span class="s" style="display:block">' + escapeHtml(ty.name) + ' · ' + escapeHtml(repText(x)) + (x.time ? ' · ' + escapeHtml(x.time) : '') + '</span></span>' +
           '<span class="d">' + label + '</span><span class="ed">›</span></button>').join('')
         : '<div class="sch-empty">아직 등록된 일정이 없어요.</div>');
   }
@@ -3894,7 +4185,12 @@ window.RecordsMemo = {
     if (sf.rep === 'monthly') fields.mday = parseISO(date).getDate(); else fields.mday = null;
     if (sf.id) {
       const x = findSch(sf.id);
-      if (x) Object.assign(x, fields);
+      if (x) {
+        /* renaming in the 일정 window renames the whole 일정 */
+        if (fields.title === schCurTitle(x)) fields.title = x.title;
+        else { delete x.retitle; delete x.names; }
+        Object.assign(x, fields);
+      }
     } else {
       state.schedules = state.schedules || [];
       state.schedules.push(Object.assign({ id: uid('s'), done: {}, moved: {}, hidden: [], ordDay: {} }, fields));
@@ -6451,12 +6747,16 @@ function mergeTodos(cloud, local) {
   (l.routines || []).forEach(r => {
     if (rById.has(r.id)) {
       const prev = rById.get(r.id);
-      rById.set(r.id, Object.assign({}, prev, r, {
+      const merged = Object.assign({}, prev, r, {
         done: mergeDone(prev.done, r.done),
         hidden: Array.from(new Set([].concat(prev.hidden || [], r.hidden || []))),
         ordDay: Object.assign({}, prev.ordDay || {}, r.ordDay || {}),
-        moved: Object.assign({}, prev.moved || {}, r.moved || {})
-      }));
+        moved: Object.assign({}, prev.moved || {}, r.moved || {}),
+        names: Object.assign({}, prev.names || {}, r.names || {})
+      });
+      const ends = [prev.end, r.end].filter(v => /^\d{4}-\d{2}-\d{2}$/.test(v || "")).sort();
+      if (ends.length) merged.end = ends[0]; else delete merged.end;
+      rById.set(r.id, merged);
     } else {
       rById.set(r.id, Object.assign({}, r, { done: Object.assign({}, r.done || {}), hidden: (r.hidden || []).slice(), ordDay: Object.assign({}, r.ordDay || {}) }));
     }
@@ -6475,12 +6775,16 @@ function mergeTodos(cloud, local) {
     if (!x || !x.id) return;
     const prev = sById.get(x.id);
     if (!prev) { sById.set(x.id, Object.assign({}, x)); return; }
-    sById.set(x.id, Object.assign({}, prev, x, {
+    const mx = Object.assign({}, prev, x, {
       done: mergeDone(prev.done, x.done),
       moved: Object.assign({}, prev.moved || {}, x.moved || {}),
       hidden: Array.from(new Set([].concat(prev.hidden || [], x.hidden || []))),
       ordDay: Object.assign({}, prev.ordDay || {}, x.ordDay || {})
-    }));
+    });
+    if (prev.names || x.names) mx.names = Object.assign({}, prev.names || {}, x.names || {});
+    const sEnds = [prev.end, x.end].filter(v => /^\d{4}-\d{2}-\d{2}$/.test(v || "")).sort();
+    if (sEnds.length) mx.end = sEnds[0]; else delete mx.end;
+    sById.set(x.id, mx);
   });
   const tById = new Map();
   (c.schTypes || []).forEach(t => { if (t && t.id) tById.set(t.id, Object.assign({}, t)); });
