@@ -315,6 +315,42 @@
     .post-menu { left: 0; right: 0; width: auto; }
   }
 
+
+  /* postpone icon next to ✕ */
+  .post-btn.ico { border: 0; background: none; color: #c4c4c4; padding: 3px; border-radius: 6px; line-height: 0;
+    display: inline-flex; align-items: center; justify-content: center; position: relative; margin-right: -2px; }
+  .post-btn.ico:hover { background: #f3f6fa; color: #1E3A5F; }
+  .post-btn.ico.on { background: #1E3A5F; color: #fff; }
+  .post-btn.ico::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    background: #2b2b2b; color: #fff; font-size: 12px; line-height: 1; padding: 5px 7px; border-radius: 6px; white-space: nowrap;
+    -webkit-text-stroke: 0; opacity: 0; pointer-events: none; transition: opacity .12s; }
+  @media (hover: hover) and (pointer: fine) {
+    .row .post-btn.ico { opacity: 0; }
+    .row:hover .post-btn.ico, .row.menu-open .post-btn.ico, .row.show-del .post-btn.ico { opacity: 1; }
+    .post-btn.ico:hover::after { opacity: 1; }
+    .row.menu-open .post-btn.ico::after { opacity: 0; }
+  }
+  @media (hover: none), (pointer: coarse) {
+    .row .post-btn.ico { opacity: 1; color: #bbb; padding: 4px; }
+    .row .post-btn.ico.on { color: #fff; }
+  }
+
+  /* week view postpone icon */
+  .mini .post-btn.mini-post { padding: 1px; margin: 0 -1px 0 0; border-radius: 4px; align-self: flex-start; }
+  .mini .post-btn.mini-post::after { font-size: 11px; padding: 4px 6px; }
+  .post-menu.float { position: fixed; right: auto; z-index: 60; }
+  @media (hover: hover) and (pointer: fine) {
+    .mini .post-btn.mini-post { opacity: 0; }
+    .mini:hover .post-btn.mini-post, .mini.menu-open .post-btn.mini-post { opacity: 1; }
+    .mini.menu-open .mini-del { opacity: 1; }
+    .post-btn.ico:hover::after { opacity: 1; }
+    .mini.menu-open .post-btn.ico::after { opacity: 0; }
+  }
+  @media (hover: none), (pointer: coarse) {
+    .mini .post-btn.mini-post { opacity: 1; color: #bbb; padding: 2px; }
+    .mini .post-btn.mini-post.on { color: #fff; }
+  }
+
   .hint {
     margin: 10px 2px 0; font-size: 13px; color: #aaa;
     -webkit-text-stroke: calc(1.5px * 13 / 44) #fdfdfd;
@@ -1592,6 +1628,12 @@
   .mini .mini-mark.due-m { color: #fff; border: 0; padding: 2px 6px; }
   .mini .mini-body .from-tag { margin-left: 3px; }
   @media (max-width: 600px) { .due-time { display: none; } .due-strip { margin-right: -6px; } .due-strip .lab .tx { display: none; } }
+  /* 마감 tag readability */
+  .due-tag { font-weight: 400; font-size: 13px; padding: 3px 8px 3px; border: 1px solid; -webkit-text-stroke: 0; letter-spacing: .2px; }
+  .row.due.missed .due-tag, .row.due.done .due-tag { opacity: .6; }
+  .mini .mini-mark.due-m { font-size: 12px; font-weight: 400; padding: 2px 7px 1px; border: 1px solid; border-radius: 8px; -webkit-text-stroke: 0; letter-spacing: .2px; margin-top: 3px; }
+  .due-chip.today { -webkit-text-stroke-width: 0; }
+  .due-chip.today .nm { letter-spacing: .1px; }
 
   /* 그누 heart */
   .meet-toggle.heart { padding: 8px 10px; gap: 0; }
@@ -1728,7 +1770,6 @@
   </div>
   <div class="month-cal" id="dailyCalGrid"></div>
   <div class="cal-legend" id="dailyCalLegend"></div>
-  <p class="hint">날짜를 누르면 그날 기록을 쓸 수 있어요. 얼굴은 그날 고른 기분, 아래 숫자는 스터디 플래너에 기록된 공부 시간, 색 표시는 일정이에요.</p>
 </div>
 <div class="sheet" id="dailyEntryView" hidden>
   <div class="toolbar">
@@ -2921,9 +2962,9 @@ window.RecordsMemo = {
       '<span class="txt">' + escapeHtml(item.text) + '</span>' +
       (item.movedFrom ? '<span class="from-tag">↪ ' + fmtSlash(item.movedFrom) + '에서 미룸</span>' : '') +
       (ty && item.time ? '<span class="due-time">' + escapeHtml(item.time) + '까지</span>' : '') +
-      (ty ? '<span class="due-tag" style="background:' + ty.color + '">마감 · ' + escapeHtml(ty.name) + '</span>' : '') +
+      (ty ? '<span class="due-tag" style="' + tagStyle(ty.color) + '">마감 · ' + escapeHtml(ty.name) + '</span>' : '') +
       (item.kind === 'routine' ? '<span class="mark">' + escapeHtml(badgeText(findRoutine(item.id))) + '</span>' : '') +
-      (item.done ? '' : '<button type="button" class="post-btn' + (open ? ' on' : '') + '" aria-expanded="' + !!open + '">↪ 미루기</button>') +
+      (item.done ? '' : '<button type="button" class="post-btn ico' + (open ? ' on' : '') + '" aria-expanded="' + !!open + '" aria-label="미루기" data-tip="미루기"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>') +
       '<button type="button" class="del" aria-label="삭제">✕</button>' +
       (open ? postMenuHtml(dateStr, today) : '') +
     '</div>';
@@ -2983,8 +3024,10 @@ window.RecordsMemo = {
       '</div>';
     }
     $('#weekView').innerHTML =
+      dueStripHtml(today) +
       '<div class="week-wrap"><div class="week">' + cols + '</div></div>' +
       '<div class="caption">화면이 좁을 때는 일주일을 좌우로 밀어 볼 수 있어요.</div>';
+    placeWeekMenu();
     if (weekAddDate) {
       const inp = $('.week-add input');
       if (inp) inp.focus();
@@ -2994,7 +3037,8 @@ window.RecordsMemo = {
   function weekRow(item, dateStr, today) {
     const missed = isMissed(item, dateStr, today);
     const ty = item.schType ? schTypeOf(item.schType) : null;
-    const cls = (item.movedTo ? ' moved' : (item.done ? ' done' : '') + (missed ? ' missed' : '')) + (ty ? ' due' : '');
+    const wOpen = !item.movedTo && postOpen && postOpen.kind === item.kind && postOpen.id === item.id && postOpen.date === dateStr;
+    const cls = (wOpen ? ' menu-open' : '') + (item.movedTo ? ' moved' : (item.done ? ' done' : '') + (missed ? ' missed' : '')) + (ty ? ' due' : '');
     return '<div class="mini' + cls + '" data-id="' + item.id +
       '" data-kind="' + item.kind + '" data-date="' + dateStr + '"' + (ty ? ' style="--dc:' + ty.color + '"' : '') +
       (item.movedTo ? ' data-moved-to="' + item.movedTo + '"' : '') + '>' +
@@ -3003,12 +3047,28 @@ window.RecordsMemo = {
         (item.movedTo ? '↪' : item.done ? '✓' : (missed ? '✕' : '')) + '</button>' +
       '<div class="mini-body"><div class="mini-txt">' + escapeHtml(item.text) + '</div>' +
       (item.kind === 'routine' && !item.movedTo ? '<span class="mini-mark">' + escapeHtml(badgeText(findRoutine(item.id))) + '</span>' : '') +
-      (ty && !item.movedTo ? '<span class="mini-mark due-m" style="background:' + ty.color + '">마감</span>' : '') +
+      (ty && !item.movedTo ? '<span class="mini-mark due-m" style="' + tagStyle(ty.color) + '">마감</span>' : '') +
       (item.movedTo ? '<span class="from-tag">→ ' + fmtSlash(item.movedTo) + '로 미룸</span>' : '') +
       (item.movedFrom ? '<span class="from-tag">↪ ' + fmtSlash(item.movedFrom) + '에서</span>' : '') + '</div>' +
+      (item.movedTo || item.done ? '' : '<button type="button" class="post-btn ico mini-post' + (wOpen ? ' on' : '') + '" aria-expanded="' + !!wOpen + '" aria-label="미루기" data-tip="미루기"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>') +
       '<button type="button" class="mini-del" aria-label="삭제">✕</button>' +
+      (wOpen ? postMenuHtml(dateStr, today).replace('class="post-menu"', 'class="post-menu float"') : '') +
     '</div>';
   }
+  function placeWeekMenu() {
+    const m = document.querySelector('#weekView .post-menu.float');
+    if (!m) return;
+    const btn = m.parentElement.querySelector('.mini-post');
+    const r = btn.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    const w = Math.min(280, vw - 16);
+    m.style.width = w + 'px';
+    let left = r.right - w; if (left < 8) left = 8; if (left + w > vw - 8) left = vw - 8 - w;
+    const h = m.offsetHeight;
+    let top = r.bottom + 6; if (top + h > vh - 8 && r.top - h - 6 > 8) top = r.top - h - 6;
+    m.style.left = left + 'px'; m.style.top = top + 'px';
+  }
+  window.addEventListener('resize', placeWeekMenu);
+  document.addEventListener('scroll', placeWeekMenu, true);
 
   function weekAddHtml(d) {
     if (weekAddDate === d) {
@@ -3431,6 +3491,14 @@ window.RecordsMemo = {
   function ensureOwnTypes() {
     if (!state.schTypes || !state.schTypes.length) state.schTypes = DEFAULT_TYPES.map(t => Object.assign({}, t));
     if (!state.schTypes.some(t => t.id === 'etc')) state.schTypes.push(Object.assign({}, DEFAULT_TYPES[2]));
+  }
+  /* readable 마감 tag = light tint bg + darker type-colour text */
+  function shade(hex, k) {
+    const n = parseInt(hex.slice(1), 16), f = v => Math.round(v * (1 - k));
+    return 'rgb(' + f(n >> 16 & 255) + ',' + f(n >> 8 & 255) + ',' + f(n & 255) + ')';
+  }
+  function tagStyle(hex) {
+    return 'background:' + tint(hex, .13) + ';border-color:' + tint(hex, .45) + ';color:' + shade(hex, .28);
   }
   function tint(hex, a) {
     const n = parseInt(hex.slice(1), 16);
@@ -3956,7 +4024,7 @@ window.RecordsMemo = {
   const MOODS = [
     { n: 1, face: '😞', cap: '별로' },
     { n: 2, face: '🙁', cap: '그저' },
-    { n: 3, face: '😐', cap: '보통' },
+    { n: 3, face: '🙂', cap: '보통' },
     { n: 4, face: '😊', cap: '좋음' },
     { n: 5, face: '😄', cap: '최고' }
   ];
