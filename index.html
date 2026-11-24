@@ -307,9 +307,10 @@
   }
   .post-menu .pick-go:disabled { background: #b8c2cf; -webkit-text-stroke-color: #b8c2cf; cursor: default; }
   .mini .from-tag { font-size: 10.5px; padding: 2px 5px; margin-top: 3px; display: inline-block; -webkit-text-stroke: 0; }
-  .mini.moved { opacity: .55; outline: 1.5px dashed #d5d5d5; outline-offset: -1.5px; background: transparent; cursor: pointer; }
+  .mini.moved { outline: 1.5px dashed #d5d5d5; outline-offset: -1.5px; background: transparent; cursor: pointer; }
   .mini.moved .check { border: 0; background: none; color: #9aa7b8; font-size: 11px; font-weight: 400; }
   .mini.moved .mini-txt { color: #999; }
+  .mini.menu-open { z-index: 30; position: relative; }
   @media (hover: none), (pointer: coarse) { .post-btn { font-size: 12px; padding: 2px 7px; } }
   @media (max-width: 600px) {
     .post-menu { left: 0; right: 0; width: auto; }
@@ -351,6 +352,17 @@
     .mini .post-btn.mini-post.on { color: #fff; }
   }
 
+
+
+  /* postponed row: keep the 다시 옮기기 button visible */
+  .row.moved .post-btn.ico, .mini.moved .post-btn.mini-post { opacity: 1; color: #9aa7b8; }
+  @media (hover: hover) and (pointer: fine) {
+    .row.moved .post-btn.ico, .mini.moved .post-btn.mini-post { opacity: 1; }
+    .row.moved .post-btn.ico:hover, .mini.moved .post-btn.mini-post:hover { color: #1E3A5F; }
+    .row.moved .post-btn.ico.on, .mini.moved .post-btn.mini-post.on { color: #fff; }
+  }
+  .post-menu .opt.undo { color: #1E3A5F; }
+  .post-menu .opt.undo em { color: #7d8ea5; }
 
   /* 반복 바꾸기 popover + rename/delete scope */
   button.mark.rep-edit, button.mini-mark.rep-edit { font-family: inherit; background: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; }
@@ -2794,52 +2806,293 @@ window.RecordsMemo = {
   }
 
   /* 미루기: the original stays as a faded "→ n월 n일로 미룸" row,
-     a copy is added on the new date with a "↪ m/d에서 미룸" tag. */
-  function moveOne(kind, id, fromDate, toDate, order) {
-    if (!isISO(toDate) || toDate === fromDate) return false;
-    let text = null;
-    let extra = null;
+     a copy is added on the new date with a "↪ m/d에서 미룸" tag.
+     Re-postponing moves that same copy and updates the original marker,
+     so the chain never gets stuck. */
+  function itemDest(kind, id, dateStr) {
     if (kind === 'oneoff') {
       const t = findOneoff(id);
-      if (!t || t.done || t.movedTo || t.date !== fromDate) return false;
-      t.movedTo = toDate;
-      text = t.text;
-      if (t.schId) extra = { schId: t.schId, schType: t.schType || 'etc', time: t.time || '' };
+      return (t && isISO(t.movedTo)) ? t.movedTo : null;
+    }
+    if (kind === 'sch') {
+      const x = findSch(id);
+      return (x && x.moved && isISO(x.moved[dateStr])) ? x.moved[dateStr] : null;
+    }
+    const r = findRoutine(id);
+    return (r && r.moved && isISO(r.moved[dateStr])) ? r.moved[dateStr] : null;
+  }
+  function setItemDest(kind, id, dateStr, toDate) {
+    if (kind === 'oneoff') {
+      const t = findOneoff(id);
+      if (!t) return false;
+      if (toDate) t.movedTo = toDate; else delete t.movedTo;
+      return true;
+    }
+    if (kind === 'sch') {
+      const x = findSch(id);
+      if (!x) return false;
+      x.moved = (x.moved && typeof x.moved === 'object') ? x.moved : {};
+      if (toDate) x.moved[dateStr] = toDate; else delete x.moved[dateStr];
+      return true;
+    }
+    const r = findRoutine(id);
+    if (!r) return false;
+    r.moved = (r.moved && typeof r.moved === 'object') ? r.moved : {};
+    if (toDate) r.moved[dateStr] = toDate; else delete r.moved[dateStr];
+    return true;
+  }
+  function originMatches(t, kind, id, originDate) {
+    if (!t) return false;
+    if (t.origin && t.origin.kind === kind && t.origin.id === id && t.origin.date === originDate) return true;
+    if (t.origin) return false;
+    return t.movedFrom === originDate && !(kind === 'oneoff' && t.id === id);
+  }
+  function findLiveCopy(kind, id, originDate) {
+    const direct = state.oneoffs.filter(t => !t.movedTo && (
+      (t.origin && t.origin.kind === kind && t.origin.id === id && t.origin.date === originDate) ||
+      (!t.origin && t.movedFrom === originDate)
+    ));
+    if (direct.length) {
+      const dest = itemDest(kind, id, originDate);
+      return direct.find(t => t.date === dest) || direct[0];
+    }
+    const seen = {};
+    let date = itemDest(kind, id, originDate);
+    let from = originDate;
+    while (isISO(date) && !seen[date]) {
+      seen[date] = true;
+      const live = state.oneoffs.find(t => t.date === date && !t.movedTo && (originMatches(t, kind, id, originDate) || t.movedFrom === from));
+      if (live) return live;
+      const mid = state.oneoffs.find(t => t.date === date && t.movedTo && (originMatches(t, kind, id, originDate) || t.movedFrom === from));
+      if (!mid) break;
+      from = mid.date;
+      date = mid.movedTo;
+    }
+    return null;
+  }
+  function resolveOrigin(t) {
+    if (!t) return null;
+    if (t.origin && t.origin.kind && t.origin.id && isISO(t.origin.date)) {
+      return { kind: t.origin.kind, id: t.origin.id, date: t.origin.date };
+    }
+    if (!isISO(t.movedFrom)) return null;
+    const src = state.oneoffs.find(o => o.id !== t.id && o.date === t.movedFrom && o.movedTo &&
+      (o.movedTo === t.date || o.movedTo === t.movedTo));
+    if (src) return resolveOrigin(src) || { kind: 'oneoff', id: src.id, date: src.date };
+    for (const r of state.routines) {
+      if (r.moved && r.moved[t.movedFrom] && (r.moved[t.movedFrom] === t.date || r.moved[t.movedFrom] === t.movedTo)) {
+        return { kind: 'routine', id: r.id, date: t.movedFrom };
+      }
+    }
+    for (const x of (state.schedules || [])) {
+      if (x.moved && x.moved[t.movedFrom] && (x.moved[t.movedFrom] === t.date || x.moved[t.movedFrom] === t.movedTo)) {
+        return { kind: 'sch', id: x.id, date: t.movedFrom };
+      }
+    }
+    return { kind: 'oneoff', id: null, date: t.movedFrom };
+  }
+  function copyTextFrom(kind, id, dateStr) {
+    if (kind === 'oneoff') { const t = findOneoff(id); return t ? t.text : null; }
+    if (kind === 'sch') { const x = findSch(id); return x ? schTitleOn(x, dateStr) : null; }
+    const r = findRoutine(id); return r ? routineName(r, dateStr) : null;
+  }
+  function copyExtraFrom(kind, id) {
+    if (kind === 'oneoff') {
+      const t = findOneoff(id);
+      if (t && t.schId) return { schId: t.schId, schType: t.schType || 'etc', time: t.time || '' };
     } else if (kind === 'sch') {
+      const x = findSch(id);
+      if (x) return { schId: x.id, schType: x.type || 'etc', time: x.time || '' };
+    }
+    return null;
+  }
+  function dropChainMarkers(kind, id, originDate, keepId) {
+    const seen = {};
+    let date = itemDest(kind, id, originDate);
+    let from = originDate;
+    const drop = {};
+    while (isISO(date) && !seen[date]) {
+      seen[date] = true;
+      const mid = state.oneoffs.find(t => t.date === date && t.movedTo && t.id !== keepId &&
+        (originMatches(t, kind, id, originDate) || t.movedFrom === from));
+      if (!mid) break;
+      drop[mid.id] = true;
+      from = mid.date;
+      date = mid.movedTo;
+    }
+    if (Object.keys(drop).length) state.oneoffs = state.oneoffs.filter(t => !drop[t.id]);
+  }
+  /* fromDate inclusive. If onlyDate, drop copies of that one occurrence only. */
+  function dropCopiesOf(kind, id, fromDate, onlyDate) {
+    const dates = {};
+    if (kind === 'oneoff') {
+      const t = findOneoff(id);
+      if (t) dates[t.date] = true;
+    } else {
+      const rec = kind === 'sch' ? findSch(id) : findRoutine(id);
+      if (rec && rec.moved) {
+        for (const d in rec.moved) {
+          if (!fromDate || (onlyDate ? d === fromDate : d >= fromDate)) dates[d] = true;
+        }
+      }
+    }
+    state.oneoffs = state.oneoffs.filter(t => {
+      if (kind === 'oneoff' && t.id === id) return true;
+      if (t.origin && t.origin.kind === kind && t.origin.id === id) {
+        if (!fromDate) return false;
+        return onlyDate ? t.origin.date !== fromDate : t.origin.date < fromDate;
+      }
+      if (!t.origin && isISO(t.movedFrom) && dates[t.movedFrom]) return false;
+      return true;
+    });
+  }
+  function detachCopy(t) {
+    if (!t) return;
+    delete t.movedFrom;
+    delete t.origin;
+  }
+  function showTodoToast(msg) {
+    const el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(showTodoToast._t);
+    showTodoToast._t = setTimeout(() => el.classList.remove('show'), 2400);
+  }
+  function undoMove(kind, id, originDate) {
+    if (kind && id) {
+      const copy = findLiveCopy(kind, id, originDate);
+      dropChainMarkers(kind, id, originDate, copy && copy.id);
+      if (copy) state.oneoffs = state.oneoffs.filter(t => t.id !== copy.id);
+      setItemDest(kind, id, originDate, null);
+      return true;
+    }
+    return false;
+  }
+  function retargetMove(kind, id, originDate, toDate, order, knownCopy) {
+    if (!isISO(toDate)) return false;
+    if (toDate === originDate) return undoMove(kind, id, originDate);
+    const copy = knownCopy || ((kind && id) ? findLiveCopy(kind, id, originDate) : null);
+    dropChainMarkers(kind, id, originDate, copy && copy.id);
+    if (kind && id) setItemDest(kind, id, originDate, toDate);
+    if (copy) {
+      if (copy.date !== toDate) {
+        copy.order = order != null ? order : nextOrder(toDate);
+        copy.date = toDate;
+      }
+      copy.movedFrom = originDate;
+      if (kind && id) copy.origin = { kind: kind, id: id, date: originDate };
+      delete copy.movedTo;
+      copy.done = false;
+      return true;
+    }
+    const text = (kind && id) ? copyTextFrom(kind, id, originDate) : null;
+    if (!text) return false;
+    state.oneoffs.push(Object.assign({
+      id: uid('o'), text: text, date: toDate, done: false,
+      order: order != null ? order : nextOrder(toDate),
+      movedFrom: originDate,
+      origin: (kind && id) ? { kind: kind, id: id, date: originDate } : undefined
+    }, copyExtraFrom(kind, id) || {}));
+    return true;
+  }
+  function moveOne(kind, id, fromDate, toDate, order) {
+    if (!isISO(toDate) || toDate === fromDate) return false;
+    if (itemDest(kind, id, fromDate)) return retargetMove(kind, id, fromDate, toDate, order);
+    if (kind === 'oneoff') {
+      const t = findOneoff(id);
+      if (!t || t.done || t.date !== fromDate) return false;
+      if (isISO(t.movedFrom) || t.origin) {
+        const origin = resolveOrigin(t);
+        if (origin && origin.id) return retargetMove(origin.kind, origin.id, origin.date, toDate, order, t);
+        if (toDate === t.movedFrom) {
+          t.order = order != null ? order : nextOrder(toDate);
+          t.date = toDate;
+          delete t.movedFrom; delete t.origin; delete t.movedTo;
+          t.done = false;
+          return true;
+        }
+        t.order = order != null ? order : nextOrder(toDate);
+        t.date = toDate;
+        return true;
+      }
+      t.movedTo = toDate;
+      const extra = t.schId ? { schId: t.schId, schType: t.schType || 'etc', time: t.time || '' } : null;
+      state.oneoffs.push(Object.assign({
+        id: uid('o'), text: t.text, date: toDate, done: false,
+        order: order != null ? order : nextOrder(toDate), movedFrom: fromDate,
+        origin: { kind: 'oneoff', id: t.id, date: fromDate }
+      }, extra || {}));
+      return true;
+    }
+    if (kind === 'sch') {
       const x = findSch(id);
       if (!x || !schOnDate(x, fromDate)) return false;
       if (x.done && x.done[fromDate]) return false;
       x.moved = (x.moved && typeof x.moved === 'object') ? x.moved : {};
-      if (x.moved[fromDate]) return false;
+      if (x.moved[fromDate]) return retargetMove('sch', id, fromDate, toDate, order);
       x.moved[fromDate] = toDate;
-      text = schTitleOn(x, fromDate);
-      extra = { schId: x.id, schType: x.type || 'etc', time: x.time || '' };
-    } else {
-      const r = findRoutine(id);
-      if (!r || !routineOnDate(r, fromDate)) return false;
-      if (r.done && r.done[fromDate]) return false;
-      r.moved = (r.moved && typeof r.moved === 'object') ? r.moved : {};
-      if (r.moved[fromDate]) return false;
-      r.moved[fromDate] = toDate;
-      text = routineName(r, fromDate);
+      state.oneoffs.push({
+        id: uid('o'), text: schTitleOn(x, fromDate), date: toDate, done: false,
+        order: order != null ? order : nextOrder(toDate), movedFrom: fromDate,
+        origin: { kind: 'sch', id: id, date: fromDate },
+        schId: x.id, schType: x.type || 'etc', time: x.time || ''
+      });
+      return true;
     }
-    state.oneoffs.push(Object.assign({
-      id: uid('o'), text, date: toDate, done: false,
-      order: order != null ? order : nextOrder(toDate), movedFrom: fromDate
-    }, extra || {}));
+    const r = findRoutine(id);
+    if (!r || !routineOnDate(r, fromDate)) return false;
+    if (r.done && r.done[fromDate]) return false;
+    r.moved = (r.moved && typeof r.moved === 'object') ? r.moved : {};
+    if (r.moved[fromDate]) return retargetMove('routine', id, fromDate, toDate, order);
+    r.moved[fromDate] = toDate;
+    state.oneoffs.push({
+      id: uid('o'), text: routineName(r, fromDate), date: toDate, done: false,
+      order: order != null ? order : nextOrder(toDate), movedFrom: fromDate,
+      origin: { kind: 'routine', id: id, date: fromDate }
+    });
     return true;
+  }
+  function undoPostponed(kind, id, dateStr) {
+    postOpen = null;
+    if (itemDest(kind, id, dateStr)) {
+      if (undoMove(kind, id, dateStr)) { save(); showTodoToast('원래 날로 되돌렸어요.'); }
+      render();
+      return;
+    }
+    if (kind === 'oneoff') {
+      const t = findOneoff(id);
+      const origin = resolveOrigin(t);
+      if (origin && origin.id) {
+        if (undoMove(origin.kind, origin.id, origin.date)) { save(); showTodoToast('원래 날로 되돌렸어요.'); }
+      } else if (t && isISO(t.movedFrom)) {
+        t.order = nextOrder(t.movedFrom);
+        t.date = t.movedFrom;
+        delete t.movedFrom; delete t.origin; delete t.movedTo;
+        t.done = false;
+        save();
+        showTodoToast('원래 날로 되돌렸어요.');
+      }
+    }
+    render();
   }
   function postpone(kind, id, fromDate, toDate) {
     postOpen = null;
+    const t = kind === 'oneoff' ? findOneoff(id) : null;
+    const origin = t && (t.origin || isISO(t.movedFrom)) ? resolveOrigin(t) : null;
+    const isMarker = !!itemDest(kind, id, fromDate);
+    const isRetarget = isMarker || !!(origin && origin.date);
+    if (origin && origin.date && toDate === origin.date) {
+      undoPostponed(kind, id, fromDate);
+      return;
+    }
+    if (isMarker && toDate === fromDate) {
+      undoPostponed(kind, id, fromDate);
+      return;
+    }
     if (moveOne(kind, id, fromDate, toDate)) {
       save();
-      const el = document.getElementById('toast');
-      if (el) {
-        el.textContent = fmtMD(toDate) + '로 미뤘어요.';
-        el.classList.add('show');
-        clearTimeout(postpone._t);
-        postpone._t = setTimeout(() => el.classList.remove('show'), 2400);
-      }
+      showTodoToast(fmtMD(toDate) + (isRetarget ? '로 옮겼어요.' : '로 미뤘어요.'));
     }
     if (isComplete(fromDate) && !state.stickers.includes(fromDate)) { state.stickers.push(fromDate); save(); }
     render();
@@ -2866,6 +3119,7 @@ window.RecordsMemo = {
     if (!r) return;
     r.hidden = Array.isArray(r.hidden) ? r.hidden : [];
     if (!r.hidden.includes(dateStr)) r.hidden.push(dateStr);
+    dropCopiesOf('routine', id, dateStr, true);
     if (r.done) delete r.done[dateStr];
     if (r.moved) delete r.moved[dateStr];
     save();
@@ -2891,6 +3145,9 @@ window.RecordsMemo = {
     endRoutineBefore(r, D);
     const i = state.routines.indexOf(r);
     state.routines.splice(i + 1, 0, nr);
+    for (const t of state.oneoffs) {
+      if (t.origin && t.origin.kind === 'routine' && t.origin.id === r.id && t.origin.date >= D) t.origin.id = nr.id;
+    }
     return nr;
   }
   function endRoutineBefore(r, D) {
@@ -2970,11 +3227,13 @@ window.RecordsMemo = {
     const r = findRoutine(id);
     if (!r) return;
     if (D <= r.start) { deleteRoutine(id); return; }
+    dropCopiesOf('routine', id, D);
     endRoutineBefore(r, D);
     save();
     render();
   }
   function deleteRoutine(id) {
+    dropCopiesOf('routine', id);
     state.routines = state.routines.filter(r => r.id !== id);
     save();
     render();
@@ -3095,12 +3354,16 @@ window.RecordsMemo = {
     const ty = item.schType ? schTypeOf(item.schType) : null;
     const dueAttr = ty ? ' style="--dc:' + ty.color + '"' : '';
     if (item.movedTo) {
-      return '<div class="row moved' + (ty ? ' due' : '') + attrs + dueAttr + ' data-moved-to="' + item.movedTo + '" title="' + fmtMD(item.movedTo) + '로 가기">' +
+      const open = postOpen && postOpen.kind === item.kind && postOpen.id === item.id && postOpen.date === dateStr;
+      return '<div class="row moved' + (open ? ' menu-open' : '') + (ty ? ' due' : '') + attrs + dueAttr + ' data-moved-to="' + item.movedTo + '" title="' + fmtMD(item.movedTo) + '로 가기">' +
         handleHtml() +
         '<button type="button" class="check" aria-label="' + fmtMD(item.movedTo) + '로 가기">↪</button>' +
         '<span class="txt">' + escapeHtml(item.text) + '</span>' +
         '<span class="moved-tag">→ ' + fmtMD(item.movedTo) + '로 미룸</span>' +
+        '<button type="button" class="post-btn ico' + (open ? ' on' : '') + '" aria-expanded="' + !!open + '" aria-label="다시 옮기기" data-tip="다시 옮기기">' +
+        '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>' +
         '<button type="button" class="del" aria-label="삭제">✕</button>' +
+        (open ? postMenuHtml(dateStr, today, item) : '') +
       '</div>';
     }
     const missed = isMissed(item, dateStr, today);
@@ -3115,9 +3378,9 @@ window.RecordsMemo = {
       (ty && item.time ? '<span class="due-time">' + escapeHtml(item.time) + '까지</span>' : '') +
       (ty ? '<span class="due-tag" style="' + tagStyle(ty.color) + '">마감 · ' + escapeHtml(ty.name) + '</span>' : '') +
       (item.kind === 'routine' ? repBadgeHtml(item, dateStr, false) : '') +
-      (item.done ? '' : '<button type="button" class="post-btn ico' + (open ? ' on' : '') + '" aria-expanded="' + !!open + '" aria-label="미루기" data-tip="미루기"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>') +
+      (item.done ? '' : '<button type="button" class="post-btn ico' + (open ? ' on' : '') + '" aria-expanded="' + !!open + '" aria-label="' + (item.movedFrom ? '다시 옮기기' : '미루기') + '" data-tip="' + (item.movedFrom ? '다시 옮기기' : '미루기') + '"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>') +
       '<button type="button" class="del" aria-label="삭제">✕</button>' +
-      (open ? postMenuHtml(dateStr, today) : '') +
+      (open ? postMenuHtml(dateStr, today, item) : '') +
       (rOpen ? repPopHtml(dateStr, today, false) : '') +
     '</div>';
   }
@@ -3159,7 +3422,46 @@ window.RecordsMemo = {
     }
     return dates.map(d => ({ date: d, label: fmtMD(d) + (d === today ? '(오늘)' : '') + '로 미루기', sub: sub(d) }));
   }
-  function postMenuHtml(dateStr, today) {
+  function retargetOptions(liveDate, today, originDate) {
+    const rel = d => d === today ? '오늘' : d === addDays(today, 1) ? '내일' : d === addDays(today, 2) ? '모레' : '';
+    const sub = d => DAYS[parseISO(d).getDay()] + (rel(d) ? ' · ' + rel(d) : '');
+    const opts = [];
+    const add = (d, label, undo) => {
+      if (!isISO(d) || d === liveDate || opts.some(o => o.date === d)) return;
+      opts.push({ date: d, label: label, sub: sub(d), undo: !!undo });
+    };
+    if (originDate && originDate !== liveDate) {
+      add(originDate, fmtMD(originDate) + (originDate === today ? '(오늘)' : '') + '로 되돌리기', true);
+    }
+    if (today !== liveDate) add(today, fmtMD(today) + '(오늘)로 옮기기');
+    add(addDays(today, 1), fmtMD(addDays(today, 1)) + '로 옮기기');
+    add(addDays(today, 2), fmtMD(addDays(today, 2)) + '로 옮기기');
+    const dow = parseISO(today).getDay();
+    add(addDays(today, dow === 0 ? 1 : 8 - dow), fmtMD(addDays(today, dow === 0 ? 1 : 8 - dow)) + '로 옮기기');
+    return opts;
+  }
+  function postMenuHtml(dateStr, today, item) {
+    const t = item && item.kind === 'oneoff' ? findOneoff(item.id) : null;
+    const originDate = item && item.movedTo ? dateStr
+      : (t && t.origin && isISO(t.origin.date) ? t.origin.date : (item && item.movedFrom) || null);
+    const liveDate = item && item.movedTo ? item.movedTo : dateStr;
+    const isMoved = !!(item && (item.movedTo || item.movedFrom || (t && t.origin)));
+    if (isMoved) {
+      const opts = retargetOptions(liveDate, today, originDate);
+      let def = today !== liveDate ? today : addDays(today, 1);
+      if (def === liveDate) def = addDays(liveDate, 1);
+      return '<div class="post-menu" role="menu" data-live-date="' + liveDate + '"' +
+        (originDate ? ' data-origin-date="' + originDate + '"' : '') + '>' +
+        '<div class="ttl">' + (item.movedTo ? '미룬 일정을 바꿀까요?' : '어디로 다시 옮길까요?') + '</div>' +
+        opts.map(o => '<button type="button" class="opt' + (o.undo ? ' undo' : '') + '" role="menuitem" data-post-to="' + o.date + '"' +
+          (o.undo ? ' data-post-undo="1"' : '') + '>' +
+          o.label + '<em>' + o.sub + '</em></button>').join('') +
+        '<div class="pick"><span>날짜 고르기</span>' +
+          '<input type="date" class="pick-date" value="' + def + '" data-forbid="' + liveDate + '" aria-label="옮길 날짜">' +
+          '<button type="button" class="pick-go" data-post-pick="1">' + fmtMD(def) + '로</button>' +
+        '</div>' +
+      '</div>';
+    }
     const opts = postOptions(dateStr, today);
     const min = dateStr < today ? today : addDays(dateStr, 1);
     const def = addDays(opts[opts.length - 1].date, 1);
@@ -3212,7 +3514,7 @@ window.RecordsMemo = {
   function weekRow(item, dateStr, today) {
     const missed = isMissed(item, dateStr, today);
     const ty = item.schType ? schTypeOf(item.schType) : null;
-    const wOpen = !item.movedTo && postOpen && postOpen.kind === item.kind && postOpen.id === item.id && postOpen.date === dateStr;
+    const wOpen = postOpen && postOpen.kind === item.kind && postOpen.id === item.id && postOpen.date === dateStr;
     const rOpen = !item.movedTo && item.kind === 'routine' && repOpen && repOpen.id === item.id && repOpen.date === dateStr;
     const cls = ((wOpen || rOpen) ? ' menu-open' : '') + (item.movedTo ? ' moved' : (item.done ? ' done' : '') + (missed ? ' missed' : '')) + (ty ? ' due' : '');
     return '<div class="mini' + cls + '" data-id="' + item.id +
@@ -3226,9 +3528,9 @@ window.RecordsMemo = {
       (ty && !item.movedTo ? '<span class="mini-mark due-m" style="' + tagStyle(ty.color) + '">마감</span>' : '') +
       (item.movedTo ? '<span class="from-tag">→ ' + fmtSlash(item.movedTo) + '로 미룸</span>' : '') +
       (item.movedFrom ? '<span class="from-tag">↪ ' + fmtSlash(item.movedFrom) + '에서</span>' : '') + '</div>' +
-      (item.movedTo || item.done ? '' : '<button type="button" class="post-btn ico mini-post' + (wOpen ? ' on' : '') + '" aria-expanded="' + !!wOpen + '" aria-label="미루기" data-tip="미루기"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>') +
+      (item.done ? '' : '<button type="button" class="post-btn ico mini-post' + (wOpen ? ' on' : '') + '" aria-expanded="' + !!wOpen + '" aria-label="' + (item.movedTo || item.movedFrom ? '다시 옮기기' : '미루기') + '" data-tip="' + (item.movedTo || item.movedFrom ? '다시 옮기기' : '미루기') + '"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>') +
       '<button type="button" class="mini-del" aria-label="삭제">✕</button>' +
-      (wOpen ? postMenuHtml(dateStr, today).replace('class="post-menu"', 'class="post-menu float"') : '') +
+      (wOpen ? postMenuHtml(dateStr, today, item).replace('class="post-menu"', 'class="post-menu float"') : '') +
       (rOpen ? repPopHtml(dateStr, today, true) : '') +
     '</div>';
   }
@@ -3393,6 +3695,12 @@ window.RecordsMemo = {
       render();
       return;
     }
+    const postUndo = e.target.closest('[data-post-undo]');
+    if (postUndo) {
+      const row = postUndo.closest('[data-id]');
+      if (row) undoPostponed(row.dataset.kind, row.dataset.id, row.dataset.date);
+      return;
+    }
     const postTo = e.target.closest('[data-post-to]');
     if (postTo) {
       const row = postTo.closest('[data-id]');
@@ -3404,12 +3712,18 @@ window.RecordsMemo = {
       const row = pickGo.closest('[data-id]');
       const inp = row && row.querySelector('.pick-date');
       const v = inp && inp.value;
-      if (row && isISO(v) && v >= (inp.min || '')) postpone(row.dataset.kind, row.dataset.id, row.dataset.date, v);
+      const menu = inp && inp.closest('.post-menu');
+      const live = menu && menu.getAttribute('data-live-date');
+      const origin = menu && menu.getAttribute('data-origin-date');
+      if (row && isISO(v) && (!inp.min || v >= inp.min) && v !== live) {
+        if (origin && v === origin) undoPostponed(row.dataset.kind, row.dataset.id, row.dataset.date);
+        else postpone(row.dataset.kind, row.dataset.id, row.dataset.date, v);
+      }
       return;
     }
     if (e.target.closest('.post-menu')) return;
     const del0 = e.target.closest('.del, .mini-del');
-    const movedRow = !del0 && e.target.closest('.row.moved, .mini.moved');
+    const movedRow = !del0 && !e.target.closest('.post-btn, .post-menu') && e.target.closest('.row.moved, .mini.moved');
     if (movedRow) {
       postOpen = null;
       viewDate = movedRow.dataset.movedTo;
@@ -3456,7 +3770,9 @@ window.RecordsMemo = {
     const inp = e.target.closest('.pick-date');
     if (!inp) return;
     const go = inp.parentNode.querySelector('.pick-go');
-    const ok = isISO(inp.value) && inp.value >= (inp.min || '');
+    const menu = inp.closest('.post-menu');
+    const live = menu && menu.getAttribute('data-live-date');
+    const ok = isISO(inp.value) && (!inp.min || inp.value >= inp.min) && inp.value !== live;
     go.disabled = !ok;
     go.textContent = ok ? fmtMD(inp.value) + '로' : '날짜 선택';
   });
@@ -3565,8 +3881,37 @@ window.RecordsMemo = {
     $('#modal').hidden = false;
   }
   function requestDelete(kind, id, dateStr) {
-    if (kind === 'oneoff') { deleteOneoff(id); return; }
     pendingRename = null;
+    if (kind === 'oneoff') {
+      const t = findOneoff(id);
+      if (t && t.movedTo) {
+        pendingDelete = { kind, id, dateStr, mode: 'moved-origin' };
+        const bToday = $('#modal [data-act="today"]'), bAll = $('#modal [data-act="all"]');
+        $('#modalMsg').textContent = '미룬 표시를 어떻게 할까요?';
+        setModalSub('할 일은 지금 ' + fmtMD(t.movedTo) + '에 있어요');
+        bToday.textContent = '미루기 표시만 지우기';
+        bToday.hidden = false;
+        bAll.textContent = '미룬 할 일도 함께 삭제';
+        bAll.className = 'danger';
+        $('#modal').hidden = false;
+        return;
+      }
+      if (t && (t.movedFrom || t.origin)) {
+        const origin = resolveOrigin(t);
+        pendingDelete = { kind, id, dateStr, mode: 'moved-copy', origin: origin };
+        const bToday = $('#modal [data-act="today"]'), bAll = $('#modal [data-act="all"]');
+        $('#modalMsg').textContent = '미룬 할 일을 어떻게 할까요?';
+        setModalSub(origin && origin.date ? '원래 날짜는 ' + fmtSlash(origin.date) + '이에요' : '');
+        bToday.textContent = '원래 날로 되돌리기';
+        bToday.hidden = false;
+        bAll.textContent = '이 할 일 삭제';
+        bAll.className = 'danger';
+        $('#modal').hidden = false;
+        return;
+      }
+      deleteOneoff(id);
+      return;
+    }
     pendingDelete = { kind, id, dateStr };
     const bToday = $('#modal [data-act="today"]'), bAll = $('#modal [data-act="all"]');
     bAll.className = 'danger';
@@ -3610,6 +3955,41 @@ window.RecordsMemo = {
     pendingDelete = null;
     $('#modal').hidden = true;
     if (!p || act === 'cancel') return;
+    if (p.mode === 'moved-copy') {
+      const t = findOneoff(p.id);
+      const origin = p.origin || resolveOrigin(t);
+      if (act === 'today') {
+        if (origin && origin.id) undoMove(origin.kind, origin.id, origin.date);
+        else if (t && isISO(t.movedFrom)) {
+          t.date = t.movedFrom; delete t.movedFrom; delete t.origin; delete t.movedTo; t.done = false;
+        }
+        save(); render();
+      } else if (act === 'all') {
+        if (origin && origin.kind === 'routine' && origin.id) { hideRoutineOn(origin.id, origin.date); return; }
+        if (origin && origin.kind === 'sch' && origin.id) { hideSchOn(origin.id, origin.date); return; }
+        if (origin && origin.id) {
+          dropCopiesOf(origin.kind, origin.id, origin.date, true);
+          setItemDest(origin.kind, origin.id, origin.date, null);
+          if (origin.kind === 'oneoff') state.oneoffs = state.oneoffs.filter(x => x.id !== origin.id);
+        }
+        state.oneoffs = state.oneoffs.filter(x => x.id !== p.id);
+        save(); render();
+      }
+      return;
+    }
+    if (p.mode === 'moved-origin') {
+      if (act === 'today') {
+        const copy = findLiveCopy(p.kind, p.id, p.dateStr);
+        dropChainMarkers(p.kind, p.id, p.dateStr, copy && copy.id);
+        setItemDest(p.kind, p.id, p.dateStr, null);
+        detachCopy(copy);
+        save(); render();
+      } else if (act === 'all') {
+        dropCopiesOf(p.kind, p.id, p.dateStr, true);
+        deleteOneoff(p.id);
+      }
+      return;
+    }
     if (p.kind === 'sch') {
       const x = findSch(p.id);
       const repeating = x && x.rep && x.rep !== 'none';
@@ -3904,6 +4284,7 @@ window.RecordsMemo = {
     if (!x) return;
     x.hidden = Array.isArray(x.hidden) ? x.hidden : [];
     if (!x.hidden.includes(dateStr)) x.hidden.push(dateStr);
+    dropCopiesOf('sch', id, dateStr, true);
     if (x.done) delete x.done[dateStr];
     if (x.moved) delete x.moved[dateStr];
     save();
@@ -3914,12 +4295,14 @@ window.RecordsMemo = {
     const x = findSch(id);
     if (!x) return;
     if ((x.rep || 'none') === 'none' || D <= x.date) { deleteSchedule(id); return; }
+    dropCopiesOf('sch', id, D);
     x.end = addDays(D, -1);
     save();
     render();
     schRefreshOpen();
   }
   function deleteSchedule(id) {
+    dropCopiesOf('sch', id);
     state.schedules = (state.schedules || []).filter(x => x.id !== id);
     save();
     render();
