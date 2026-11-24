@@ -18,8 +18,7 @@
   h1 { margin: 0; font-family: 'Inter', sans-serif; font-size: 40px; color: #2b2b2b; -webkit-text-stroke: 0; font-weight: 700; }
   .header-right { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
   .tabs { display: flex; gap: 18px; align-items: baseline; }
-  .tabs a { font-size: 18px; color: #999; text-decoration: none;
-    -webkit-text-stroke: calc(1.5px * 18 / 44) #fff; }
+  .tabs a { font-size: 18px; color: #888; text-decoration: none; -webkit-text-stroke: 0; }
   .tabs a.on { color: #2b2b2b; border-bottom: 1.5px solid #2b2b2b; padding-bottom: 2px; }
   .tabs a:hover { color: #555; }
   .search-wrap { display: flex; align-items: center; gap: 8px; }
@@ -1212,6 +1211,7 @@
   }
   .add-bar input::placeholder { color: #bbb; }
   .add-bar .name-in { flex: 1 1 160px; }
+
   .add-bar .date-in {
     flex: 0 0 148px; width: 148px; max-width: 148px;
     font-family: sans-serif; font-size: 13px; color: #555;
@@ -1224,6 +1224,86 @@
   }
   .opt-btn.on { border-color: #bbb; background: #f3f3f3; color: #333; }
   .add-btn:hover, .opt-btn:hover { background: #f6f6f6; }
+  }
+
+  /* ===== panel: links (바로가기) ===== */
+  #links .hint { margin: 0 2px 12px; font-size: 14px; color: #777; -webkit-text-stroke: 0; line-height: 1.45; }
+  .link-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+  }
+  .link-card, .link-add-tile {
+    position: relative;
+    display: flex; flex-direction: row; align-items: center;
+    height: 42px; min-height: 42px; max-height: 42px;
+    background: rgba(255,255,255,.94);
+    border: 1px solid #eee;
+    border-radius: 10px;
+    min-width: 0;
+    padding: 0 4px 0 2px;
+  }
+  .link-card.dragging { opacity: .55; box-shadow: 0 6px 14px rgba(0,0,0,.12); z-index: 2; }
+  .link-handle {
+    position: static;
+    flex: 0 0 22px; width: 22px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: grab; color: #c0c6ce; border: 0; background: none; padding: 0; touch-action: none;
+  }
+  .link-handle:active { cursor: grabbing; }
+  .link-handle svg { width: 12px; height: 14px; display: block; }
+  .link-main {
+    flex: 1; min-width: 0; min-height: 0;
+    display: flex; flex-direction: row; align-items: center;
+    gap: 8px; text-decoration: none; color: inherit; font: inherit; text-align: left;
+    cursor: pointer; padding: 4px 4px; border-radius: 8px; justify-content: flex-start;
+  }
+  .link-main:hover { background: #f6f8fb; }
+  .link-ico {
+    width: 26px; height: 26px; border-radius: 7px; flex: 0 0 26px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 14px; line-height: 1; letter-spacing: 0;
+    -webkit-text-stroke: 0;
+  }
+  .link-text {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    gap: 1px;
+  }
+  .link-title {
+    font-size: 15px; color: #1a1a1a; line-height: 1.2; -webkit-text-stroke: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+  }
+  .link-acts {
+    position: static;
+    display: flex; flex-direction: column; justify-content: center;
+    gap: 0; flex: 0 0 auto;
+  }
+  .link-acts button {
+    border: 0; background: none; color: #8a97a8; font: inherit; font-size: 11px;
+    cursor: pointer; padding: 1px 6px; border-radius: 5px; -webkit-text-stroke: 0; line-height: 1.3;
+  }
+  .link-acts button:hover { background: #f3f6fa; color: #1E3A5F; }
+  .link-acts .link-del:hover { color: #c0605a; background: #fdf6f5; }
+  .link-add-tile {
+    border: 1.5px dashed #cfd6de; background: rgba(255,255,255,.55);
+    justify-content: center; gap: 6px; padding: 0 10px;
+    color: #5a6a7a; font: inherit; font-size: 14px; cursor: pointer;
+    -webkit-text-stroke: 0;
+  }
+  .link-add-tile:hover { background: #f6f8fb; border-color: #1E3A5F; color: #1E3A5F; }
+  .link-add-plus {
+    width: 26px; height: 26px; border-radius: 7px; flex: 0 0 26px;
+    display: flex; align-items: center; justify-content: center;
+    background: #eef2f6; color: #1E3A5F; font-size: 18px; line-height: 1;
+    -webkit-text-stroke: 0;
+  }
+  .link-add-tile:hover .link-add-plus { background: #e4ebf3; }
+  @media (max-width: 600px) {
+    .link-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .link-card, .link-add-tile { height: 42px; min-height: 42px; max-height: 42px; }
+    .link-title { font-size: 14px; }
+    .link-acts button { padding: 1px 5px; }
   }
 
   .modal input[type="text"], .modal input[type="number"], .modal input[type="date"] {
@@ -1545,7 +1625,20 @@
 
   /* ===== 일정 (deadlines) ===== */
   header h1 { cursor: pointer; user-select: none; }
-  .sch-btn { border: 1px solid #1E3A5F; background: #fff; color: #1E3A5F; border-radius: 14px; padding: 4px 12px; font: inherit; font-size: 14px; cursor: pointer; -webkit-text-stroke: calc(1.5px * 14 / 44) #fff; display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
+  .sch-cats { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 10px; }
+  .sch-cats[hidden], .sch-cats:empty { display: none; }
+  .sch-sheet .sch-cats { margin: 0 0 10px; }
+  .sch-cat { border: 1px solid #dde3ea; background: #fff; color: #444; border-radius: 16px; padding: 4px 10px; font: inherit; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; -webkit-text-stroke: 0; line-height: 1.3; }
+  .sch-cat i { width: 8px; height: 8px; border-radius: 50%; display: block; flex: 0 0 auto; }
+  .sch-cat:hover { border-color: #c5ced8; }
+  .sch-cat.on { border-color: #1E3A5F; background: #1E3A5F; color: #fff; }
+  .sch-cat.on i { box-shadow: 0 0 0 1.5px #fff; }
+  .sch-ghead { display: flex; align-items: center; gap: 7px; font-size: 13px; color: #666; margin: 12px 2px 6px; -webkit-text-stroke: 0; }
+  .sch-ghead:first-child { margin-top: 2px; }
+  .sch-ghead i { width: 8px; height: 8px; border-radius: 50%; display: block; }
+  .sch-ghead b { font-weight: 400; color: #2b2b2b; }
+  .sch-ghead em { font-style: normal; color: #99a3ae; margin-left: auto; font-family: 'Inter', sans-serif; font-size: 11px; }
+  .sch-btn { border: 1px solid #1E3A5F; background: #fff; color: #1E3A5F; border-radius: 14px; padding: 4px 12px; font: inherit; font-size: 14px; cursor: pointer; -webkit-text-stroke: 0; display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
   .sch-btn:hover { background: #1E3A5F; color: #fff; -webkit-text-stroke-color: #1E3A5F; }
   .sch-btn svg { width: 14px; height: 14px; }
   .mday .schs { margin-top: auto; width: 100%; display: flex; flex-direction: column; gap: 2px; padding: 4px 2px 0; box-sizing: border-box; }
@@ -1697,7 +1790,7 @@
   .sch-item.edit { border-color: #1E3A5F; box-shadow: 0 0 0 2px rgba(30,58,95,.08); }
   .sch-item .bar { width: 4px; align-self: stretch; border-radius: 2px; flex: 0 0 4px; }
   .sch-item .b { flex: 1; min-width: 0; }
-  .sch-item .t { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -webkit-text-stroke: calc(1.5px * 16 / 44) #fff; color: #2b2b2b; }
+  .sch-item .t { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -webkit-text-stroke: 0; color: #1a1a1a; }
   .sch-item.over .t { text-decoration: line-through; text-decoration-color: rgba(192,96,90,.8); color: #888; }
   .sch-item.fin .t { text-decoration: line-through; color: #999; }
   .sch-item .s { font-size: 12px; color: #999; margin-top: 2px; -webkit-text-stroke: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1723,14 +1816,15 @@
   /* 할 일: 다가오는 마감 줄 + 마감 rows */
   .due-strip { display: flex; align-items: center; gap: 6px; margin: -2px 0 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; scrollbar-width: none; }
   .due-strip::-webkit-scrollbar { display: none; }
-  .due-strip .lab { font-size: 13px; color: #1E3A5F; white-space: nowrap; margin-right: 2px; -webkit-text-stroke: calc(1.5px * 13 / 44) #fff; display: inline-flex; align-items: center; gap: 4px; }
-  .due-chip { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; border-radius: 14px; padding: 4px 10px 4px 8px; font: inherit; font-size: 13px; border: 1px solid; cursor: pointer; -webkit-text-stroke: calc(1.5px * 13 / 44) #fff; flex: 0 0 auto; }
-  .due-chip i { width: 7px; height: 7px; border-radius: 50%; display: block; }
-  .due-chip .nm { color: #333; }
+  .due-strip .lab { font-size: 13px; color: #1E3A5F; white-space: nowrap; margin-right: 2px; -webkit-text-stroke: 0; display: inline-flex; align-items: center; gap: 4px; }
+  .due-chip { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; border-radius: 14px; padding: 4px 10px 4px 8px; font: inherit; font-size: 13px; border: 1px solid; cursor: pointer; -webkit-text-stroke: 0; flex: 0 0 auto; }
+  .due-chip i { width: 7px; height: 7px; border-radius: 50%; display: block; flex: 0 0 auto; }
+  .due-chip .nm { color: #1a1a1a !important; -webkit-text-stroke: 0; }
   .due-chip b { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12px; -webkit-text-stroke: 0; }
-  .due-chip.today .nm, .due-chip.today b { color: #fff; }
+  .due-chip.today .nm, .due-chip.today b { color: #fff !important; }
   .due-chip.over { border-color: #ecd3cf !important; background: #fdf6f5 !important; color: #c0605a !important; }
-  .due-chip.over .nm { color: #c0605a; }
+  .due-chip.over .nm { color: #1a1a1a !important; }
+  .due-chip.over b { color: #c0605a; }
   .row.due { border-left: 4px solid var(--dc); padding-left: 7px; }
   .row.due.moved { border-left: 1px dashed #ddd; padding-left: 10px; }
   .due-tag { font-size: 12px; line-height: 1; border-radius: 10px; padding: 4px 8px; white-space: nowrap; color: #fff; -webkit-text-stroke: 0; font-weight: 600; }
@@ -1766,6 +1860,7 @@
       <a href="#ledger" data-panel="ledger">가계부</a>
       <a href="#dday" data-panel="dday">디데이</a>
       <a href="#memo" data-panel="memo">메모</a>
+      <a href="#links" data-panel="links">바로가기</a>
     </nav>
     <div class="search-wrap" id="memoSearchWrap">
       <input id="searchBox" placeholder="검색">
@@ -1875,6 +1970,7 @@
     <div class="date-nav" id="dailyCalNav"></div>
     <button type="button" class="sch-btn" id="schOpenBtn"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" stroke="currentColor" stroke-width="1.5"/></svg>일정</button>
   </div>
+  <div class="sch-cats" id="dailySchCats"></div>
   <div class="month-cal" id="dailyCalGrid"></div>
   <div class="cal-legend" id="dailyCalLegend"></div>
 </div>
@@ -1974,6 +2070,13 @@
 </div>
 </section>
 
+<section id="links" hidden>
+<div class="sheet">
+  <p class="hint">자주 쓰는 사이트를 모아 두고, 눌러서 바로 열어요.</p>
+  <div id="linksList"></div>
+</div>
+</section>
+
 <div class="backdrop" id="appModal" hidden>
   <div class="modal" role="dialog" aria-modal="true">
     <p id="appModalMsg"></p>
@@ -2031,7 +2134,7 @@ window.RecordsIme = (function () {
 /* ===== app shell: tab switching (more panels can be registered later) ===== */
 (function () {
   const TAB_KEY = 'records-tab';
-  const PANELS = ['todo', 'study', 'daily', 'ledger', 'dday', 'memo'];
+  const PANELS = ['todo', 'study', 'daily', 'ledger', 'dday', 'memo', 'links'];
 
   function normalize(name) {
     return PANELS.includes(name) ? name : 'todo';
@@ -4292,12 +4395,12 @@ window.RecordsMemo = {
       if (!schOnDate(x, iso) || occMoved(x, iso)) continue;
       const ty = schTypeOf(x.type);
       const done = occDone(x, iso);
-      out.push({ kind: 'sch', id: x.id, title: schTitleOn(x, iso), color: ty.color, bg: tint(ty.color, .12), st: done ? 'done' : (iso < today ? 'miss' : ''), rank: timeRank(x.time), time: x.time || '' });
+      out.push({ kind: 'sch', id: x.id, type: x.type || 'etc', title: schTitleOn(x, iso), color: ty.color, bg: tint(ty.color, .12), st: done ? 'done' : (iso < today ? 'miss' : ''), rank: timeRank(x.time), time: x.time || '' });
     }
     for (const t of state.oneoffs) {
       if (!t.schId || t.date !== iso || t.movedTo) continue;
       const ty = schTypeOf(t.schType);
-      out.push({ kind: 'oneoff', id: t.id, title: t.text, color: ty.color, bg: tint(ty.color, .12), st: t.done ? 'done' : (iso < today ? 'miss' : ''), rank: timeRank(t.time), time: t.time || '' });
+      out.push({ kind: 'oneoff', id: t.id, type: t.schType || 'etc', title: t.text, color: ty.color, bg: tint(ty.color, .12), st: t.done ? 'done' : (iso < today ? 'miss' : ''), rank: timeRank(t.time), time: t.time || '' });
     }
     out.sort((a, b) => a.rank - b.rank);
     return out;
@@ -4537,6 +4640,29 @@ window.RecordsMemo = {
         : '<button type="button" class="sdelete">삭제</button>') : '') +
       '<button type="button" class="cancel">취소</button><button type="button" class="save">저장</button>';
   }
+  let schCatFilter = 'all';
+  function getSchCatFilter() { return schCatFilter || 'all'; }
+  function setSchCatFilter(id) {
+    const next = id || 'all';
+    if (next !== 'all' && !schTypes().some(t => t.id === next)) schCatFilter = 'all';
+    else schCatFilter = next;
+    schRenderList();
+    if (window.RecordsDaily && window.RecordsDaily.refreshCal) window.RecordsDaily.refreshCal();
+    if (window.RecordsDaily && window.RecordsDaily.renderSchCats) window.RecordsDaily.renderSchCats();
+  }
+  function schCatBarHtml() {
+    const types = schTypes();
+    const cur = getSchCatFilter();
+    return types.length ? (
+      '<div class="sch-cats" role="toolbar" aria-label="일정 종류">' +
+        '<button type="button" class="sch-cat' + (cur === 'all' ? ' on' : '') + '" data-sch-cat="all">전체</button>' +
+        types.map(t =>
+          '<button type="button" class="sch-cat' + (cur === t.id ? ' on' : '') + '" data-sch-cat="' + escapeHtml(t.id) + '">' +
+            '<i style="background:' + t.color + '"></i>' + escapeHtml(t.name) +
+          '</button>').join('') +
+      '</div>'
+    ) : '';
+  }
   function schListEntries() {
     const today = todayISO();
     return (state.schedules || []).map(x => {
@@ -4555,19 +4681,45 @@ window.RecordsMemo = {
       return { x, ty, label, cls, key: key + timeRank(x.time).toFixed(3) };
     }).sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
   }
+  function schItemHtml(ent) {
+    const { x, ty, label, cls } = ent;
+    return '<button type="button" class="sch-item' + (cls ? ' ' + cls : '') + (x.id === sf.id ? ' edit' : '') + '" data-sch-id="' + escapeHtml(x.id) + '">' +
+      '<span class="bar" style="background:' + ty.color + '"></span>' +
+      '<span class="b"><span class="t" style="display:block">' + escapeHtml(schCurTitle(x)) + '</span><span class="s" style="display:block">' + escapeHtml(ty.name) + ' · ' + escapeHtml(repText(x)) + (x.time ? ' · ' + escapeHtml(x.time) : '') + '</span></span>' +
+      '<span class="d">' + label + '</span><span class="ed">›</span></button>';
+  }
   function schRenderList() {
     if (!schEl) return;
-    const list = schListEntries();
+    const all = schListEntries();
+    const filter = getSchCatFilter();
+    const list = filter === 'all' ? all : all.filter(e => (e.x.type || 'etc') === filter);
     const tabBtn = schEl.querySelector('[data-schtab="list"]');
-    tabBtn.textContent = '일정 목록 (' + list.length + ')';
+    tabBtn.textContent = '일정 목록 (' + all.length + ')';
+    const headCount = filter === 'all' ? ('등록된 일정 ' + all.length + '개') : (schTypeOf(filter).name + ' ' + list.length + '개');
+    let body;
+    if (!all.length) {
+      body = '<div class="sch-empty">아직 등록된 일정이 없어요.</div>';
+    } else if (!list.length) {
+      body = '<div class="sch-empty">이 종류의 일정이 없어요.</div>';
+    } else if (filter === 'all') {
+      const groups = [];
+      const by = {};
+      schTypes().forEach(t => { by[t.id] = []; groups.push(t); });
+      list.forEach(e => {
+        const id = e.ty.id || 'etc';
+        if (!by[id]) { by[id] = []; groups.push(e.ty); }
+        by[id].push(e);
+      });
+      body = groups.filter(t => by[t.id] && by[t.id].length).map(t =>
+        '<div class="sch-group"><div class="sch-ghead"><i style="background:' + t.color + '"></i><b>' + escapeHtml(t.name) + '</b><em>' + by[t.id].length + '</em></div>' +
+        by[t.id].map(schItemHtml).join('') + '</div>'
+      ).join('');
+    } else {
+      body = list.map(schItemHtml).join('');
+    }
     schEl.querySelector('#schList').innerHTML =
-      '<h4><span>등록된 일정 ' + list.length + '개</span><button type="button" class="sch-new">＋ 새 일정</button></h4>' +
-      (list.length ? list.map(({ x, ty, label, cls }) =>
-        '<button type="button" class="sch-item' + (cls ? ' ' + cls : '') + (x.id === sf.id ? ' edit' : '') + '" data-sch-id="' + escapeHtml(x.id) + '">' +
-          '<span class="bar" style="background:' + ty.color + '"></span>' +
-          '<span class="b"><span class="t" style="display:block">' + escapeHtml(schCurTitle(x)) + '</span><span class="s" style="display:block">' + escapeHtml(ty.name) + ' · ' + escapeHtml(repText(x)) + (x.time ? ' · ' + escapeHtml(x.time) : '') + '</span></span>' +
-          '<span class="d">' + label + '</span><span class="ed">›</span></button>').join('')
-        : '<div class="sch-empty">아직 등록된 일정이 없어요.</div>');
+      '<h4><span>' + headCount + '</span><button type="button" class="sch-new">＋ 새 일정</button></h4>' +
+      schCatBarHtml() + body;
   }
   function schRefreshOpen() {
     if (!schIsOpen()) return;
@@ -4664,6 +4816,8 @@ window.RecordsMemo = {
     if (t.closest('.sch-x') || t.closest('.sch-acts .cancel')) { closeSchedule(); return; }
     const tabB = t.closest('[data-schtab]');
     if (tabB) { sf.tab = tabB.dataset.schtab; schApplyTab(); return; }
+    const catB = t.closest('[data-sch-cat]');
+    if (catB) { setSchCatFilter(catB.getAttribute('data-sch-cat')); return; }
     if (t.closest('.sch-new')) { schLoadForm(null); sf.tab = 'form'; schApplyTab(); return; }
     const item = t.closest('[data-sch-id]');
     if (item) { schLoadForm(item.dataset.schId); sf.tab = 'form'; schApplyTab(); return; }
@@ -5097,6 +5251,7 @@ window.RecordsMemo = {
     schLegendHtml,
     openSchedule,
     openCalItem,
+    getSchCatFilter, setSchCatFilter, schCatBarHtml, schTypes,
     setViewDate: (d) => { if (isISO(d)) { viewDate = d; render(); } },
     getViewDate: () => viewDate
   };
@@ -5533,6 +5688,18 @@ window.RecordsMemo = {
   const photoBox = document.getElementById('dailyPhotoBox');
   const photoFile = document.getElementById('dailyPhotoFile');
 
+  function calSchs(iso) {
+    if (!window.RecordsTodo || !window.RecordsTodo.schOnCalendar) return [];
+    let schs = window.RecordsTodo.schOnCalendar(iso) || [];
+    const f = window.RecordsTodo.getSchCatFilter ? window.RecordsTodo.getSchCatFilter() : 'all';
+    if (f && f !== 'all') schs = schs.filter(x => (x.type || 'etc') === f);
+    return schs;
+  }
+  function renderSchCats() {
+    const box = document.getElementById('dailySchCats');
+    if (!box) return;
+    box.innerHTML = (window.RecordsTodo && window.RecordsTodo.schCatBarHtml) ? window.RecordsTodo.schCatBarHtml() : '';
+  }
   function showCal() {
     entryOpen = false;
     calView.hidden = false;
@@ -5580,6 +5747,7 @@ window.RecordsMemo = {
     if (typeof closeSchPop === 'function') closeSchPop();
     const today = U.todayISO();
     calNav.innerHTML = navHtml(U.fmtYmDot(viewYm));
+    renderSchCats();
     const dows = U.DAYS.map(d => '<div class="m-dow">' + d + '</div>').join('');
     const cells = monthCells(viewYm).map(c => {
       const day = state.days[c.iso];
@@ -5587,7 +5755,7 @@ window.RecordsMemo = {
       const heart = day && day.metBf ? '<svg class="heart" viewBox="0 0 16 16" aria-hidden="true"><path fill="#e08a96" d="M8 13.6S2.6 10.2 2.6 7.1C2.6 5.4 3.9 4.1 5.6 4.1c.9 0 1.75.45 2.25 1.16C8.35 4.55 9.2 4.1 10.1 4.1c1.7 0 3 1.3 3 3 0 3.1-5.1 6.5-5.1 6.5z"/></svg>' : '';
       const cls = 'mday' + (c.mute ? ' mute' : '') + (c.iso === today ? ' today' : '');
       const studyMin = (!c.mute && window.RecordsStudy) ? window.RecordsStudy.dayMinutes(c.iso) : 0;
-      const schs = (!c.mute && window.RecordsTodo && window.RecordsTodo.schOnCalendar) ? window.RecordsTodo.schOnCalendar(c.iso) : [];
+      const schs = (!c.mute) ? calSchs(c.iso) : [];
       let schHtml = '';
       if (schs.length) {
         const itemAttr = x => ' data-sch-kind="' + U.escapeHtml(x.kind || '') + '" data-sch-id="' + U.escapeHtml(x.id || '') + '" role="button" tabindex="0"';
@@ -5765,7 +5933,7 @@ window.RecordsMemo = {
   }
   function openSchPop(iso, anchor) {
     if (!window.RecordsTodo || !window.RecordsTodo.schOnCalendar) return;
-    const schs = window.RecordsTodo.schOnCalendar(iso) || [];
+    const schs = (typeof calSchs === 'function') ? calSchs(iso) : (window.RecordsTodo.schOnCalendar(iso) || []);
     const pop = schPopEl();
     pop.setAttribute('aria-label', U.fmtDot(iso) + ' 일정 ' + schs.length + '개');
     pop.innerHTML =
@@ -5786,6 +5954,12 @@ window.RecordsMemo = {
     openSchPop(iso, anchor);
   }
 
+  const dailySchCats = document.getElementById('dailySchCats');
+  if (dailySchCats) dailySchCats.addEventListener('click', e => {
+    const btn = e.target.closest('[data-sch-cat]');
+    if (!btn || !window.RecordsTodo) return;
+    window.RecordsTodo.setSchCatFilter(btn.getAttribute('data-sch-cat'));
+  });
   calNav.addEventListener('click', e => {
     const btn = e.target.closest('[data-nav]');
     if (!btn) return;
@@ -5799,7 +5973,7 @@ window.RecordsMemo = {
     if (window.RecordsTodo && window.RecordsTodo.openCalItem) window.RecordsTodo.openCalItem(kind, id, iso);
   }
   function openDotsOrPop(iso, anchor) {
-    const schs = (window.RecordsTodo && window.RecordsTodo.schOnCalendar) ? (window.RecordsTodo.schOnCalendar(iso) || []) : [];
+    const schs = calSchs(iso);
     if (schs.length === 1 && schs[0].kind && schs[0].id) { openCalFrom(schs[0].kind, schs[0].id, iso); return; }
     if (schs.length) toggleSchPop(iso, anchor);
   }
@@ -6059,6 +6233,7 @@ window.RecordsMemo = {
     getDay, dayHasRecord, monthCells,
     showCal, showEntry,
     refreshCal() { if (!entryOpen) renderCal(); },
+    renderSchCats,
     empty: emptyDaily,
     hydrate: hydrateDaily,
     _setViewDate(iso) { viewDate = iso; viewYm = U.ymOf(iso); }
@@ -6459,6 +6634,267 @@ window.RecordsMemo = {
     render: renderDday,
     empty: emptyDday,
     hydrate: hydrateDday
+  };
+})();
+
+
+
+/* ===== panel: 바로가기 ===== */
+(function () {
+  const U = window.RecordsUtil;
+  const KEY = 'records-links';
+  const listEl = document.getElementById('linksList');
+  const DEFAULTS = [
+    { id: 'lnk-dailybread', title: 'dailybread', url: 'https://bettylee0531.github.io/dailybread/', note: '매일 묵상' },
+    { id: 'lnk-news', title: '경제 뉴스 스크랩', url: 'https://economicnewsstudy.netlify.app/', note: '' }
+  ];
+  const LINK_COLORS = {
+    'lnk-dailybread': '#1E3A5F',
+    'lnk-news': '#5E8A6E'
+  };
+  const LINK_PALETTE = ['#1E3A5F','#4A6FA5','#5E8A6E','#B9733A','#8B5E7A','#3D6B6B','#6B5A8A','#8A6A3D'];
+  let links = emptyLinks();
+  let drag = null;
+
+  function emptyLinks() { return { v: 1, items: [] }; }
+  function defaultLinks() {
+    return DEFAULTS.map(x => Object.assign({}, x));
+  }
+  function normalizeUrl(raw) {
+    let s = String(raw || '').trim();
+    if (!s) return '';
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+    try {
+      const u = new URL(s);
+      if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
+      if (!u.hostname) return '';
+      return u.href;
+    } catch (e) { return ''; }
+  }
+  function hostOf(url) {
+    try { return new URL(url).hostname.replace(/^www\./, ''); } catch (e) { return url; }
+  }
+  function colorOf(it) {
+    if (it && LINK_COLORS[it.id]) return LINK_COLORS[it.id];
+    const key = (it && (it.id || it.title)) || '';
+    let h = 0;
+    for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+    return LINK_PALETTE[h % LINK_PALETTE.length];
+  }
+  function initialOf(title) {
+    const t = String(title || '').trim();
+    return t ? t.charAt(0).toUpperCase() : '+';
+  }
+  function fieldsHtml(it) {
+    return '<input type="text" name="title" value="' + U.escapeHtml((it && it.title) || '') + '" placeholder="이름" maxlength="40">' +
+      '<input type="url" name="url" value="' + U.escapeHtml((it && it.url) || '') + '" placeholder="주소 (예: bettylee0531.github.io/dailybread)" maxlength="300">';
+  }
+  function validItem(it) {
+    return it && typeof it.id === 'string' && typeof it.title === 'string' && it.title.trim() && normalizeUrl(it.url);
+  }
+  function normalizeItem(it) {
+    if (!it) return null;
+    const url = normalizeUrl(it.url);
+    const title = window.RecordsIme.nfc(it.title || '').replace(/\s+/g, ' ').trim();
+    if (!title || !url) return null;
+    return {
+      id: typeof it.id === 'string' && it.id ? it.id : U.uid('lnk'),
+      title: title.slice(0, 40),
+      url: url,
+      note: window.RecordsIme.nfc(it.note || '').replace(/\s+/g, ' ').trim().slice(0, 60)
+    };
+  }
+  function hydrateLinks(data) {
+    const next = emptyLinks();
+    if (!data || typeof data !== 'object') return next;
+    if (Number.isFinite(data.v)) next.v = data.v;
+    next.items = Array.isArray(data.items) ? data.items.map(normalizeItem).filter(Boolean) : [];
+    return next;
+  }
+  function loadLinks() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw == null || raw === '') {
+        links = { v: 1, items: defaultLinks() };
+        saveLinks({ localOnly: true });
+      } else {
+        links = hydrateLinks(JSON.parse(raw));
+      }
+    } catch (e) { links = { v: 1, items: defaultLinks() }; }
+  }
+  function saveLinks(opts) {
+    try { localStorage.setItem(KEY, JSON.stringify(links)); }
+    catch (e) { alert('저장 공간이 부족해요.'); }
+    if ((!opts || !opts.localOnly) && window.RecordsCloud) window.RecordsCloud.onLinksSave(links);
+  }
+  function applyCloudLinks(data) {
+    links = hydrateLinks(data);
+    saveLinks({ localOnly: true });
+    renderLinks();
+  }
+
+  function renderLinks() {
+    if (!listEl) return;
+    const handle = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="4" r="1.15" fill="currentColor"/><circle cx="10" cy="4" r="1.15" fill="currentColor"/><circle cx="6" cy="8" r="1.15" fill="currentColor"/><circle cx="10" cy="8" r="1.15" fill="currentColor"/><circle cx="6" cy="12" r="1.15" fill="currentColor"/><circle cx="10" cy="12" r="1.15" fill="currentColor"/></svg>';
+    const cards = links.items.map(it => {
+      return '<div class="link-card" data-id="' + U.escapeHtml(it.id) + '">' +
+        '<button type="button" class="link-handle" aria-label="순서 바꾸기" data-link-drag="1">' + handle + '</button>' +
+        '<a class="link-main" href="' + U.escapeHtml(it.url) + '" target="_blank" rel="noopener noreferrer">' +
+          '<span class="link-ico" style="background:' + colorOf(it) + '">' + U.escapeHtml(initialOf(it.title)) + '</span>' +
+          '<span class="link-text">' +
+            '<span class="link-title">' + U.escapeHtml(it.title) + '</span>' +
+          '</span>' +
+        '</a>' +
+        '<div class="link-acts">' +
+          '<button type="button" data-link-edit="1">수정</button>' +
+          '<button type="button" class="link-del" data-link-del="1">삭제</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    const addTile = '<button type="button" class="link-add-tile" data-link-add="1" aria-label="바로가기 추가">' +
+      '<span class="link-add-plus">+</span><span>추가</span></button>';
+    listEl.innerHTML = '<div class="link-list">' + cards + addTile + '</div>';
+  }
+
+  function openEdit(it) {
+    window.RecordsModal.open({
+      title: '바로가기 수정',
+      body: fieldsHtml(it),
+      actions: [
+        { act: 'ok', label: '저장' },
+        { act: 'delete', label: '삭제', className: 'danger' },
+        { act: 'cancel', label: '취소', className: 'ghost' }
+      ]
+    }).then(res => {
+      if (res.act === 'delete') {
+        if (!confirm('이 바로가기를 지울까요?')) return;
+        links.items = links.items.filter(x => x.id !== it.id);
+        saveLinks(); renderLinks(); return;
+      }
+      if (res.act !== 'ok') return;
+      const next = normalizeItem({ id: it.id, title: res.form.title, url: res.form.url, note: it.note });
+      if (!next) { alert('이름과 바른 주소를 적어 주세요.'); return; }
+      Object.assign(it, next);
+      saveLinks(); renderLinks();
+    });
+  }
+
+  function openAdd() {
+    window.RecordsModal.open({
+      title: '바로가기 추가',
+      body: fieldsHtml(null),
+      actions: [
+        { act: 'ok', label: '추가' },
+        { act: 'cancel', label: '취소', className: 'ghost' }
+      ]
+    }).then(res => {
+      if (res.act !== 'ok') return;
+      const next = normalizeItem({
+        id: U.uid('lnk'),
+        title: res.form.title,
+        url: res.form.url
+      });
+      if (!next) { alert('이름과 바른 주소를 적어 주세요. 주소가 http 없이 시작하면 https://를 붙이에요.'); return; }
+      links.items.push(next);
+      saveLinks();
+      renderLinks();
+    });
+  }
+
+  if (listEl) listEl.addEventListener('click', e => {
+    if (e.target.closest('[data-link-add]')) {
+      e.preventDefault();
+      openAdd();
+      return;
+    }
+    const card = e.target.closest('.link-card[data-id]');
+    if (!card) return;
+    const it = links.items.find(x => x.id === card.dataset.id);
+    if (!it) return;
+    if (e.target.closest('[data-link-del]')) {
+      e.preventDefault();
+      if (confirm('이 바로가기를 지울까요?')) {
+        links.items = links.items.filter(x => x.id !== it.id);
+        saveLinks(); renderLinks();
+      }
+      return;
+    }
+    if (e.target.closest('[data-link-edit]')) {
+      e.preventDefault();
+      openEdit(it);
+      return;
+    }
+    if (e.target.closest('[data-link-drag]')) {
+      e.preventDefault();
+    }
+  });
+
+  function cardAt(x, y) {
+    const cards = [...listEl.querySelectorAll('.link-card')];
+    const hit = cards.find(el => {
+      const r = el.getBoundingClientRect();
+      return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    });
+    if (hit) return hit;
+    let best = null, bestD = Infinity;
+    cards.forEach(el => {
+      const r = el.getBoundingClientRect();
+      const dx = (r.left + r.right) / 2 - x;
+      const dy = (r.top + r.bottom) / 2 - y;
+      const d = dx * dx + dy * dy;
+      if (d < bestD) { bestD = d; best = el; }
+    });
+    return best;
+  }
+  if (listEl) {
+    listEl.addEventListener('pointerdown', e => {
+      const handle = e.target.closest('[data-link-drag]');
+      if (!handle || e.button) return;
+      const card = handle.closest('.link-card');
+      if (!card) return;
+      e.preventDefault();
+      drag = { id: card.dataset.id, startY: e.clientY };
+      card.classList.add('dragging');
+      handle.setPointerCapture(e.pointerId);
+    });
+    listEl.addEventListener('pointermove', e => {
+      if (!drag) return;
+      const over = cardAt(e.clientX, e.clientY);
+      if (!over || over.dataset.id === drag.id) return;
+      const dragging = listEl.querySelector('.link-card[data-id="' + drag.id + '"]');
+      if (!dragging) return;
+      const list = dragging.parentNode;
+      const cards = [...list.querySelectorAll('.link-card')];
+      const from = cards.indexOf(dragging), to = cards.indexOf(over);
+      if (from < 0 || to < 0 || from === to) return;
+      if (from < to) list.insertBefore(dragging, over.nextSibling);
+      else list.insertBefore(dragging, over);
+    });
+    function endDrag() {
+      if (!drag) return;
+      const ids = [...listEl.querySelectorAll('.link-card')].map(el => el.dataset.id);
+      const next = ids.map(id => links.items.find(x => x.id === id)).filter(Boolean);
+      if (next.length === links.items.length) links.items = next;
+      drag = null;
+      listEl.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+      saveLinks();
+    }
+    listEl.addEventListener('pointerup', endDrag);
+    listEl.addEventListener('pointercancel', endDrag);
+  }
+
+  document.addEventListener('records-panel', ev => {
+    if (ev.detail === 'links') renderLinks();
+  });
+
+  loadLinks();
+  window.RecordsLinks = {
+    getState: () => links,
+    applyCloud: applyCloudLinks,
+    render: renderLinks,
+    empty: emptyLinks,
+    hydrate: hydrateLinks,
+    normalizeUrl
   };
 })();
 
@@ -7357,6 +7793,7 @@ let todosUnsub = null;
 let moneyUnsub = null;
 let dailyUnsub = null;
 let ddayUnsub = null;
+let linksUnsub = null;
 let studyUnsub = null;
 let studyTimer = null;
 let lastStudyJson = "";
@@ -7365,11 +7802,13 @@ let todosTimer = null;
 let moneyTimer = null;
 let dailyTimer = null;
 let ddayTimer = null;
+let linksTimer = null;
 let lastNotesJson = "";
 let lastTodosJson = "";
 let lastMoneyJson = "";
 let lastDailyJson = "";
 let lastDdayJson = "";
+let lastLinksJson = "";
 let lastPhotoJson = "";
 let toastTimer = null;
 
@@ -7788,6 +8227,7 @@ async function markInitialized(uid) {
 function moneyRef(uid) { return doc(fbDb, "users", uid, "data", "money"); }
 function dailyRef(uid) { return doc(fbDb, "users", uid, "data", "daily"); }
 function ddayRef(uid) { return doc(fbDb, "users", uid, "data", "dday"); }
+function linksRef(uid) { return doc(fbDb, "users", uid, "data", "links"); }
 function studyRef(uid) { return doc(fbDb, "users", uid, "data", "study"); }
 function emptyStudy() {
   if (window.RecordsStudy) return window.RecordsStudy.empty();
@@ -7850,6 +8290,7 @@ function emptyDaily() {
   ], days: {} };
 }
 function emptyDday() { return { v: 1, items: [] }; }
+function emptyLinks() { return { v: 1, items: [] }; }
 
 function moneyPayload(state) {
   const s = state || emptyMoney();
@@ -7905,6 +8346,19 @@ function ddaySignature(state) {
   delete s.updatedAt;
   return stableStringify(s);
 }
+function linksPayload(state) {
+  const s = state || emptyLinks();
+  return clean({
+    v: s.v || 1,
+    items: Array.isArray(s.items) ? s.items : [],
+    updatedAt: new Date().toISOString()
+  });
+}
+function linksSignature(state) {
+  const s = linksPayload(state);
+  delete s.updatedAt;
+  return stableStringify(s);
+}
 
 function localMoney() {
   if (window.RecordsMoney && typeof window.RecordsMoney.getState === "function") return window.RecordsMoney.getState();
@@ -7921,6 +8375,11 @@ function localDday() {
   try { return JSON.parse(localStorage.getItem("records-dday") || "null") || emptyDday(); }
   catch (e) { return emptyDday(); }
 }
+function localLinks() {
+  if (window.RecordsLinks && typeof window.RecordsLinks.getState === "function") return window.RecordsLinks.getState();
+  try { return JSON.parse(localStorage.getItem("records-links") || "null") || emptyLinks(); }
+  catch (e) { return emptyLinks(); }
+}
 
 function moneyHasData(s) {
   return !!(s && ((s.entries && s.entries.length) || (s.openingMonth && s.openingBalance != null)));
@@ -7933,6 +8392,7 @@ function dailyHasData(s) {
   return !!(s.habits && s.habits.length && names !== defs && (s.habits.length !== 3));
 }
 function ddayHasData(s) { return !!(s && s.items && s.items.length); }
+function linksHasData(s) { return !!(s && s.items && s.items.length); }
 
 function photosFromSnapshot(snap) {
   const map = {};
@@ -7964,6 +8424,12 @@ function applyDday(state) {
   applyingCloud = true;
   lastDdayJson = ddaySignature(state);
   if (window.RecordsDday) window.RecordsDday.applyCloud(state);
+  applyingCloud = false;
+}
+function applyLinks(state) {
+  applyingCloud = true;
+  lastLinksJson = linksSignature(state);
+  if (window.RecordsLinks) window.RecordsLinks.applyCloud(state);
   applyingCloud = false;
 }
 
@@ -8046,6 +8512,30 @@ function mergeDday(cloud, local) {
   });
   return { v: Math.max(c.v || 1, l.v || 1), items: Array.from(byId.values()) };
 }
+function mergeLinks(cloud, local) {
+  const hyd = window.RecordsLinks && window.RecordsLinks.hydrate;
+  const c = hyd ? hyd(cloud) : (cloud || emptyLinks());
+  const l = hyd ? hyd(local) : (local || emptyLinks());
+  const byId = new Map();
+  const keys = new Set();
+  const keyOf = it => (it.title || "") + "\0" + (it.url || "");
+  (c.items || []).forEach(it => { if (it && it.id) { byId.set(it.id, Object.assign({}, it)); keys.add(keyOf(it)); } });
+  (l.items || []).forEach(it => {
+    if (!it || !it.id) return;
+    if (byId.has(it.id)) {
+      byId.set(it.id, Object.assign({}, byId.get(it.id), it));
+    } else if (!keys.has(keyOf(it))) {
+      byId.set(it.id, Object.assign({}, it));
+      keys.add(keyOf(it));
+    }
+  });
+  // keep local order when possible, then append remaining cloud-only
+  const order = [];
+  const seen = new Set();
+  (l.items || []).forEach(it => { if (it && it.id && byId.has(it.id) && !seen.has(it.id)) { seen.add(it.id); order.push(byId.get(it.id)); } });
+  (c.items || []).forEach(it => { if (it && it.id && byId.has(it.id) && !seen.has(it.id)) { seen.add(it.id); order.push(byId.get(it.id)); } });
+  return { v: Math.max(c.v || 1, l.v || 1), items: order.length ? order : Array.from(byId.values()) };
+}
 
 async function shrinkPhoto(src) {
   let out = src;
@@ -8081,6 +8571,14 @@ async function uploadDday(uid, state) {
     return;
   }
   await setDoc(ddayRef(uid), data, { merge: true });
+}
+async function uploadLinks(uid, state) {
+  const data = linksPayload(state);
+  if (byteSize(data) > DOC_LIMIT) {
+    toast("바로가기 데이터가 너무 커서 계정에 올리지 못했어요.");
+    return;
+  }
+  await setDoc(linksRef(uid), data, { merge: true });
 }
 async function uploadPhoto(uid, date, photo) {
   if (!photo) {
@@ -8136,6 +8634,15 @@ async function pushDdayNow(state) {
   try {
     await uploadDday(currentUser.uid, state);
     lastDdayJson = sig;
+  } catch (err) { toast(friendlyError(err)); }
+}
+async function pushLinksNow(state) {
+  if (!currentUser || !fbDb || applyingCloud) return;
+  const sig = linksSignature(state);
+  if (sig === lastLinksJson) return;
+  try {
+    await uploadLinks(currentUser.uid, state);
+    lastLinksJson = sig;
   } catch (err) { toast(friendlyError(err)); }
 }
 async function pushPhotoNow(date, photo) {
@@ -8207,6 +8714,7 @@ function dailyKeys(s) {
   return k;
 }
 function ddayKeys(s) { return ((s && s.items) || []).filter(i => i && i.id).map(i => "dd:" + i.id); }
+function linksKeys(s) { return ((s && s.items) || []).filter(i => i && i.id).map(i => "lk:" + i.id); }
 const DEFAULT_SUBJECT_IDS = new Set(["edu", "eng", "biz"]);
 function studyDayHasContent(d) {
   return !!(d && ((d.cells && Object.keys(d.cells).length) || (d.tasks && d.tasks.length) || (d.line && String(d.line).trim())));
@@ -8223,7 +8731,7 @@ function photoKeys(map) { return Object.keys(map || {}).map(iso => "d:" + iso); 
 /* items present in `local` but not in `cloud` and never seen in this account on this browser */
 function findLocalOnly(cloud, local, synced) {
   const seen = k => synced.has(k);
-  const out = { notes: [], oneoffs: [], routines: [], entries: [], opening: null, days: {}, habits: [], ddays: [], schedules: [], schTypes: [], studyDays: {}, subjects: [], timer: null, keys: [] };
+  const out = { notes: [], oneoffs: [], routines: [], entries: [], opening: null, days: {}, habits: [], ddays: [], links: [], schedules: [], schTypes: [], studyDays: {}, subjects: [], timer: null, keys: [] };
 
   const cNoteIds = new Set((cloud.notes || []).map(n => String(n.id)));
   const cNoteContent = new Set((cloud.notes || []).map(noteContentKey));
@@ -8305,6 +8813,17 @@ function findLocalOnly(cloud, local, synced) {
     out.ddays.push(it); out.keys.push(k);
   });
 
+  const clk = cloud.links || {}, llk = local.links || {};
+  const lKeyOf = it => (it.title || "") + "\0" + (it.url || "");
+  const cLIds = new Set((clk.items || []).map(i => i && i.id));
+  const cLKeys = new Set((clk.items || []).map(i => i && lKeyOf(i)));
+  (llk.items || []).forEach(it => {
+    if (!it || !it.id) return;
+    const k = "lk:" + it.id;
+    if (cLIds.has(it.id) || cLKeys.has(lKeyOf(it)) || seen(k)) return;
+    out.links.push(it); out.keys.push(k);
+  });
+
   const cs = cloud.study || {}, ls = local.study || {};
   Object.keys(ls.days || {}).forEach(iso => {
     const k = "sd:" + iso;
@@ -8383,6 +8902,12 @@ function appendLocalOnly(base, lo) {
   dday.items = (dday.items || []).slice();
   (lo.ddays || []).forEach(it => { if (!dIds.has(it.id)) { dIds.add(it.id); dday.items.push(it); } });
 
+  const lnh = window.RecordsLinks && window.RecordsLinks.hydrate;
+  const linkst = lnh ? lnh(base.links) : Object.assign(emptyLinks(), base.links || {});
+  const lnIds = new Set((linkst.items || []).map(i => i.id));
+  linkst.items = (linkst.items || []).slice();
+  (lo.links || []).forEach(it => { if (!lnIds.has(it.id)) { lnIds.add(it.id); linkst.items.push(it); } });
+
   const sh = window.RecordsStudy && window.RecordsStudy.hydrate;
   const study = sh ? sh(base.study) : JSON.parse(JSON.stringify(base.study || emptyStudy()));
   study.days = study.days || {};
@@ -8409,11 +8934,11 @@ function appendLocalOnly(base, lo) {
   });
   if (lo.timer && !(study.timer && study.timer.active)) study.timer = JSON.parse(JSON.stringify(lo.timer));
 
-  return { notes, todos, money, daily, dday, study };
+  return { notes, todos, money, daily, dday, links: linkst, study };
 }
 
 function emptyLocalOnly() {
-  return { notes: [], oneoffs: [], routines: [], entries: [], opening: null, days: {}, habits: [], ddays: [], schedules: [], schTypes: [], studyDays: {}, subjects: [], timer: null, keys: [] };
+  return { notes: [], oneoffs: [], routines: [], entries: [], opening: null, days: {}, habits: [], ddays: [], links: [], schedules: [], schTypes: [], studyDays: {}, subjects: [], timer: null, keys: [] };
 }
 
 /* Keep items the user chose not to move, so they come back after logging out
@@ -8433,6 +8958,8 @@ function stashLocalOnly(lo) {
   add(cur.entries, lo.entries || [], e => e.id);
   add(cur.habits, lo.habits || [], h => h.id);
   add(cur.ddays, lo.ddays || [], i => i.id);
+  cur.links = cur.links || [];
+  add(cur.links, lo.links || [], i => i.id);
   cur.schedules = cur.schedules || []; cur.schTypes = cur.schTypes || [];
   add(cur.schedules, lo.schedules || [], x => x.id);
   add(cur.schTypes, lo.schTypes || [], t => t.id);
@@ -8461,13 +8988,14 @@ function restoreStashedLocal() {
   if (!kept || typeof kept !== "object") return;
   const lo = Object.assign(emptyLocalOnly(), kept);
   const merged = appendLocalOnly({
-    notes: localNotes(), todos: localTodos(), money: localMoney(), daily: localDaily(), dday: localDday(), study: localStudy()
+    notes: localNotes(), todos: localTodos(), money: localMoney(), daily: localDaily(), dday: localDday(), links: localLinks(), study: localStudy()
   }, lo);
   if (window.RecordsMemo) window.RecordsMemo.applyCloud(merged.notes);
   if (window.RecordsTodo) window.RecordsTodo.applyCloud(merged.todos);
   if (window.RecordsMoney) window.RecordsMoney.applyCloud(merged.money);
   if (window.RecordsDaily) window.RecordsDaily.applyCloud(merged.daily, {});
   if (window.RecordsDday) window.RecordsDday.applyCloud(merged.dday);
+  if (window.RecordsLinks) window.RecordsLinks.applyCloud(merged.links);
   if (window.RecordsStudy) window.RecordsStudy.applyCloud(merged.study);
   try { localStorage.removeItem(KEEP_KEY); } catch (e) {}
 }
@@ -8480,15 +9008,16 @@ async function maybeMigrate(uid, bag) {
     money: bag.cloudMoney || emptyMoney(),
     daily: bag.cloudDaily || emptyDaily(),
     dday: bag.cloudDday || emptyDday(),
+    links: bag.cloudLinks || emptyLinks(),
     study: bag.cloudStudy || emptyStudy(),
     photos: bag.cloudPhotos || {}
   };
-  const local = { notes: localNotes(), todos: localTodos(), money: localMoney(), daily: localDaily(), dday: localDday(), study: localStudy() };
+  const local = { notes: localNotes(), todos: localTodos(), money: localMoney(), daily: localDaily(), dday: localDday(), links: localLinks(), study: localStudy() };
 
   const st = loadMigrateState(uid);
   // everything currently in the account counts as "synced" on this browser
   [noteKeys(cloud.notes), todoKeys(cloud.todos), moneyKeys(cloud.money), dailyKeys(cloud.daily),
-    ddayKeys(cloud.dday), studyKeys(cloud.study), photoKeys(cloud.photos)].forEach(ks => ks.forEach(k => st.synced.add(k)));
+    ddayKeys(cloud.dday), linksKeys(cloud.links), studyKeys(cloud.study), photoKeys(cloud.photos)].forEach(ks => ks.forEach(k => st.synced.add(k)));
 
   const lo = findLocalOnly(cloud, local, st.synced);
   if (!lo.keys.length) {
@@ -8524,6 +9053,7 @@ async function maybeMigrate(uid, bag) {
   if (lo.entries.length) parts.push("수입·지출 " + lo.entries.length + "개");
   if (lo.opening) parts.push("가계부 시작 잔액");
   if (lo.ddays.length) parts.push("디데이 " + lo.ddays.length + "개");
+  if ((lo.links || []).length) parts.push("바로가기 " + lo.links.length + "개");
   if ((lo.schedules || []).length) parts.push("일정 " + lo.schedules.length + "개");
   const sdCount = Object.keys(lo.studyDays || {}).length;
   if (sdCount) parts.push("스터디 플래너 " + sdCount + "일");
@@ -8546,6 +9076,7 @@ async function maybeMigrate(uid, bag) {
         if (lo.days[iso] && lo.days[iso].photo) await uploadPhoto(uid, iso, lo.days[iso].photo);
       }
       if (lo.ddays.length) await uploadDday(uid, merged.dday);
+      if ((lo.links || []).length) await uploadLinks(uid, merged.links);
       if (sdCount || (lo.subjects || []).length || lo.timer) await uploadStudy(uid, merged.study);
       applyNotes(merged.notes);
       applyTodos(merged.todos);
@@ -8554,6 +9085,7 @@ async function maybeMigrate(uid, bag) {
       Object.keys(lo.days).forEach(iso => { if (lo.days[iso] && lo.days[iso].photo) photoMap[iso] = lo.days[iso].photo; });
       applyDaily(merged.daily, photoMap);
       applyDday(merged.dday);
+      applyLinks(merged.links || emptyLinks());
       applyStudy(merged.study);
       lo.keys.forEach(k => { st.synced.add(k); st.declined.delete(k); });
       st.asked = true;
@@ -8611,6 +9143,7 @@ function stopCloudSync() {
   if (moneyUnsub) { moneyUnsub(); moneyUnsub = null; }
   if (dailyUnsub) { dailyUnsub(); dailyUnsub = null; }
   if (ddayUnsub) { ddayUnsub(); ddayUnsub = null; }
+  if (linksUnsub) { linksUnsub(); linksUnsub = null; }
   if (studyUnsub) { studyUnsub(); studyUnsub = null; }
   if (studyTimer) { clearTimeout(studyTimer); studyTimer = null; }
   if (photosUnsub) { photosUnsub(); photosUnsub = null; }
@@ -8618,6 +9151,7 @@ function stopCloudSync() {
   if (moneyTimer) { clearTimeout(moneyTimer); moneyTimer = null; }
   if (dailyTimer) { clearTimeout(dailyTimer); dailyTimer = null; }
   if (ddayTimer) { clearTimeout(ddayTimer); ddayTimer = null; }
+  if (linksTimer) { clearTimeout(linksTimer); linksTimer = null; }
 }
 
 function startCloudSync(uid) {
@@ -8667,6 +9201,15 @@ function startCloudSync(uid) {
     applyDday(data);
   }, err => toast(friendlyError(err)));
 
+  linksUnsub = onSnapshot(linksRef(uid), snap => {
+    if (applyingCloud) return;
+    const data = snap.exists() ? snap.data() : emptyLinks();
+    rememberSynced(uid, linksKeys(data));
+    const sig = linksSignature(data);
+    if (sig === lastLinksJson) return;
+    applyLinks(data);
+  }, err => toast(friendlyError(err)));
+
   studyUnsub = onSnapshot(studyRef(uid), snap => {
     if (applyingCloud) return;
     if (!snap.exists()) return;
@@ -8698,24 +9241,26 @@ async function enterSignedIn(user) {
     return;
   }
   try {
-    const [nSnap, tSnap, mSnap, dSnap, ddSnap, pSnap, sSnap] = await Promise.all([
+    const [nSnap, tSnap, mSnap, dSnap, ddSnap, pSnap, sSnap, lSnap] = await Promise.all([
       getDocs(notesCol(user.uid)),
       getDoc(todosRef(user.uid)),
       getDoc(moneyRef(user.uid)),
       getDoc(dailyRef(user.uid)),
       getDoc(ddayRef(user.uid)),
       getDocs(dailyCol(user.uid)),
-      getDoc(studyRef(user.uid))
+      getDoc(studyRef(user.uid)),
+      getDoc(linksRef(user.uid))
     ]);
     const cloudNotes = notesFromSnapshot(nSnap);
     const cloudTodos = tSnap.exists() ? tSnap.data() : emptyTodos();
     const cloudMoney = mSnap.exists() ? mSnap.data() : emptyMoney();
     const cloudDaily = dSnap.exists() ? dSnap.data() : emptyDaily();
     const cloudDday = ddSnap.exists() ? ddSnap.data() : emptyDday();
+    const cloudLinks = lSnap.exists() ? lSnap.data() : emptyLinks();
     const cloudPhotos = photosFromSnapshot(pSnap);
     const bag = {
       cloudNotes, cloudTodos, cloudNoteIds: nSnap.docs.map(d => d.id),
-      cloudMoney, cloudDaily, cloudDday, cloudPhotos, cloudPhotoIds: pSnap.docs.map(d => d.id),
+      cloudMoney, cloudDaily, cloudDday, cloudLinks, cloudPhotos, cloudPhotoIds: pSnap.docs.map(d => d.id),
       cloudStudy: sSnap.exists() ? sSnap.data() : null
     };
     const wrote = await maybeMigrate(user.uid, bag);
@@ -8725,6 +9270,7 @@ async function enterSignedIn(user) {
       applyMoney(cloudMoney);
       applyDaily(cloudDaily, cloudPhotos);
       applyDday(cloudDday);
+      applyLinks(cloudLinks);
       applyStudy(bag.cloudStudy || emptyStudy());
     }
     startCloudSync(user.uid);
@@ -8742,6 +9288,7 @@ function enterSignedOut() {
   lastMoneyJson = "";
   lastDailyJson = "";
   lastDdayJson = "";
+  lastLinksJson = "";
   lastStudyJson = "";
   lastPhotoJson = "";
   updateAuthUi();
@@ -8765,6 +9312,10 @@ function enterSignedOut() {
   try {
     const dday = JSON.parse(localStorage.getItem("records-dday") || "null");
     if (window.RecordsDday) window.RecordsDday.applyCloud(dday || emptyDday());
+  } catch (e) {}
+  try {
+    const links = JSON.parse(localStorage.getItem("records-links") || "null");
+    if (window.RecordsLinks) window.RecordsLinks.applyCloud(links || emptyLinks());
   } catch (e) {}
   try {
     const study = JSON.parse(localStorage.getItem("records-study") || "null");
@@ -8906,6 +9457,7 @@ async function logoutGoogle() {
       try { await pushMoneyNow(localMoney()); } catch (e) {}
       try { await pushDailyNow(localDaily()); } catch (e) {}
       try { await pushDdayNow(localDday()); } catch (e) {}
+      try { await pushLinksNow(localLinks()); } catch (e) {}
       try { await pushStudyNow(localStudy()); } catch (e) {}
     }
     stopCloudSync();
@@ -8945,6 +9497,11 @@ window.RecordsCloud = {
     if (!currentUser || applyingCloud) return;
     clearTimeout(ddayTimer);
     ddayTimer = setTimeout(() => { ddayTimer = null; pushDdayNow(state); }, 250);
+  },
+  onLinksSave(state) {
+    if (!currentUser || applyingCloud) return;
+    clearTimeout(linksTimer);
+    linksTimer = setTimeout(() => { linksTimer = null; pushLinksNow(state); }, 250);
   },
   onStudySave(state) {
     if (!currentUser || applyingCloud) return;
