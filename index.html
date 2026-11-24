@@ -52,7 +52,7 @@
     background: #333; color: #fff; font-size: 15px; line-height: 1.4;
     padding: 8px 14px; border-radius: 10px; max-width: min(440px, calc(100% - 32px));
     opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
-    z-index: 80; text-align: center;
+    z-index: 260; text-align: center;
     -webkit-text-stroke: calc(1.5px * 15 / 44) #333;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -626,7 +626,7 @@
   .backdrop {
     position: fixed; inset: 0; background: rgba(0,0,0,.28);
     display: flex; align-items: center; justify-content: center;
-    z-index: 50; padding: 20px;
+    z-index: 240; padding: 20px;
   }
   .backdrop[hidden] { display: none; }
   .modal {
@@ -1550,6 +1550,8 @@
   .sch-btn svg { width: 14px; height: 14px; }
   .mday .schs { margin-top: auto; width: 100%; display: flex; flex-direction: column; gap: 2px; padding: 4px 2px 0; box-sizing: border-box; }
   .mday .sch { display: block; font-size: 11px; line-height: 1.25; padding: 1px 4px; border-radius: 4px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 3px solid; color: #333; -webkit-text-stroke: 0; }
+  .mday .sch.sch-open { cursor: pointer; }
+  .mday .sch.sch-open:hover { filter: brightness(0.97); }
   .mday .sch.done { opacity: .5; text-decoration: line-through; color: #888; }
   .mday .sch.miss { text-decoration: line-through; text-decoration-color: rgba(192,96,90,.8); }
   .mday .sch.miss::before { content: '✕ '; color: #c0605a; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 9px; }
@@ -1590,6 +1592,8 @@
   .sch-pop .sch.done { opacity: .55; text-decoration: line-through; color: #888; }
   .sch-pop .sch.miss { text-decoration: line-through; text-decoration-color: rgba(192,96,90,.8); }
   .sch-pop .sch.miss::before { content: '✕ '; color: #c0605a; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 11px; }
+  .sch-pop .sch { cursor: pointer; }
+  .sch-pop .sch:hover { filter: brightness(0.97); }
   .sch-pop .tm { display: block; font-size: 11px; color: #8a97a8; margin-top: 1px; -webkit-text-stroke: 0; }
 
   .mday .sdots { display: none; }
@@ -1597,7 +1601,7 @@
   @media (max-width: 600px) {
     .mday .schs { display: none; }
     .mday .sch-more { text-align: center; padding: 0; font-size: 9.5px; margin-top: 2px; }
-    .mday .sdots { display: flex; gap: 2px; margin-top: auto; padding-top: 3px; justify-content: center; flex-wrap: wrap; }
+    .mday .sdots { display: flex; gap: 2px; margin-top: auto; padding-top: 3px; justify-content: center; flex-wrap: wrap; cursor: pointer; }
     .mday .sdots i { width: 5px; height: 5px; border-radius: 50%; display: block; }
     .mday .sdots i.done { opacity: .35; }
     .mday .sdots i.miss { background: #fff !important; border: 1.2px solid #c0605a; box-sizing: border-box; }
@@ -1664,6 +1668,26 @@
   .sch-acts .sdel-cf { margin-right: auto; font-size: 13px; color: #a0524c; display: inline-flex; align-items: center; gap: 6px; }
   .sch-acts .sdel-cf button { background: #c0605a; color: #fff; border: 0; padding: 5px 10px; font-size: 13px; -webkit-text-stroke: 0; }
   .sch-err { color: #c0605a; font-size: 13px; margin-top: 4px; }
+  .sch-sheet.cal-only { width: min(460px, calc(100vw - 40px)); }
+  .cal-view { display: flex; flex-direction: column; gap: 14px; }
+  .cal-view .ttl { font-size: 22px; line-height: 1.35; color: #222; border-left: 4px solid; padding: 2px 0 2px 12px; -webkit-text-stroke: calc(1.5px * 22 / 44) #fff; word-break: keep-all; }
+  .cal-view .st { font-size: 13px; color: #8a97a8; padding-left: 16px; margin-top: -8px; -webkit-text-stroke: 0; }
+  .cal-view .st.miss { color: #c0605a; }
+  .cal-view .st.done { color: #7a8896; }
+  .cal-rows { display: flex; flex-direction: column; gap: 8px; }
+  .cal-row { display: grid; grid-template-columns: 52px 1fr; gap: 8px 12px; font-size: 16px; line-height: 1.45; align-items: start; }
+  .cal-row .k { color: #8a97a8; font-size: 13px; padding-top: 2px; -webkit-text-stroke: 0; }
+  .cal-row .v { color: #2b2b2b; word-break: keep-all; }
+  .cal-row .type { display: inline-flex; align-items: center; gap: 6px; }
+  .cal-row .type i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .cal-done { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #d6dde6; background: #fff; border-radius: 8px; padding: 7px 12px; font: inherit; font-size: 15px; color: #333; cursor: pointer; width: fit-content; -webkit-text-stroke: 0; }
+  .cal-done .box { width: 16px; height: 16px; border: 1.5px solid #1E3A5F; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-family: 'Inter', sans-serif; box-sizing: border-box; }
+  .cal-done[aria-pressed="true"] { background: #f3f6fa; color: #1E3A5F; }
+  .cal-done[aria-pressed="true"] .box { background: #1E3A5F; }
+  .sch-acts .edit { border: 1px solid #1E3A5F; background: #1E3A5F; color: #fff; -webkit-text-stroke-color: #1E3A5F; }
+  @media (max-width: 600px) {
+    .sch-sheet.cal-only { width: 100%; }
+  }
   .sch-list { border-left: 1px dashed #e5e5e5; padding-left: 20px; min-width: 0; }
   .sch-list h4 { margin: 0 0 8px; font-weight: 400; font-size: 14px; color: #888; -webkit-text-stroke: calc(1.5px * 14 / 44) #fff; display: flex; justify-content: space-between; align-items: center; }
   .sch-list h4 button { border: 0; background: none; color: #1E3A5F; font: inherit; font-size: 13px; cursor: pointer; }
@@ -3320,6 +3344,7 @@ window.RecordsMemo = {
     renderDateNav(today);
     renderStreak(today);
     renderWeek(today);
+    if (window.RecordsDaily && window.RecordsDaily.refreshCal) window.RecordsDaily.refreshCal();
   }
 
   function renderDateNav(today) {
@@ -4041,7 +4066,12 @@ window.RecordsMemo = {
       pendingRename = null;
       $('#modal').hidden = true;
       if (hadRename) render();
+      if (typeof syncCalItem === 'function') syncCalItem();
+      e.stopImmediatePropagation();
     }
+  });
+  $('#modal').addEventListener('click', () => {
+    queueMicrotask(() => { if ($('#modal').hidden && typeof syncCalItem === 'function') syncCalItem(); });
   });
 
   /* drag: mouse on handle immediately; touch long-press ~300ms on row */
@@ -4262,12 +4292,12 @@ window.RecordsMemo = {
       if (!schOnDate(x, iso) || occMoved(x, iso)) continue;
       const ty = schTypeOf(x.type);
       const done = occDone(x, iso);
-      out.push({ title: schTitleOn(x, iso), color: ty.color, bg: tint(ty.color, .12), st: done ? 'done' : (iso < today ? 'miss' : ''), rank: timeRank(x.time), time: x.time || '' });
+      out.push({ kind: 'sch', id: x.id, title: schTitleOn(x, iso), color: ty.color, bg: tint(ty.color, .12), st: done ? 'done' : (iso < today ? 'miss' : ''), rank: timeRank(x.time), time: x.time || '' });
     }
     for (const t of state.oneoffs) {
       if (!t.schId || t.date !== iso || t.movedTo) continue;
       const ty = schTypeOf(t.schType);
-      out.push({ title: t.text, color: ty.color, bg: tint(ty.color, .12), st: t.done ? 'done' : (iso < today ? 'miss' : ''), rank: timeRank(t.time), time: t.time || '' });
+      out.push({ kind: 'oneoff', id: t.id, title: t.text, color: ty.color, bg: tint(ty.color, .12), st: t.done ? 'done' : (iso < today ? 'miss' : ''), rank: timeRank(t.time), time: t.time || '' });
     }
     out.sort((a, b) => a.rank - b.rank);
     return out;
@@ -4393,6 +4423,7 @@ window.RecordsMemo = {
   }
   function schIsOpen() { return !!(schEl && !schEl.hidden); }
   function openSchedule(id, opts) {
+    if (typeof closeCalItem === 'function') closeCalItem();
     schEnsureDom();
     schEl.hidden = false;
     schLoadForm(id || null, opts);
@@ -4695,6 +4726,340 @@ window.RecordsMemo = {
     if (sf.adding) { sf.adding = false; schRenderTypes(); return; }
     closeSchedule();
   });
+
+  /* ---------- 달력에서 일정 보기 / 고치기 ---------- */
+  let calItemEl = null;
+  const cv = { kind: null, id: null, date: null, mode: 'view', type: 'etc', rep: 'none', days: [], delConfirm: false, afterRename: false };
+  function calItemOpen() { return !!(calItemEl && !calItemEl.hidden); }
+  function closeCalItem() {
+    if (calItemEl) calItemEl.hidden = true;
+    cv.kind = cv.id = cv.date = null;
+    cv.mode = 'view'; cv.delConfirm = false; cv.afterRename = false;
+  }
+  function calItemEnsure() {
+    if (calItemEl) return calItemEl;
+    calItemEl = document.createElement('div');
+    calItemEl.className = 'sch-back';
+    calItemEl.id = 'calItemBack';
+    calItemEl.hidden = true;
+    calItemEl.innerHTML = '<div class="sch-sheet cal-only" role="dialog" aria-modal="true" aria-labelledby="calItemTitle">' +
+      '<div class="sch-head"><h3 id="calItemTitle">일정</h3><button type="button" class="sch-x" data-cal-close="1" aria-label="닫기">✕</button></div>' +
+      '<div id="calItemBody"></div></div>';
+    document.body.appendChild(calItemEl);
+    calItemEl.addEventListener('click', calItemClick);
+    calItemEl.addEventListener('input', e => {
+      if (e.target.id === 'calTimeIn') {
+        const c = calItemEl.querySelector('.time-clear');
+        if (c) c.hidden = !e.target.value;
+      }
+      if (e.target.id === 'calTitleIn') {
+        const err = calItemEl.querySelector('#calErr');
+        if (err) err.hidden = true;
+      }
+    });
+    return calItemEl;
+  }
+  function calItemInfo() {
+    if (!cv.kind || !cv.id || !isISO(cv.date)) return null;
+    const today = todayISO();
+    if (cv.kind === 'sch') {
+      const x = findSch(cv.id);
+      if (!x || !schOnDate(x, cv.date) || occMoved(x, cv.date)) return null;
+      const ty = schTypeOf(x.type);
+      const done = occDone(x, cv.date);
+      return {
+        kind: 'sch', id: x.id, date: cv.date, raw: x,
+        title: schTitleOn(x, cv.date), time: x.time || '',
+        type: x.type || 'etc', typeName: ty.name, color: ty.color,
+        memo: x.memo || '', rep: x.rep || 'none',
+        days: (x.rep === 'weekly') ? schWeekdays(x) : [],
+        repLabel: (x.rep && x.rep !== 'none') ? repText(x) : '없음',
+        repeating: !!(x.rep && x.rep !== 'none'),
+        done: done, missed: !done && cv.date < today,
+        movedFrom: null
+      };
+    }
+    if (cv.kind === 'oneoff') {
+      const t = findOneoff(cv.id);
+      if (!t || !t.schId || t.date !== cv.date || t.movedTo) return null;
+      const ty = schTypeOf(t.schType || 'etc');
+      const origin = resolveOrigin(t);
+      const ox = (origin && origin.kind === 'sch') ? findSch(origin.id) : null;
+      const from = isISO(t.movedFrom) ? t.movedFrom : (origin && isISO(origin.date) ? origin.date : null);
+      return {
+        kind: 'oneoff', id: t.id, date: t.date, raw: t,
+        title: t.text, time: t.time || '',
+        type: t.schType || 'etc', typeName: ty.name, color: ty.color,
+        memo: ox && ox.memo ? ox.memo : (t.memo || ''),
+        memoReadonly: true,
+        rep: 'none', days: [],
+        repLabel: ox && ox.rep && ox.rep !== 'none' ? (repText(ox) + '에서 옮김') : '없음',
+        repeating: false,
+        done: !!t.done, missed: !t.done && t.date < today,
+        movedFrom: from, origin: origin
+      };
+    }
+    return null;
+  }
+  function syncCalItem() {
+    if (!calItemOpen()) return;
+    if (!calItemInfo()) closeCalItem();
+    else if (cv.mode === 'view' || cv.afterRename) {
+      cv.afterRename = false;
+      cv.mode = 'view';
+      renderCalItem();
+    }
+  }
+  function openCalItem(kind, id, date) {
+    if (typeof closeSchedule === 'function') closeSchedule();
+    if (!kind || !id || !isISO(date)) return;
+    cv.kind = kind; cv.id = id; cv.date = date;
+    cv.mode = 'view'; cv.delConfirm = false; cv.afterRename = false;
+    calItemEnsure();
+    if (!calItemInfo()) { closeCalItem(); return; }
+    calItemEl.hidden = false;
+    renderCalItem();
+  }
+  function calTypeChips(cur) {
+    return schTypes().map(t => {
+      const on = t.id === cur;
+      return '<button type="button" class="tchip' + (on ? ' on' : '') + '" data-cal-type="' + escapeHtml(t.id) + '" style="' + (on ? 'background:' + t.color + ';border-color:' + t.color : '') + '"><i style="background:' + (on ? '#fff' : t.color) + '"></i>' + escapeHtml(t.name) + '</button>';
+    }).join('');
+  }
+  function calRepDetail() {
+    if (cv.rep === 'weekly') {
+      const date = (calItemEl.querySelector('#calDateIn') || {}).value || cv.date;
+      if (!cv.days.length) cv.days = [parseISO(date).getDay()];
+      return '<div class="dows">' + DOW_ORDER.map(n =>
+        '<button type="button" data-cal-dow="' + n + '" class="' + (cv.days.includes(n) ? 'on' : '') + '">' + DOW_KO[n] + '</button>'
+      ).join('') + '</div><small>반복할 요일을 골라 주세요.</small>';
+    }
+    if (cv.rep === 'monthly') {
+      const date = (calItemEl.querySelector('#calDateIn') || {}).value || cv.date;
+      const n = parseISO(date).getDate();
+      return '매월 ' + n + '일<small>이 일정의 반복 규칙을 바꿉니다. 이날만 옮기려면 날짜만 바꿔 주세요.</small>';
+    }
+    if (cv.rep === 'yearly') {
+      const date = (calItemEl.querySelector('#calDateIn') || {}).value || cv.date;
+      const d = parseISO(date);
+      return '매년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일';
+    }
+    return '';
+  }
+  function renderCalItem() {
+    const info = calItemInfo();
+    if (!info) { closeCalItem(); return; }
+    const body = calItemEl.querySelector('#calItemBody');
+    const head = calItemEl.querySelector('#calItemTitle');
+    if (cv.mode !== 'edit') {
+      head.textContent = '일정';
+      const st = info.done ? '<div class="st done">완료됨</div>' : (info.missed ? '<div class="st miss">기한이 지났어요</div>' : '');
+      const dateLab = fmtDot(info.date) + ' (' + DOW_KO[parseISO(info.date).getDay()] + ')';
+      const rows = [
+        ['날짜', escapeHtml(dateLab)],
+        ['시간', info.time ? escapeHtml(info.time) : '없음'],
+        ['반복', escapeHtml(info.repLabel)],
+        ['종류', '<span class="type"><i style="background:' + info.color + '"></i>' + escapeHtml(info.typeName) + '</span>']
+      ];
+      if (info.memo) rows.push(['메모', escapeHtml(info.memo).replace(/\n/g, '<br>')]);
+      if (info.movedFrom) rows.push(['미룸', escapeHtml(fmtSlash(info.movedFrom)) + '에서 미룸']);
+      body.innerHTML =
+        '<div class="cal-view">' +
+          '<div class="ttl" style="border-color:' + info.color + '">' + escapeHtml(info.title) + '</div>' +
+          st +
+          '<div class="cal-rows">' + rows.map(r => '<div class="cal-row"><span class="k">' + r[0] + '</span><span class="v">' + r[1] + '</span></div>').join('') + '</div>' +
+          '<button type="button" class="cal-done" data-cal-done="1" aria-pressed="' + (info.done ? 'true' : 'false') + '"><span class="box">' + (info.done ? '✓' : '') + '</span>' + (info.done ? '완료 취소' : '완료로 표시') + '</button>' +
+          '<div class="sch-acts">' +
+            (cv.delConfirm ? '<span class="sdel-cf">지울까요? <button type="button" class="sdel-yes" data-cal-del-go="1">지우기</button></span>' : '<button type="button" class="sdelete" data-cal-del="1">삭제</button>') +
+            '<button type="button" class="cancel" data-cal-close="1">닫기</button>' +
+            '<button type="button" class="edit" data-cal-edit="1">고치기</button>' +
+          '</div>' +
+        '</div>';
+      return;
+    }
+    head.textContent = '일정 수정';
+    cv.type = info.type;
+    cv.rep = info.kind === 'sch' ? info.rep : 'none';
+    cv.days = (info.days || []).slice();
+    const showRep = info.kind === 'sch';
+    body.innerHTML =
+      '<div class="sch-form">' +
+        '<div class="sch-f"><label class="l" for="calTitleIn">제목</label><input id="calTitleIn" class="sch-in" type="text" maxlength="100" autocomplete="off" value="' + escapeHtml(info.title) + '"><div class="sch-err" id="calErr" hidden></div></div>' +
+        '<div class="sch-row2">' +
+          '<div class="sch-f"><label class="l" for="calDateIn">날짜</label><input id="calDateIn" class="sch-in" type="date" value="' + info.date + '"></div>' +
+          '<div class="sch-f"><label class="l" for="calTimeIn">시간 (선택)</label><div class="time-wrap"><input id="calTimeIn" class="sch-in" type="time" value="' + escapeHtml(info.time) + '"><button type="button" class="time-clear" data-cal-time-clear="1" aria-label="시간 지우기"' + (info.time ? '' : ' hidden') + '>✕</button></div></div>' +
+        '</div>' +
+        '<div class="sch-f"><span class="l">종류</span><div class="tchips" id="calTypeChips">' + calTypeChips(cv.type) + '</div></div>' +
+        (showRep ? ('<div class="sch-f"><span class="l">반복</span><div class="seg2" id="calRepSeg">' +
+          [['none', '없음'], ['weekly', '매주'], ['monthly', '매월'], ['yearly', '매년']].map(r =>
+            '<button type="button" data-cal-rep="' + r[0] + '"' + (cv.rep === r[0] ? ' class="on"' : '') + '>' + r[1] + '</button>').join('') +
+          '</div><div class="rep-detail" id="calRepDetail">' + calRepDetail() + '</div></div>') : '') +
+        (info.memoReadonly
+          ? (info.memo ? '<div class="sch-f"><span class="l">메모</span><div class="cal-row"><span class="v">' + escapeHtml(info.memo).replace(/\n/g, '<br>') + '</span></div></div>' : '')
+          : '<div class="sch-f"><label class="l" for="calMemoIn">메모 (선택)</label><textarea id="calMemoIn" class="sch-in sch-memo" rows="2" maxlength="500">' + escapeHtml(info.memo) + '</textarea></div>') +
+        (info.movedFrom ? '<div class="sch-f"><span class="l">미룸</span><div class="v">' + escapeHtml(fmtSlash(info.movedFrom)) + '에서 미룸</div></div>' : '') +
+        '<div class="sch-acts">' +
+          '<button type="button" class="sdelete" data-cal-del="1">삭제</button>' +
+          '<button type="button" class="cancel" data-cal-back="1">취소</button>' +
+          '<button type="button" class="save" data-cal-save="1">저장</button>' +
+        '</div>' +
+      '</div>';
+  }
+  function refreshCalRepUI() {
+    const seg = calItemEl.querySelector('#calRepSeg');
+    if (seg) seg.querySelectorAll('[data-cal-rep]').forEach(b => b.classList.toggle('on', b.dataset.calRep === cv.rep));
+    const det = calItemEl.querySelector('#calRepDetail');
+    if (det) det.innerHTML = calRepDetail();
+  }
+  function saveCalItem() {
+    const info = calItemInfo();
+    if (!info) { closeCalItem(); return; }
+    const titleIn = calItemEl.querySelector('#calTitleIn');
+    if (titleIn && window.RecordsIme.isElComposing(titleIn)) return;
+    const title = window.RecordsIme.nfc((titleIn && titleIn.value) || '').replace(/\s+/g, ' ').trim();
+    const date = (calItemEl.querySelector('#calDateIn') || {}).value || '';
+    const err = calItemEl.querySelector('#calErr');
+    if (!title) { if (err) { err.textContent = '제목을 적어 주세요.'; err.hidden = false; } if (titleIn) titleIn.focus(); return; }
+    if (!isISO(date)) { if (err) { err.textContent = '날짜를 골라 주세요.'; err.hidden = false; } return; }
+    const time = (calItemEl.querySelector('#calTimeIn') || {}).value || '';
+    const memoEl = calItemEl.querySelector('#calMemoIn');
+    const memo = memoEl ? window.RecordsIme.nfc(memoEl.value).trim() : null;
+    const occDate = info.date;
+    let needRename = false;
+    if (info.kind === 'sch') {
+      const x = findSch(info.id);
+      if (!x) { closeCalItem(); return; }
+      x.type = cv.type || x.type;
+      x.time = time;
+      if (memo != null) x.memo = memo;
+      x.rep = cv.rep || 'none';
+      if (x.rep === 'weekly') x.days = (cv.days.length ? cv.days : [parseISO(date).getDay()]).slice().sort((a, b) => a - b);
+      else x.days = [];
+      if (x.rep === 'monthly') x.mday = parseISO(occDate).getDate();
+      else x.mday = null;
+      if (title !== info.title) {
+        if (isRepeatingItem('sch', x.id)) needRename = true;
+        else { x.title = title; delete x.retitle; if (x.names) delete x.names[occDate]; }
+      }
+    } else {
+      const t = findOneoff(info.id);
+      if (!t) { closeCalItem(); return; }
+      t.text = title;
+      t.time = time;
+      t.schType = cv.type || t.schType;
+    }
+    if (date !== occDate) {
+      const originDate = info.movedFrom || (info.origin && info.origin.date);
+      if (originDate && date === originDate) {
+        if (info.origin && info.origin.kind === 'sch' && info.origin.id) {
+          cv.kind = 'sch'; cv.id = info.origin.id; cv.date = date;
+        } else { cv.date = date; }
+        cv.mode = 'view';
+        undoPostponed(info.kind, info.id, occDate);
+        if (calItemOpen()) renderCalItem();
+        return;
+      }
+      if (moveOne(info.kind, info.id, occDate, date)) {
+        if (info.kind === 'sch') {
+          const copy = state.oneoffs.find(o => o.date === date && !o.movedTo && o.origin && o.origin.kind === 'sch' && o.origin.id === info.id && o.origin.date === occDate);
+          if (copy) {
+            if (title !== info.title) copy.text = title;
+            copy.time = time;
+            if (cv.type) copy.schType = cv.type;
+            cv.kind = 'oneoff'; cv.id = copy.id; cv.date = date;
+          } else { closeCalItem(); }
+        } else {
+          cv.date = date;
+        }
+        cv.mode = 'view';
+        save();
+        showTodoToast(fmtMD(date) + (info.movedFrom || originDate ? '로 옮겼어요.' : '로 미뤘어요.'));
+        if (isComplete(occDate) && !state.stickers.includes(occDate)) { state.stickers.push(occDate); save(); }
+        render();
+        if (calItemOpen()) renderCalItem();
+        return;
+      }
+    }
+    if (needRename) {
+      save();
+      render();
+      cv.afterRename = true;
+      requestRename('sch', info.id, occDate, info.title, title);
+      return;
+    }
+    save();
+    render();
+    cv.mode = 'view';
+    if (calItemOpen()) renderCalItem();
+    const el = document.getElementById('toast');
+    if (el) {
+      el.textContent = '일정을 저장했어요.';
+      el.classList.add('show');
+      clearTimeout(saveCalItem._t);
+      saveCalItem._t = setTimeout(() => el.classList.remove('show'), 2200);
+    }
+  }
+  function calItemClick(e) {
+    const t = e.target;
+    if (t === calItemEl || t.closest('[data-cal-close]')) { closeCalItem(); return; }
+    if (t.closest('[data-cal-back]')) { cv.mode = 'view'; cv.delConfirm = false; renderCalItem(); return; }
+    if (t.closest('[data-cal-edit]')) {
+      const info = calItemInfo();
+      if (!info) return;
+      cv.mode = 'edit'; cv.delConfirm = false;
+      renderCalItem();
+      setTimeout(() => { const i = calItemEl.querySelector('#calTitleIn'); if (i && window.matchMedia('(pointer: fine)').matches) i.focus(); }, 30);
+      return;
+    }
+    if (t.closest('[data-cal-done]')) {
+      const info = calItemInfo();
+      if (!info) return;
+      setDone(info.kind, info.id, info.date, !info.done);
+      afterDoneChange(info.date);
+      if (calItemOpen()) renderCalItem();
+      return;
+    }
+    if (t.closest('[data-cal-del]')) {
+      const info = calItemInfo();
+      if (!info) return;
+      requestDelete(info.kind, info.id, info.date);
+      return;
+    }
+    if (t.closest('[data-cal-time-clear]')) {
+      const ti = calItemEl.querySelector('#calTimeIn');
+      if (ti) ti.value = '';
+      t.closest('[data-cal-time-clear]').hidden = true;
+      return;
+    }
+    const typ = t.closest('[data-cal-type]');
+    if (typ) {
+      cv.type = typ.dataset.calType;
+      const box = calItemEl.querySelector('#calTypeChips');
+      if (box) box.innerHTML = calTypeChips(cv.type);
+      return;
+    }
+    const rb = t.closest('[data-cal-rep]');
+    if (rb) { cv.rep = rb.dataset.calRep; refreshCalRepUI(); return; }
+    const dw = t.closest('[data-cal-dow]');
+    if (dw) {
+      const n = Number(dw.dataset.calDow);
+      const i = cv.days.indexOf(n);
+      if (i >= 0) { if (cv.days.length > 1) cv.days.splice(i, 1); }
+      else cv.days.push(n);
+      refreshCalRepUI();
+      return;
+    }
+    if (t.closest('[data-cal-save]')) { saveCalItem(); return; }
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || !calItemOpen()) return;
+    if (window.RecordsIme && window.RecordsIme.isEventComposing(e)) return;
+    if ($('#modal') && !$('#modal').hidden) return;
+    e.stopPropagation();
+    if (cv.mode === 'edit') { cv.mode = 'view'; renderCalItem(); }
+    else closeCalItem();
+  });
+
   function schLegendHtml() {
     return schTypes().map(t => '<span><b style="background:' + t.color + '"></b>' + escapeHtml(t.name) + '</span>').join('') + '<span>✕ 기한 지남</span>';
   }
@@ -4731,6 +5096,7 @@ window.RecordsMemo = {
     schOnCalendar,
     schLegendHtml,
     openSchedule,
+    openCalItem,
     setViewDate: (d) => { if (isISO(d)) { viewDate = d; render(); } },
     getViewDate: () => viewDate
   };
@@ -5224,9 +5590,10 @@ window.RecordsMemo = {
       const schs = (!c.mute && window.RecordsTodo && window.RecordsTodo.schOnCalendar) ? window.RecordsTodo.schOnCalendar(c.iso) : [];
       let schHtml = '';
       if (schs.length) {
+        const itemAttr = x => ' data-sch-kind="' + U.escapeHtml(x.kind || '') + '" data-sch-id="' + U.escapeHtml(x.id || '') + '" role="button" tabindex="0"';
         schHtml = '<span class="schs">' + schs.slice(0, 2).map(x =>
-            '<span class="sch' + (x.st ? ' ' + x.st : '') + '" style="background:' + x.bg + ';border-color:' + x.color + '">' + U.escapeHtml(x.title) + '</span>').join('') + '</span>' +
-          '<span class="sdots">' + schs.slice(0, 6).map(x => '<i class="' + x.st + '" style="background:' + x.color + '"></i>').join('') + '</span>' +
+            '<span class="sch sch-open' + (x.st ? ' ' + x.st : '') + '" style="background:' + x.bg + ';border-color:' + x.color + '"' + itemAttr(x) + '>' + U.escapeHtml(x.title) + '</span>').join('') + '</span>' +
+          '<span class="sdots" data-sch-dots="' + c.iso + '">' + schs.slice(0, 6).map(x => '<i class="' + x.st + '" style="background:' + x.color + '"></i>').join('') + '</span>' +
           (schs.length > 2 ? '<span class="sch-more" data-sch-more="' + c.iso + '" role="button" tabindex="0" aria-expanded="false">+' + (schs.length - 2) + '개</span>' : '');
       }
       return '<button type="button" class="' + cls + '" data-iso="' + c.iso + '"' + (schs.length ? ' aria-label="' + c.day + '일, 일정 ' + schs.length + '개"' : '') + '>' +
@@ -5360,7 +5727,15 @@ window.RecordsMemo = {
     pop.setAttribute('role', 'dialog');
     document.body.appendChild(pop);
     pop.addEventListener('click', e => {
-      if (e.target.closest('[data-sch-pop-close]')) closeSchPop();
+      if (e.target.closest('[data-sch-pop-close]')) { closeSchPop(); return; }
+      const item = e.target.closest('[data-sch-kind][data-sch-id]');
+      if (item && item.getAttribute('data-sch-id')) {
+        const iso = schPopIso;
+        const kind = item.getAttribute('data-sch-kind');
+        const id = item.getAttribute('data-sch-id');
+        closeSchPop();
+        if (window.RecordsTodo && window.RecordsTodo.openCalItem) window.RecordsTodo.openCalItem(kind, id, iso);
+      }
     });
     return pop;
   }
@@ -5397,7 +5772,7 @@ window.RecordsMemo = {
       '<div class="hd"><span><b>' + U.fmtDot(iso) + '</b> · 일정 ' + schs.length + '개</span>' +
         '<button type="button" class="px" data-sch-pop-close="1" aria-label="닫기">×</button></div>' +
       '<div class="list">' + schs.map(x =>
-        '<div class="sch' + (x.st ? ' ' + x.st : '') + '" style="background:' + x.bg + ';border-color:' + x.color + '">' +
+        '<div class="sch' + (x.st ? ' ' + x.st : '') + '" style="background:' + x.bg + ';border-color:' + x.color + '" data-sch-kind="' + U.escapeHtml(x.kind || '') + '" data-sch-id="' + U.escapeHtml(x.id || '') + '" role="button" tabindex="0">' +
           U.escapeHtml(x.title) +
           (x.time ? '<span class="tm">' + U.escapeHtml(x.time) + '</span>' : '') +
         '</div>').join('') + '</div>';
@@ -5419,12 +5794,36 @@ window.RecordsMemo = {
     else if (btn.dataset.nav === '1') viewYm = U.addMonths(viewYm, 1);
     renderCal();
   });
+  function openCalFrom(kind, id, iso) {
+    closeSchPop();
+    if (window.RecordsTodo && window.RecordsTodo.openCalItem) window.RecordsTodo.openCalItem(kind, id, iso);
+  }
+  function openDotsOrPop(iso, anchor) {
+    const schs = (window.RecordsTodo && window.RecordsTodo.schOnCalendar) ? (window.RecordsTodo.schOnCalendar(iso) || []) : [];
+    if (schs.length === 1 && schs[0].kind && schs[0].id) { openCalFrom(schs[0].kind, schs[0].id, iso); return; }
+    if (schs.length) toggleSchPop(iso, anchor);
+  }
   calGrid.addEventListener('click', e => {
+    const item = e.target.closest('[data-sch-kind][data-sch-id]');
+    if (item && item.getAttribute('data-sch-id') && (item.closest('#dailyCalGrid') || item.closest('.schs'))) {
+      e.preventDefault();
+      e.stopPropagation();
+      const cell = item.closest('[data-iso]');
+      openCalFrom(item.getAttribute('data-sch-kind'), item.getAttribute('data-sch-id'), cell && cell.dataset.iso);
+      return;
+    }
     const more = e.target.closest('[data-sch-more]');
     if (more) {
       e.preventDefault();
       e.stopPropagation();
       toggleSchPop(more.getAttribute('data-sch-more'), more);
+      return;
+    }
+    const dots = e.target.closest('[data-sch-dots]');
+    if (dots) {
+      e.preventDefault();
+      e.stopPropagation();
+      openDotsOrPop(dots.getAttribute('data-sch-dots'), dots);
       return;
     }
     const cell = e.target.closest('[data-iso]');
@@ -5433,13 +5832,20 @@ window.RecordsMemo = {
     showEntry(cell.dataset.iso);
   });
   calGrid.addEventListener('keydown', e => {
-    const more = e.target.closest && e.target.closest('[data-sch-more]');
-    if (!more) return;
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const item = e.target.closest && e.target.closest('[data-sch-kind][data-sch-id]');
+    if (item && item.getAttribute('data-sch-id')) {
       e.preventDefault();
       e.stopPropagation();
-      toggleSchPop(more.getAttribute('data-sch-more'), more);
+      const cell = item.closest('[data-iso]');
+      openCalFrom(item.getAttribute('data-sch-kind'), item.getAttribute('data-sch-id'), cell && cell.dataset.iso);
+      return;
     }
+    const more = e.target.closest && e.target.closest('[data-sch-more]');
+    if (!more) return;
+    e.preventDefault();
+    e.stopPropagation();
+    toggleSchPop(more.getAttribute('data-sch-more'), more);
   });
   document.addEventListener('click', e => {
     if (!schPopIso) return;
@@ -5652,6 +6058,7 @@ window.RecordsMemo = {
     applyCloudPhoto,
     getDay, dayHasRecord, monthCells,
     showCal, showEntry,
+    refreshCal() { if (!entryOpen) renderCal(); },
     empty: emptyDaily,
     hydrate: hydrateDaily,
     _setViewDate(iso) { viewDate = iso; viewYm = U.ymOf(iso); }
