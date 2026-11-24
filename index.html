@@ -536,6 +536,20 @@
     font-size: 9px; line-height: 1.1; margin-top: 1px;
     -webkit-text-stroke: calc(1.5px * 9 / 44) rgba(255,255,255,.82);
   }
+
+  .mini .handle {
+    width: 10px; height: 16px; flex: 0 0 10px;
+    grid-template-columns: 3px 3px; gap: 2px 3px;
+    margin-top: 1px; cursor: grab;
+  }
+  .mini .handle i { width: 2.5px; height: 2.5px; }
+  .mini.dragging .handle i { background: #555; }
+  .mini.dragging { cursor: grabbing; }
+  @media (hover: none), (pointer: coarse) {
+    .mini .handle { width: 14px; height: 20px; flex: 0 0 14px; padding: 2px 0; }
+    .mini .handle i { width: 3px; height: 3px; }
+  }
+
   .mini-list { display: flex; flex-direction: column; gap: 5px; flex: 1; }
   .mini {
     display: flex; align-items: flex-start; gap: 5px;
@@ -1719,16 +1733,11 @@
 <div class="todo-card" id="card">
   <div class="toolbar">
     <div class="toolbar-left">
-      <div class="seg" id="viewToggle">
-        <button type="button" data-view="today">오늘</button>
-        <button type="button" data-view="week">일주일</button>
-      </div>
       <div class="date-nav" id="dateNav"></div>
     </div>
     <div class="streak" id="streak"></div>
   </div>
-  <div id="todayView"></div>
-  <div id="weekView" hidden></div>
+  <div id="weekView"></div>
 </div>
 </section>
 
@@ -2462,7 +2471,7 @@ window.RecordsMemo = {
       '<i></i><i></i><i></i><i></i><i></i><i></i></span>';
   }
 
-  let state = { v: 1, view: 'today', oneoffs: [], routines: [], stickers: [], schedules: [], schTypes: [] };
+  let state = { v: 1, view: 'week', oneoffs: [], routines: [], stickers: [], schedules: [], schTypes: [] };
   let viewDate = todayISO();
   let weekAddDate = null;
   let weekRepeatOpen = false;
@@ -2478,7 +2487,7 @@ window.RecordsMemo = {
   let postOpen = null; /* {kind, id, date} of the row whose 미루기 menu is open */
 
   function defaultState() {
-    return { v: 1, view: 'today', oneoffs: [], routines: [], stickers: [], schedules: [], schTypes: [] };
+    return { v: 1, view: 'week', oneoffs: [], routines: [], stickers: [], schedules: [], schTypes: [] };
   }
   function validSchedule(x) {
     return x && typeof x.id === 'string' && typeof x.title === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.date);
@@ -2498,7 +2507,7 @@ window.RecordsMemo = {
       const data = JSON.parse(raw);
       state = defaultState();
       if (data && typeof data === 'object') {
-        state.view = data.view === 'week' ? 'week' : 'today';
+        state.view = 'week';
         state.oneoffs = Array.isArray(data.oneoffs) ? data.oneoffs.filter(validOneoff) : [];
         state.routines = Array.isArray(data.routines) ? data.routines.filter(validRoutine) : [];
         state.stickers = Array.isArray(data.stickers)
@@ -2528,7 +2537,7 @@ window.RecordsMemo = {
   function applyCloudState(data) {
     const next = defaultState();
     if (data && typeof data === 'object') {
-      next.view = data.view === 'week' ? 'week' : 'today';
+      next.view = 'week';
       next.oneoffs = Array.isArray(data.oneoffs) ? data.oneoffs.filter(validOneoff) : [];
       next.routines = Array.isArray(data.routines) ? data.routines.filter(validRoutine) : [];
       next.stickers = Array.isArray(data.stickers)
@@ -2616,6 +2625,31 @@ window.RecordsMemo = {
     }
   }
 
+  /* exact-day pin (ordDay) wins; else the latest from-date rule (ordFrom) <= date; else ord. */
+  function orderOfRepeat(rec, dateStr, fallback) {
+    if (!rec) return fallback;
+    if (rec.ordDay && rec.ordDay[dateStr] != null && Number.isFinite(rec.ordDay[dateStr])) return rec.ordDay[dateStr];
+    let best = '', val = fallback;
+    if (rec.ordFrom && typeof rec.ordFrom === 'object') {
+      for (const k in rec.ordFrom) {
+        if (isISO(k) && k <= dateStr && k > best && Number.isFinite(rec.ordFrom[k])) { best = k; val = rec.ordFrom[k]; }
+      }
+    }
+    if (best) return val;
+    return Number.isFinite(rec.ord) ? rec.ord : fallback;
+  }
+  /* set order from D onward (later from-rules and same-or-later one-day pins are replaced) */
+  function applyRepeatOrder(rec, dateStr, i) {
+    if (!rec) return;
+    rec.ordFrom = (rec.ordFrom && typeof rec.ordFrom === 'object') ? rec.ordFrom : {};
+    rec.ordFrom[dateStr] = i;
+    for (const k of Object.keys(rec.ordFrom)) { if (k > dateStr) delete rec.ordFrom[k]; }
+    if (rec.ordDay && typeof rec.ordDay === 'object') {
+      for (const k of Object.keys(rec.ordDay)) { if (k >= dateStr) delete rec.ordDay[k]; }
+    }
+    const start = rec.start || rec.date;
+    if (!isISO(start) || dateStr <= start) rec.ord = i;
+  }
   function itemsFor(dateStr) {
     const list = [];
     for (const t of state.oneoffs) {
@@ -2633,9 +2667,7 @@ window.RecordsMemo = {
     for (const r of state.routines) {
       if (routineOnDate(r, dateStr)) {
         const done = !!(r.done && r.done[dateStr]);
-        const order = (r.ordDay && r.ordDay[dateStr] != null)
-          ? r.ordDay[dateStr]
-          : (Number.isFinite(r.ord) ? r.ord : 0);
+        const order = orderOfRepeat(r, dateStr, 0);
         const mv = r.moved && isISO(r.moved[dateStr]) ? r.moved[dateStr] : null;
         list.push({ kind: 'routine', id: r.id, text: routineName(r, dateStr), done: mv ? false : done, order, movedTo: mv, movedFrom: null });
       }
@@ -2643,7 +2675,7 @@ window.RecordsMemo = {
     for (const x of state.schedules || []) {
       if (!schOnDate(x, dateStr)) continue;
       const mv = x.moved && isISO(x.moved[dateStr]) ? x.moved[dateStr] : null;
-      const order = (x.ordDay && x.ordDay[dateStr] != null) ? x.ordDay[dateStr] : -1000 + timeRank(x.time);
+      const order = orderOfRepeat(x, dateStr, -1000 + timeRank(x.time));
       list.push({
         kind: 'sch', id: x.id, text: schTitleOn(x, dateStr), done: mv ? false : !!(x.done && x.done[dateStr]),
         order, movedTo: mv, movedFrom: null, schType: x.type || 'etc', time: x.time || ''
@@ -2744,17 +2776,9 @@ window.RecordsMemo = {
         const t = findOneoff(item.id);
         if (t) t.order = i;
       } else if (item.kind === 'sch') {
-        const x = findSch(item.id);
-        if (x) {
-          x.ordDay = (x.ordDay && typeof x.ordDay === 'object') ? x.ordDay : {};
-          x.ordDay[dateStr] = i;
-        }
+        applyRepeatOrder(findSch(item.id), dateStr, i);
       } else {
-        const r = findRoutine(item.id);
-        if (r) {
-          r.ordDay = r.ordDay || {};
-          r.ordDay[dateStr] = i;
-        }
+        applyRepeatOrder(findRoutine(item.id), dateStr, i);
       }
     });
   }
@@ -3138,7 +3162,8 @@ window.RecordsMemo = {
     const nr = Object.assign({
       id: uid('r'), text: r.text, start: D, freq: r.freq === 'weekly' ? 'weekly' : 'daily',
       hidden: (r.hidden || []).filter(d => d >= D), done: pickFrom(r.done, D), moved: pickFrom(r.moved, D),
-      names: pickFrom(r.names, D), ord: r.ord, ordDay: pickFrom(r.ordDay, D)
+      names: pickFrom(r.names, D), ord: orderOfRepeat(r, D, Number.isFinite(r.ord) ? r.ord : 0),
+      ordDay: pickFrom(r.ordDay, D), ordFrom: pickFrom(r.ordFrom, D)
     }, r.freq === 'weekly' ? { weekdays: (weekdayList(r) || []).slice() } : {}, patch || {});
     if (nr.freq !== 'weekly') delete nr.weekdays;
     if (isISO(r.end) && r.end >= D) nr.end = r.end;
@@ -3153,10 +3178,10 @@ window.RecordsMemo = {
   function endRoutineBefore(r, D) {
     r.end = addDays(D, -1);
     r.hidden = (r.hidden || []).filter(d => d < D);
-    dropFrom(r.done, D); dropFrom(r.moved, D); dropFrom(r.names, D); dropFrom(r.ordDay, D);
+    dropFrom(r.done, D); dropFrom(r.moved, D); dropFrom(r.names, D); dropFrom(r.ordDay, D); dropFrom(r.ordFrom, D);
   }
   function routineOrderOn(r, D) {
-    return (r.ordDay && r.ordDay[D] != null) ? r.ordDay[D] : (Number.isFinite(r.ord) ? r.ord : 0);
+    return orderOfRepeat(r, D, 0);
   }
   /* 반복 바꾸기: applies from D (the edited date); earlier dates keep the old repeat */
   function changeRepeat(id, D, mode, days) {
@@ -3252,38 +3277,21 @@ window.RecordsMemo = {
       return;
     }
     const today = todayISO();
-    const isTodayView = state.view === 'today';
-    $$('#viewToggle button').forEach(b => {
-      b.classList.toggle('on', b.dataset.view === state.view);
-    });
-    renderDateNav(today, isTodayView);
+    state.view = 'week';
+    renderDateNav(today);
     renderStreak(today);
-    $('#todayView').hidden = !isTodayView;
-    $('#weekView').hidden = isTodayView;
-    if (isTodayView) renderToday(today);
-    else renderWeek(today);
+    renderWeek(today);
   }
 
-  function renderDateNav(today, isTodayView) {
+  function renderDateNav(today) {
     const nav = $('#dateNav');
-    if (isTodayView) {
-      const isToday = viewDate === today;
-      nav.innerHTML =
-        '<button type="button" class="nav-btn" id="prevDate" aria-label="이전 날">◀</button>' +
-        '<div class="date-label">' + fmtDot(viewDate) +
-          (isToday ? ' <em>오늘</em>' : '') + '</div>' +
-        '<button type="button" class="nav-btn" id="nextDate" aria-label="다음 날">▶</button>' +
-        (isToday ? '' : '<button type="button" class="jump-today" id="jumpToday">오늘</button>');
-    } else {
-      const mon = mondayOf(viewDate);
-      const inThisWeek = viewDate >= mon && viewDate <= addDays(mon, 6) &&
-        today >= mon && today <= addDays(mon, 6);
-      nav.innerHTML =
-        '<button type="button" class="nav-btn" id="prevDate" aria-label="이전 주">◀</button>' +
-        '<div class="date-label">' + weekLabel(mon) + '</div>' +
-        '<button type="button" class="nav-btn" id="nextDate" aria-label="다음 주">▶</button>' +
-        (inThisWeek ? '' : '<button type="button" class="jump-today" id="jumpToday">오늘</button>');
-    }
+    const mon = mondayOf(viewDate);
+    const inThisWeek = today >= mon && today <= addDays(mon, 6);
+    nav.innerHTML =
+      '<button type="button" class="nav-btn" id="prevDate" aria-label="이전 주">◀</button>' +
+      '<div class="date-label">' + weekLabel(mon) + '</div>' +
+      '<button type="button" class="nav-btn" id="nextDate" aria-label="다음 주">▶</button>' +
+      (inThisWeek ? '' : '<button type="button" class="jump-today" id="jumpToday">오늘</button>');
   }
 
   function renderStreak(today) {
@@ -3520,6 +3528,7 @@ window.RecordsMemo = {
     return '<div class="mini' + cls + '" data-id="' + item.id +
       '" data-kind="' + item.kind + '" data-date="' + dateStr + '"' + (ty ? ' style="--dc:' + ty.color + '"' : '') +
       (item.movedTo ? ' data-moved-to="' + item.movedTo + '"' : '') + '>' +
+      handleHtml() +
       '<button type="button" class="check" aria-label="' +
         (item.movedTo ? fmtMD(item.movedTo) + '로 가기' : (item.done ? '완료 취소' : '완료')) + '">' +
         (item.movedTo ? '↪' : item.done ? '✓' : (missed ? '✕' : '')) + '</button>' +
@@ -3565,25 +3574,13 @@ window.RecordsMemo = {
   }
 
   /* ---------- events ---------- */
-  $('#viewToggle').addEventListener('click', e => {
-    const btn = e.target.closest('button[data-view]');
-    if (!btn) return;
-    state.view = btn.dataset.view;
-    if (state.view === 'today' && mondayOf(viewDate) !== mondayOf(todayISO()) &&
-        viewDate !== todayISO()) {
-      /* keep viewDate as-is so user can stay on a chosen day */
-    }
-    save();
-    render();
-  });
-
   $('#dateNav').addEventListener('click', e => {
     if (e.target.closest('#prevDate')) {
-      viewDate = addDays(viewDate, state.view === 'week' ? -7 : -1);
+      viewDate = addDays(viewDate, -7);
       weekAddDate = null;
       render();
     } else if (e.target.closest('#nextDate')) {
-      viewDate = addDays(viewDate, state.view === 'week' ? 7 : 1);
+      viewDate = addDays(viewDate, 7);
       weekAddDate = null;
       render();
     } else if (e.target.closest('#jumpToday')) {
@@ -3723,12 +3720,10 @@ window.RecordsMemo = {
     }
     if (e.target.closest('.post-menu')) return;
     const del0 = e.target.closest('.del, .mini-del');
-    const movedRow = !del0 && !e.target.closest('.post-btn, .post-menu') && e.target.closest('.row.moved, .mini.moved');
+    const movedRow = !del0 && !e.target.closest('.post-btn, .post-menu, [data-handle]') && e.target.closest('.row.moved, .mini.moved');
     if (movedRow) {
       postOpen = null;
       viewDate = movedRow.dataset.movedTo;
-      state.view = 'today';
-      save();
       render();
       return;
     }
@@ -4028,7 +4023,7 @@ window.RecordsMemo = {
     const onHandle = !!e.target.closest('[data-handle]');
     const isTouch = e.pointerType === 'touch' || e.pointerType === 'pen';
     if (!isTouch && !onHandle) return;
-    if (isTouch) {
+    if (isTouch && !onHandle) {
       pressStart = { x: e.clientX, y: e.clientY, id: e.pointerId, row, ev: e };
       pressTimer = setTimeout(() => {
         if (pressStart) startDrag(pressStart.ev, pressStart.row);
@@ -4073,9 +4068,11 @@ window.RecordsMemo = {
     row.style.zIndex = '30';
     row.style.margin = '0';
     try { row.setPointerCapture(e.pointerId); } catch (err) {}
+    const wrap = row.closest('.week-wrap');
+    if (wrap) { wrap.dataset.prevOverflow = wrap.style.overflow; wrap.style.overflow = 'hidden'; }
     drag = {
       pointerId: e.pointerId,
-      row, list, dateStr, ghost,
+      row, list, dateStr, ghost, wrap,
       offsetX: e.clientX - rect.left,
       offsetY: e.clientY - rect.top,
       kind: row.dataset.kind,
@@ -4102,9 +4099,10 @@ window.RecordsMemo = {
 
   function endDrag(cancel) {
     if (!drag) return;
-    const { row, list, dateStr, ghost, kind, id } = drag;
+    const { row, list, dateStr, ghost, kind, id, wrap } = drag;
     drag = null;
     document.body.style.userSelect = '';
+    if (wrap) { wrap.style.overflow = wrap.dataset.prevOverflow || ''; delete wrap.dataset.prevOverflow; }
     const others = [...list.querySelectorAll('[data-id]')].filter(el => el !== row);
     const idx = Math.max(0, [...list.children].indexOf(ghost));
     /* build new order from others + dragged, using ghost position among others */
@@ -4693,7 +4691,9 @@ window.RecordsMemo = {
     applyCloud: applyCloudState,
     schOnCalendar,
     schLegendHtml,
-    openSchedule
+    openSchedule,
+    setViewDate: (d) => { if (isISO(d)) { viewDate = d; render(); } },
+    getViewDate: () => viewDate
   };
 })();
 
@@ -7126,7 +7126,7 @@ function mergeTodos(cloud, local) {
   const routineKey = r => (r.start || "") + "\0" + (r.text || "");
   const routineKeys = new Set();
   const rById = new Map();
-  (c.routines || []).forEach(r => rById.set(r.id, Object.assign({}, r, { done: Object.assign({}, r.done || {}), hidden: (r.hidden || []).slice(), ordDay: Object.assign({}, r.ordDay || {}) })));
+  (c.routines || []).forEach(r => rById.set(r.id, Object.assign({}, r, { done: Object.assign({}, r.done || {}), hidden: (r.hidden || []).slice(), ordDay: Object.assign({}, r.ordDay || {}), ordFrom: Object.assign({}, r.ordFrom || {}) })));
   (l.routines || []).forEach(r => {
     if (rById.has(r.id)) {
       const prev = rById.get(r.id);
@@ -7134,6 +7134,7 @@ function mergeTodos(cloud, local) {
         done: mergeDone(prev.done, r.done),
         hidden: Array.from(new Set([].concat(prev.hidden || [], r.hidden || []))),
         ordDay: Object.assign({}, prev.ordDay || {}, r.ordDay || {}),
+        ordFrom: Object.assign({}, prev.ordFrom || {}, r.ordFrom || {}),
         moved: Object.assign({}, prev.moved || {}, r.moved || {}),
         names: Object.assign({}, prev.names || {}, r.names || {})
       });
@@ -7141,7 +7142,7 @@ function mergeTodos(cloud, local) {
       if (ends.length) merged.end = ends[0]; else delete merged.end;
       rById.set(r.id, merged);
     } else {
-      rById.set(r.id, Object.assign({}, r, { done: Object.assign({}, r.done || {}), hidden: (r.hidden || []).slice(), ordDay: Object.assign({}, r.ordDay || {}) }));
+      rById.set(r.id, Object.assign({}, r, { done: Object.assign({}, r.done || {}), hidden: (r.hidden || []).slice(), ordDay: Object.assign({}, r.ordDay || {}), ordFrom: Object.assign({}, r.ordFrom || {}) }));
     }
   });
   rById.forEach(r => {
@@ -7162,7 +7163,8 @@ function mergeTodos(cloud, local) {
       done: mergeDone(prev.done, x.done),
       moved: Object.assign({}, prev.moved || {}, x.moved || {}),
       hidden: Array.from(new Set([].concat(prev.hidden || [], x.hidden || []))),
-      ordDay: Object.assign({}, prev.ordDay || {}, x.ordDay || {})
+      ordDay: Object.assign({}, prev.ordDay || {}, x.ordDay || {}),
+      ordFrom: Object.assign({}, prev.ordFrom || {}, x.ordFrom || {})
     });
     if (prev.names || x.names) mx.names = Object.assign({}, prev.names || {}, x.names || {});
     const sEnds = [prev.end, x.end].filter(v => /^\d{4}-\d{2}-\d{2}$/.test(v || "")).sort();
