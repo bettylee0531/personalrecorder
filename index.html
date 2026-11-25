@@ -1321,6 +1321,167 @@
     -webkit-text-stroke: calc(1.5px * 15 / 44) #fff;
   }
 
+  /* ===== 가계부 upgrade: budget, fixed expenses, categories, card statements ===== */
+  #ledger .toolbar { align-items: center; }
+  #ledger .gx-seg { display: inline-flex; border: 1px solid #d0d0d0; border-radius: 8px; overflow: hidden; background: #fff; }
+  #ledger .gx-seg button { appearance: none; border: 0; background: transparent; padding: 5px 12px; font: inherit; font-size: 14px; color: #777; border-right: 1px solid #d0d0d0; -webkit-text-stroke: 0; cursor: pointer; white-space: nowrap; }
+  #ledger .gx-seg button small { font-size: 11px; color: #aaa; margin-left: 2px; }
+  #ledger .gx-seg button:last-child { border-right: 0; }
+  #ledger .gx-seg button.on { background: #2b2b2b; color: #fff; }
+  #ledger .gx-seg button.on small { color: #bbb; }
+  #ledger .gx-note { font-size: 12px; color: #8a8a8a; -webkit-text-stroke: 0; margin: 6px 0 0; line-height: 1.45; }
+  #ledger .gx-muted { color: #999; font-size: 12px; }
+  #ledger .gx-card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 14px 14px 12px; margin-bottom: 14px; }
+  #ledger .gx-card h4 { margin: 0 0 8px; font-size: 14px; color: #555; font-weight: 400; display: flex; justify-content: space-between; align-items: center; gap: 8px; -webkit-text-stroke: 0; }
+  #ledger .gx-link { font: inherit; font-size: 12px; color: #5a7799; border: 0; background: none; padding: 0; cursor: pointer; border-bottom: 1px dashed #9db1c9; -webkit-text-stroke: 0; }
+  #ledger .gx-pill { font: inherit; font-size: 12px; color: #555; border: 1px solid #d6d6d6; background: #fff; border-radius: 99px; padding: 2px 10px; cursor: pointer; -webkit-text-stroke: 0; white-space: nowrap; }
+  #ledger .gx-pill:hover, #ledger .gx-link:hover { color: #1E3A5F; }
+  #ledger .gx-big { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 28px; color: #2b2b2b; letter-spacing: -.03em; line-height: 1.15; -webkit-text-stroke: 0; }
+  #ledger .gx-big small { font-size: 14px; margin-left: 2px; }
+  #ledger .gx-budget.over .gx-big { color: #c0605a; }
+  #ledger .gx-budget.warn .gx-big { color: #a8741a; }
+  #ledger .gx-bar { height: 10px; background: #ececec; border-radius: 99px; overflow: hidden; margin: 10px 0 6px; }
+  #ledger .gx-bar i { display: block; height: 100%; background: #3a3a3a; border-radius: 99px; }
+  #ledger .gx-bar.warn i { background: #d19a3a; }
+  #ledger .gx-bar.over i { background: #c0605a; }
+  #ledger .gx-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13px; color: #666; -webkit-text-stroke: 0; padding: 2px 0; }
+  #ledger .gx-row b { font-family: 'Inter', sans-serif; font-weight: 700; color: #2b2b2b; -webkit-text-stroke: 0; font-size: 13px; }
+  #ledger .gx-sep { border-top: 1px solid #eee; margin: 6px 0; }
+  #ledger .gx-fx { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid #f0f0f0; font-size: 13px; color: #444; -webkit-text-stroke: 0; }
+  #ledger .gx-card h4 + .gx-fx { border-top: 0; }
+  #ledger .gx-fx .n { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #ledger .gx-fx .d { font-size: 11px; color: #999; }
+  #ledger .gx-fx .a { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12.5px; color: #2b2b2b; -webkit-text-stroke: 0; }
+  #ledger .gx-fx.pending .n, #ledger .gx-fx.pending .a { color: #aaa; }
+  #ledger .gx-fxsum { border-top: 1px solid #eee; margin-top: 4px; padding-top: 6px; }
+  #ledger .gx-woori { background: #f7f9fc; border-color: #dfe7f1; }
+  #ledger .gx-catlbl { display: flex; justify-content: space-between; align-items: center; }
+  #ledger .chip.fx { color: #5a7799; border-color: #c9d6e6; background: #f3f7fc; }
+  #ledger .chip.hand { color: #6c7a66; border-color: #d6e0d1; background: #f6faf3; }
+  #ledger .chip.warn { color: #a8741a; border-color: #ecd5a6; background: #fff8e9; }
+  #ledger .chip.neg { color: #c0605a; border-color: #efc9c6; background: #fff5f4; }
+  #ledger .chip.os { color: #6b5a8a; border-color: #d9d0e8; background: #f7f4fc; }
+  #ledger .chip.ins { color: #a8741a; border-color: #ecd5a6; background: #fff8e9; }
+  #ledger .gx-add2 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; width: 100%; margin-top: 4px; padding-top: 7px; border-top: 1px dashed #e6e6e6; }
+  #ledger .gx-add2 .lbl { font-size: 12px; color: #999; -webkit-text-stroke: 0; }
+  #ledger .add-bar input.gx-in { border: 1px solid #d9d9d9; border-radius: 8px; padding: 2px 6px; font-size: 13px; background: #fff; color: #444; font-family: 'Inter', sans-serif; -webkit-text-stroke: 0; }
+  #ledger .gx-paywrap { display: inline-flex; align-items: center; gap: 6px; margin-left: 6px; }
+  #ledger .gx-paywrap[hidden] { display: none; }
+  #ledger .gx-pays { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+  #ledger .gx-pays .chip { background: #fff; cursor: pointer; font: inherit; font-size: 12px; -webkit-text-stroke: 0; }
+  #ledger .chip.sel { background: #2b2b2b; color: #fff; border-color: #2b2b2b; }
+  #ledger .gx-banner { display: flex; gap: 8px; align-items: flex-start; background: #f3f7fc; border: 1px solid #d9e4f1; color: #3d5878; border-radius: 10px; padding: 9px 12px; font-size: 13px; margin: 0 0 14px; -webkit-text-stroke: 0; line-height: 1.45; }
+  #ledger .gx-banner.amber { background: #fff8e9; border-color: #ecd5a6; color: #8a6417; }
+  #ledger .gx-ok { display: flex; gap: 8px; align-items: flex-start; background: #f2f9f3; border: 1px solid #cfe5d3; color: #3f6b48; border-radius: 10px; padding: 8px 12px; font-size: 13px; margin-bottom: 12px; -webkit-text-stroke: 0; line-height: 1.5; }
+  #ledger .gx-ok b, #ledger .gx-banner b { font-weight: 400; }
+  #ledger .gx-months { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  #ledger .gx-mchip { border: 1px solid #ddd; background: #fff; border-radius: 16px; padding: 3px 12px; font: inherit; font-size: 13px; color: #777; -webkit-text-stroke: 0; cursor: pointer; }
+  #ledger .gx-mchip.wait { color: #aaa; border-style: dashed; }
+  #ledger .gx-mchip.on { background: #2b2b2b; color: #fff; border-color: #2b2b2b; border-style: solid; }
+  #ledger .gx-mchip em { font-style: normal; font-size: 11px; color: #8aa58f; margin-left: 4px; }
+  #ledger .gx-mchip.on em { color: #cfe2d3; }
+  #ledger .gx-drop { border: 1.5px dashed #bfc8d3; border-radius: 12px; background: rgba(255,255,255,.7); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; font-size: 14px; color: #555; -webkit-text-stroke: 0; }
+  #ledger .gx-drop.over { border-color: #1E3A5F; background: #f3f7fc; }
+  #ledger .gx-drop.compact { padding: 8px 12px; }
+  #ledger .gx-dropline { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  #ledger .gx-drop .ic { width: 34px; height: 34px; border-radius: 9px; background: #eef2f6; color: #1E3A5F; display: flex; align-items: center; justify-content: center; font-size: 18px; flex: 0 0 34px; }
+  #ledger .gx-dtxt { flex: 1; min-width: 0; }
+  #ledger .gx-dtxt b { font-weight: 400; }
+  #ledger .gx-pick { color: #1E3A5F; border-bottom: 1px dashed #1E3A5F; cursor: pointer; }
+  #ledger .gx-wbtn { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1.5px solid #0067b2; color: #0067b2; border-radius: 10px; padding: 6px 12px; font-size: 14px; -webkit-text-stroke: 0; text-decoration: none; white-space: nowrap; }
+  #ledger .gx-wbtn:hover { background: #f0f7fc; }
+  #ledger .gx-steps { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; color: #777; -webkit-text-stroke: 0; }
+  #ledger .gx-steps b { font-weight: 400; background: #eef2f6; border-radius: 99px; padding: 1px 9px; color: #445; }
+  #ledger .gx-save { display: flex; align-items: center; gap: 8px; justify-content: space-between; flex-wrap: wrap; margin: 0 0 10px; }
+  #ledger .gx-cnt { font-size: 14px; color: #555; -webkit-text-stroke: 0; }
+  #ledger .gx-btn, .modal .gx-btn { border: 1px solid #ccc; background: #fff; border-radius: 16px; padding: 3px 12px; font: inherit; font-size: 13px; color: #555; white-space: nowrap; display: inline-block; cursor: pointer; -webkit-text-stroke: 0; }
+  #ledger .gx-btn.pri, .modal .gx-btn.pri { background: #1E3A5F; border-color: #1E3A5F; color: #fff; }
+  #ledger .gx-btn.danger { color: #b85c4a; }
+  #ledger .gx-tip { margin: -4px 0 10px; }
+  #ledger .gx-tbl { background: #fff; border: 1px solid #ebebeb; border-radius: 12px; overflow: hidden; }
+  #ledger .gx-th, #ledger .gx-tr { display: grid; grid-template-columns: 48px minmax(120px, 1.5fr) 92px 112px 54px 54px 92px; gap: 6px; align-items: center; padding: 7px 12px; font-size: 13px; -webkit-text-stroke: 0; }
+  #ledger .gx-th { background: #f6f6f6; color: #888; font-size: 11.5px; padding: 6px 12px; }
+  #ledger .gx-tr { border-top: 1px solid #f1f1f1; color: #333; }
+  #ledger .gx-tr.chk { background: #fff8e9; }
+  #ledger .gx-tr.gx-tsum { background: #fafafa; }
+  #ledger .gx-tr .r, #ledger .gx-th .r { text-align: right; }
+  #ledger .gx-tr .m { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12.5px; letter-spacing: -.02em; }
+  #ledger .gx-tr .m.neg { color: #c0605a; }
+  #ledger .gx-tr .m.zero { color: #c8c8c8; font-weight: 400; }
+  #ledger .gx-tr .d { font-family: 'Inter', sans-serif; font-size: 12px; color: #aaa; font-weight: 700; }
+  #ledger .gx-tr .mer { min-width: 0; }
+  #ledger .gx-tr .mn { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #ledger .gx-tr .sub { display: block; font-size: 11px; color: #9a9a9a; }
+  #ledger .gx-tr .kind .chip, #ledger .gx-tr .cat .chip { font-size: 11px; }
+  #ledger .gx-tr .cat { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; }
+  #ledger .gx-csel { border: 1px solid #ddd; border-radius: 10px; background: #fff; padding: 1px 4px; font: inherit; font-size: 12px; color: #555; -webkit-text-stroke: 0; max-width: 100%; cursor: pointer; }
+  #ledger .gx-csel.warn { border-color: #d1a64a; color: #8a6417; }
+  @media (max-width: 700px) {
+    #ledger .toolbar { gap: 8px; }
+    #ledger .gx-seg button { padding: 5px 9px; font-size: 13px; }
+    #ledger .gx-th { display: none; }
+    #ledger .gx-tr { grid-template-columns: 40px minmax(0, 1fr) auto; grid-template-areas: "d mer bill" ". kind fee" ". cat ben"; row-gap: 3px; padding: 9px 10px; }
+    #ledger .gx-tr .d { grid-area: d; align-self: start; }
+    #ledger .gx-tr .mer { grid-area: mer; }
+    #ledger .gx-tr .kind { grid-area: kind; }
+    #ledger .gx-tr .cat { grid-area: cat; }
+    #ledger .gx-tr .bill { grid-area: bill; }
+    #ledger .gx-tr .bill .m { font-size: 14px; }
+    #ledger .gx-tr .fee { grid-area: fee; font-size: 10px; }
+    #ledger .gx-tr .ben { grid-area: ben; font-size: 10px; }
+    #ledger .gx-tr .fee .m, #ledger .gx-tr .ben .m { font-size: 10.5px; color: #999; font-weight: 400; }
+    #ledger .gx-tr .fee .m:not(.zero)::before { content: '수수료 '; }
+    #ledger .gx-tr .ben .m:not(.zero)::before { content: '혜택 '; }
+    #ledger .gx-tr .m.zero { display: none; }
+    #ledger .gx-tr.gx-tsum .kind, #ledger .gx-tr.gx-tsum .cat { display: none; }
+  }
+  /* wide modal (fixed expenses, category editor) */
+  .modal.gx-wide { max-width: 640px; max-height: 88vh; overflow: auto; }
+  .modal.gx-wide .modal-actions { flex-direction: row; justify-content: flex-end; }
+  .modal.gx-wide .modal-actions button { min-width: 72px; }
+  .modal .gx-sub, .modal .gx-modal-note { font-size: 13px; color: #888; margin: -8px 0 12px; -webkit-text-stroke: 0; line-height: 1.45; }
+  .modal select { font: inherit; font-size: 15px; border: 1px solid #ddd; border-radius: 8px; padding: 4px 8px; background: #fff; margin: 0 0 10px; }
+  .modal .gx-fin { border: 1px solid #d9d9d9 !important; border-radius: 8px; padding: 4px 8px !important; font: inherit; font-size: 13px !important; color: #444; background: #fff; margin: 0 !important; width: 100%; min-width: 0; -webkit-text-stroke: 0 !important; box-sizing: border-box; }
+  .modal .gx-fin.num { font-family: 'Inter', sans-serif; font-weight: 700; text-align: right; }
+  .modal .gx-t { display: grid; grid-template-columns: 34px 1.5fr 1fr 96px 96px 104px; gap: 6px 8px; align-items: center; font-size: 13px; -webkit-text-stroke: 0; }
+  .modal .gx-t .h { font-size: 11px; color: #999; }
+  .modal .gx-t .nxt { font-size: 11px; color: #999; display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+  .modal .gx-x { border: 0; background: none; color: #c0605a; cursor: pointer; font-size: 13px; padding: 2px 4px; }
+  .modal .gx-swl { position: relative; display: inline-block; width: 30px; height: 17px; cursor: pointer; }
+  .modal .gx-swl input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .modal .gx-sw { width: 30px; height: 17px; border-radius: 99px; background: #ccc; position: absolute; inset: 0; pointer-events: none; transition: background .15s; }
+  .modal .gx-sw::after { content: ''; position: absolute; left: 2px; top: 2px; width: 13px; height: 13px; border-radius: 50%; background: #fff; transition: left .15s; }
+  .modal .gx-swl input:checked + .gx-sw { background: #1E3A5F; }
+  .modal .gx-swl input:checked + .gx-sw::after { left: 15px; }
+  .modal .gx-empty { font-size: 13px; color: #999; -webkit-text-stroke: 0; margin: 4px 0; }
+  .modal .gx-addrow { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; padding-top: 12px; border-top: 1px solid #eee; align-items: center; }
+  .modal .gx-addrow .gx-fin { width: auto; flex: 1 1 96px; }
+  .modal .gx-addrow #gxFxName, .modal .gx-addrow .gx-newcat { flex: 2 1 150px; }
+  .modal .gx-rule { font-size: 12px; color: #888; line-height: 1.55; margin-top: 12px; background: #fafafa; border-radius: 8px; padding: 8px 10px; -webkit-text-stroke: 0; }
+  .modal .gx-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 14px; color: #444; -webkit-text-stroke: 0; }
+  .modal .gx-foot b { font-weight: 400; }
+  .modal .gx-cat { display: grid; grid-template-columns: 20px 1fr 56px 96px; gap: 8px; align-items: center; padding: 7px 0; border-top: 1px solid #f1f1f1; font-size: 14px; -webkit-text-stroke: 0; }
+  .modal .gx-cat:first-child { border-top: 0; }
+  .modal .gx-cat .hd { color: #b0b6be; cursor: grab; font-size: 15px; letter-spacing: -2px; touch-action: none; user-select: none; text-align: center; }
+  .modal .gx-cats.dragging, .modal .gx-cats.dragging * { cursor: grabbing; user-select: none; }
+  .modal .gx-cat.drag-on { background: #f3f7fc; border-radius: 8px; }
+  .modal .gx-cat input.nm { border: 1px solid #e1e1e1; border-radius: 8px; padding: 4px 8px; font-size: 14px; color: #333; background: #fff; margin: 0; width: 100%; box-sizing: border-box; -webkit-text-stroke: 0; }
+  .modal .gx-cat input.nm[readonly] { background: #fafafa; color: #777; }
+  .modal .gx-cat .cnt { font-size: 12px; color: #999; text-align: right; }
+  .modal .gx-cat .del { border: 0; background: none; color: #c0605a; font: inherit; font-size: 12px; text-align: right; cursor: pointer; }
+  .modal .gx-cat .lock { font-size: 11px; color: #aaa; text-align: right; white-space: nowrap; }
+  .modal .gx-cat.confirm { background: #fff5f4; border-radius: 8px 8px 0 0; padding: 8px; margin: 2px -8px 0; }
+  .modal .gx-cconf { background: #fff5f4; color: #a0473f; font-size: 12px; line-height: 1.6; padding: 0 8px 8px 36px; margin: 0 -8px 2px; border-radius: 0 0 8px 8px; -webkit-text-stroke: 0; }
+  .modal .gx-cconf b { font-weight: 400; text-decoration: underline; }
+  @media (max-width: 560px) {
+    .modal .gx-t { grid-template-columns: 34px 1fr 1fr 1fr; }
+    .modal .gx-t .h { display: none; }
+    .modal .gx-t .c-sw { grid-column: 1; }
+    .modal .gx-t .c-name { grid-column: 2 / -1; }
+    .modal .gx-t .c-amt { grid-column: 2; }
+    .modal .gx-t .nxt { grid-column: 2 / -1; padding-bottom: 6px; border-bottom: 1px solid #f1f1f1; }
+  }
+
   /* ===== tab lock + running-timer pill (global) ===== */
   .tabs a .lock { width: 13px; height: 13px; margin-right: 3px; vertical-align: -1px; opacity: .75; }
   .run-pill {
@@ -2036,7 +2197,12 @@
 <div class="sheet">
   <div class="toolbar">
     <div class="date-nav" id="ledgerNav"></div>
+    <div class="gx-seg" id="ledgerView">
+      <button type="button" data-view="book" class="on">가계부 <small>체크카드·현금</small></button>
+      <button type="button" data-view="card">카드사용내역 <small>우리카드</small></button>
+    </div>
   </div>
+  <div id="ledgerBook">
   <div class="ledger-grid">
     <div class="side" id="ledgerSide"></div>
     <div class="list-col">
@@ -2049,13 +2215,21 @@
         <input class="won-in" name="amount" placeholder="금액" inputmode="numeric">
         <button type="button" class="cat-btn" id="ledgerCatBtn">식비</button>
         <button type="submit" class="add-btn">추가</button>
-        <div class="add-hint">여기서 추가하면 오늘 매일 기록의 수입·지출에도 보여요.</div>
+        <div class="gx-add2">
+          <span class="lbl">날짜</span><input type="date" class="gx-in" name="date" id="ledgerDate" aria-label="날짜">
+          <span class="gx-paywrap" id="ledgerPayWrap"><span class="lbl">결제</span>
+          <span class="gx-pays" id="ledgerPays"><button type="button" class="chip sel" data-pay="체크카드">체크카드</button><button type="button" class="chip" data-pay="현금">현금</button><button type="button" class="chip" data-pay="계좌이체">계좌이체</button></span></span>
+        </div>
+        <div class="add-hint">매일 기록에서 쓴 수입·지출은 여기에 자동으로 나와요. 여기서 추가한 내역도 그 날짜의 매일 기록에 보여요.</div>
       </form>
       <div id="ledgerList"></div>
     </div>
   </div>
+  </div>
+  <div id="ledgerCard" hidden></div>
 </div>
 </section>
+
 
 <section id="dday">
 <div class="sheet">
@@ -5267,7 +5441,29 @@ window.RecordsMemo = {
     { n: 4, face: '😊', cap: '좋음' },
     { n: 5, face: '😄', cap: '최고' }
   ];
-  const CATS = ['식비', '교통', '생활', '카페', '기타'];
+  const DEFAULT_CATS = ['식비', '교통', '생활', '카페', '통신·구독', '기타'];
+  // live list: edited in place so every screen that reads RecordsUtil.CATS sees the user's categories
+  const CATS = DEFAULT_CATS.slice();
+  const PAYS = ['체크카드', '현금', '계좌이체'];
+  function cleanCatList(list) {
+    if (!Array.isArray(list)) return null;
+    const out = [];
+    list.forEach(c => {
+      if (typeof c !== 'string') return;
+      const t = c.trim().slice(0, 12);
+      if (!t || t === '수입' || out.includes(t)) return;
+      out.push(t);
+    });
+    if (!out.length) return null;
+    const i = out.indexOf('기타');
+    if (i >= 0) out.splice(i, 1);
+    out.push('기타');
+    return out;
+  }
+  function setCatsInPlace(list) {
+    const l = cleanCatList(list) || DEFAULT_CATS;
+    CATS.splice(0, CATS.length, ...l);
+  }
   const DEFAULT_HABITS = [
     { id: 'qt', name: '큐티/묵상' },
     { id: 'stretch', name: '스트레칭' },
@@ -5340,7 +5536,7 @@ window.RecordsMemo = {
   }
 
   window.RecordsUtil = {
-    DAYS, MOODS, CATS, DEFAULT_HABITS,
+    DAYS, MOODS, CATS, DEFAULT_CATS, PAYS, DEFAULT_HABITS,
     pad, toISO, parseISO, todayISO, ymOf, monthStart, addMonths, addDays,
     fmtDot, fmtYmDot, dowName, escapeHtml, uid, parseWon, fmtWon, daysBetween, nextYearlyISO
   };
@@ -5354,12 +5550,16 @@ window.RecordsMemo = {
   function closeModal() {
     if (!modal) return;
     modal.hidden = true;
+    const box = modal.querySelector('.modal');
+    if (box) box.classList.remove('gx-wide');
     modalBody.innerHTML = '';
     modalActs.innerHTML = '';
   }
   function openModal(opts) {
     if (!modal) return Promise.resolve({ act: 'cancel' });
     modalMsg.textContent = opts.title || '';
+    const box = modal.querySelector('.modal');
+    if (box) box.classList.toggle('gx-wide', !!opts.wide);
     modalMsg.style.display = opts.title ? '' : 'none';
     modalBody.innerHTML = opts.body || '';
     modalActs.innerHTML = '';
@@ -5392,35 +5592,71 @@ window.RecordsMemo = {
 
   /* ----- money store ----- */
   const MONEY_KEY = 'records-money';
+  const DEFAULT_BUDGET = 300000;
   let money = emptyMoney();
   const moneyListeners = [];
 
   function emptyMoney() {
-    return { v: 1, openingBalance: null, openingMonth: null, entries: [] };
+    return { v: 1, openingBalance: null, openingMonth: null, entries: [], cats: null, budget: null, fixed: [], fixedSkips: [] };
   }
   function validEntry(e) {
     return e && typeof e.id === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.date) &&
       (e.type === 'in' || e.type === 'out') && typeof e.name === 'string' &&
       Number.isFinite(Number(e.amount));
   }
-  function normalizeEntry(e) {
+  function normalizeEntry(e, catList) {
     if (!validEntry(e)) return null;
-    return {
+    const list = catList || CATS;
+    const out = {
       id: e.id,
       date: e.date,
       type: e.type,
       name: e.name,
       amount: Math.round(Math.abs(Number(e.amount))),
-      cat: e.type === 'in' ? '수입' : (CATS.includes(e.cat) ? e.cat : '기타'),
-      source: e.source === 'ledger' ? 'ledger' : 'daily'
+      cat: e.type === 'in' ? '수입' : (list.includes(e.cat) ? e.cat : '기타'),
+      source: (e.source === 'ledger' || e.source === 'fixed') ? e.source : 'daily'
+    };
+    if (out.type === 'out' && PAYS.includes(e.pay)) out.pay = e.pay;
+    if (out.source === 'fixed' && typeof e.fixId === 'string') out.fixId = e.fixId;
+    return out;
+  }
+  function normBudget(b) {
+    if (!b || typeof b !== 'object') return null;
+    const out = { amount: null, months: {} };
+    if (Number.isFinite(Number(b.amount)) && Number(b.amount) >= 0 && b.amount !== null && b.amount !== '') out.amount = Math.round(Number(b.amount));
+    if (b.months && typeof b.months === 'object') {
+      Object.keys(b.months).forEach(k => {
+        const n = Number(b.months[k]);
+        if (/^\d{4}-\d{2}$/.test(k) && Number.isFinite(n) && n >= 0) out.months[k] = Math.round(n);
+      });
+    }
+    return out;
+  }
+  function normFixed(f, catList) {
+    if (!f || typeof f.id !== 'string' || typeof f.name !== 'string' || !f.name.trim()) return null;
+    const amount = Math.round(Math.abs(Number(f.amount)));
+    if (!Number.isFinite(amount) || amount <= 0) return null;
+    let day = Math.round(Number(f.day));
+    if (!Number.isFinite(day) || day < 1) day = 1;
+    if (day > 31) day = 31;
+    const list = catList || CATS;
+    return {
+      id: f.id,
+      name: f.name.trim().slice(0, 40),
+      amount,
+      day,
+      cat: list.includes(f.cat) ? f.cat : '기타',
+      on: f.on !== false,
+      startYm: /^\d{4}-\d{2}$/.test(f.startYm || '') ? f.startYm : ymOf(todayISO())
     };
   }
   function loadMoney() {
     try {
       const raw = localStorage.getItem(MONEY_KEY);
-      if (!raw) { money = emptyMoney(); return; }
+      if (!raw) { money = emptyMoney(); setCatsInPlace(null); return; }
       money = hydrateMoney(JSON.parse(raw));
     } catch (e) { money = emptyMoney(); }
+    setCatsInPlace(money.cats);
   }
   function hydrateMoney(data) {
     const next = emptyMoney();
@@ -5428,7 +5664,12 @@ window.RecordsMemo = {
     if (Number.isFinite(data.v)) next.v = data.v;
     if (Number.isFinite(Number(data.openingBalance))) next.openingBalance = Math.round(Number(data.openingBalance));
     if (data.openingMonth && /^\d{4}-\d{2}$/.test(data.openingMonth)) next.openingMonth = data.openingMonth;
-    next.entries = Array.isArray(data.entries) ? data.entries.map(normalizeEntry).filter(Boolean) : [];
+    next.cats = cleanCatList(data.cats);
+    const list = next.cats || DEFAULT_CATS;
+    next.budget = normBudget(data.budget);
+    next.fixed = Array.isArray(data.fixed) ? data.fixed.map(f => normFixed(f, list)).filter(Boolean) : [];
+    next.fixedSkips = Array.isArray(data.fixedSkips) ? data.fixedSkips.filter(s => typeof s === 'string').slice(-600) : [];
+    next.entries = Array.isArray(data.entries) ? data.entries.map(e => normalizeEntry(e, list)).filter(Boolean) : [];
     return next;
   }
   function saveMoney(opts) {
@@ -5479,6 +5720,7 @@ window.RecordsMemo = {
       prev, income, expense,
       balance: prev + income - expense,
       cats, entries,
+      budget: getBudget(ym),
       canEditPrev: !money.openingMonth || money.openingMonth === ym
     };
   }
@@ -5504,7 +5746,9 @@ window.RecordsMemo = {
   function updateEntry(id, patch) {
     const i = money.entries.findIndex(e => e.id === id);
     if (i < 0) return null;
-    const e = normalizeEntry(Object.assign({}, money.entries[i], patch, { id: money.entries[i].id }));
+    const merged = Object.assign({}, money.entries[i], patch, { id: money.entries[i].id });
+    if (patch && Object.prototype.hasOwnProperty.call(patch, 'pay') && !patch.pay) delete merged.pay;
+    const e = normalizeEntry(merged);
     if (!e) return null;
     money.entries[i] = e;
     saveMoney();
@@ -5512,7 +5756,9 @@ window.RecordsMemo = {
   }
   function removeEntry(id) {
     const before = money.entries.length;
+    const gone = money.entries.find(e => e.id === id);
     money.entries = money.entries.filter(e => e.id !== id);
+    if (gone && gone.source === 'fixed' && !money.fixedSkips.includes(id)) money.fixedSkips.push(id);
     if (money.entries.length !== before) saveMoney();
   }
   function setOpening(ym, amount) {
@@ -5520,12 +5766,110 @@ window.RecordsMemo = {
     money.openingBalance = Math.round(Number(amount) || 0);
     saveMoney();
   }
+
+  /* budget: one amount for every month, with optional per-month overrides */
+  function getBudget(ym) {
+    const b = money.budget;
+    if (b && b.months && Object.prototype.hasOwnProperty.call(b.months, ym)) return b.months[ym];
+    if (b && b.amount != null) return b.amount;
+    return DEFAULT_BUDGET;
+  }
+  function setBudget(amount, onlyYm) {
+    const n = Math.max(0, Math.round(Number(amount) || 0));
+    const b = money.budget ? { amount: money.budget.amount, months: Object.assign({}, money.budget.months) } : { amount: null, months: {} };
+    if (onlyYm) b.months[onlyYm] = n;
+    else {
+      b.amount = n;
+      // a new base amount replaces any override from this month on
+      const cur = ymOf(todayISO());
+      Object.keys(b.months).forEach(k => { if (k >= cur) delete b.months[k]; });
+    }
+    money.budget = b;
+    saveMoney();
+  }
+
+  /* fixed expenses: entered automatically on their day; ids are fx-<fixedId>-<YYYY-MM> so nothing doubles */
+  function fixedDate(ym, day) {
+    const [y, m] = ym.split('-').map(Number);
+    const last = new Date(y, m, 0).getDate();
+    return ym + '-' + pad(Math.min(day, last));
+  }
+  function fixedEntryId(fid, ym) { return 'fx-' + fid + '-' + ym; }
+  function fillFixed() {
+    const today = todayISO();
+    const curYm = ymOf(today);
+    const have = new Set(money.entries.map(e => e.id));
+    const skips = new Set(money.fixedSkips);
+    let added = 0;
+    (money.fixed || []).forEach(f => {
+      if (!f.on) return;
+      let ym = f.startYm && f.startYm <= curYm ? f.startYm : curYm;
+      const floor = addMonths(curYm, -24);
+      if (ym < floor) ym = floor;
+      for (let guard = 0; ym <= curYm && guard < 30; ym = addMonths(ym, 1), guard++) {
+        const date = fixedDate(ym, f.day);
+        if (date > today) break;
+        const id = fixedEntryId(f.id, ym);
+        if (have.has(id) || skips.has(id)) continue;
+        const e = normalizeEntry({ id, date, type: 'out', name: f.name, amount: f.amount, cat: f.cat, source: 'fixed', fixId: f.id });
+        if (e) { money.entries.push(e); have.add(id); added++; }
+      }
+    });
+    if (added) saveMoney();
+    return added;
+  }
+  function setFixed(list) {
+    const curYm = ymOf(todayISO());
+    const prev = new Map((money.fixed || []).map(f => [f.id, f]));
+    money.fixed = (list || []).map(f => {
+      const old = prev.get(f.id);
+      const copy = Object.assign({}, f);
+      if (!old) copy.startYm = copy.startYm || curYm;
+      else if (!old.on && copy.on !== false) copy.startYm = curYm;
+      else copy.startYm = old.startYm;
+      return normFixed(copy);
+    }).filter(Boolean);
+    saveMoney();
+    return fillFixed();
+  }
+
+  /* categories (shared with the card statements) */
+  function catCounts() {
+    const out = {};
+    money.entries.forEach(e => { if (e.type === 'out') out[e.cat] = (out[e.cat] || 0) + 1; });
+    return out;
+  }
+  function applyCatEdit(edit) {
+    const renames = (edit && edit.renames) || {};
+    const deleted = (edit && edit.deleted) || [];
+    const list = cleanCatList(edit && edit.list) || DEFAULT_CATS.slice();
+    const mapCat = c => {
+      if (Object.prototype.hasOwnProperty.call(renames, c)) c = renames[c];
+      if (deleted.includes(c) || !list.includes(c)) return '기타';
+      return c;
+    };
+    money.entries = money.entries.map(e => e.type === 'out' ? Object.assign({}, e, { cat: mapCat(e.cat) }) : e);
+    money.fixed = (money.fixed || []).map(f => Object.assign({}, f, { cat: mapCat(f.cat) }));
+    const same = list.length === DEFAULT_CATS.length && list.every((c, i) => c === DEFAULT_CATS[i]);
+    money.cats = same ? null : list;
+    setCatsInPlace(money.cats);
+    saveMoney();
+    document.dispatchEvent(new CustomEvent('records-cats-change', { detail: { renames, deleted, list: CATS.slice() } }));
+  }
+
   function applyCloudMoney(data) {
+    const before = CATS.join('|');
     money = hydrateMoney(data);
+    setCatsInPlace(money.cats);
     saveMoney({ localOnly: true });
+    if (CATS.join('|') !== before) document.dispatchEvent(new CustomEvent('records-cats-change', { detail: { list: CATS.slice() } }));
+    // fill after the cloud apply finishes so the new rows are pushed normally
+    setTimeout(fillFixed, 0);
   }
 
   loadMoney();
+  fillFixed();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) fillFixed(); });
   window.RecordsMoney = {
     getState: () => money,
     applyCloud: applyCloudMoney,
@@ -5537,10 +5881,23 @@ window.RecordsMemo = {
     monthSummary,
     prevBalance,
     setOpening,
+    getBudget,
+    setBudget,
+    getFixed: () => (money.fixed || []).map(f => Object.assign({}, f)),
+    setFixed,
+    fillFixed,
+    fixedDate,
+    fixedEntryId,
+    isSkipped: id => money.fixedSkips.includes(id),
+    getCats: () => CATS.slice(),
+    catCounts,
+    applyCatEdit,
+    DEFAULT_BUDGET,
     empty: emptyMoney,
     hydrate: hydrateMoney
   };
 })();
+
 
 /* ===== store + panel: daily ===== */
 (function () {
@@ -5844,6 +6201,7 @@ window.RecordsMemo = {
   function updateCatBtn() {
     if (!catBtn) return;
     catBtn.hidden = dailyType === 'in';
+    if (!U.CATS.includes(dailyCat)) dailyCat = U.CATS[0];
     catBtn.textContent = dailyCat;
     const seg = moneyForm.querySelector('.seg');
     if (seg) {
@@ -6240,6 +6598,647 @@ window.RecordsMemo = {
   };
 })();
 
+/* ===== card statements (credit card; separate from the money ledger, balance and budget) ===== */
+(function () {
+  const U = window.RecordsUtil;
+  const KEY = 'records-cards';
+  const PAY_DAY = 14;
+  const WOORI_URL = 'https://pc.wooricard.com/dcpc/main.do';
+  const XLSX_SRC = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
+  const XLSX_SRI = 'sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT';
+  const KINDS = ['일시불', '할부', '취소', '해외', '기타'];
+  let cards = emptyCards();
+  let pending = null;     // parsed file waiting for 저장 (nothing is stored before that)
+  let viewPay = null;     // 'YYYY-MM' of the payment month on screen
+  let errorMsg = '';
+  let busy = false;
+  let navBound = null, rootBound = null;
+
+  function emptyCards() { return { v: 1, statements: {}, merchantCats: [] }; }
+  function int(n) { const v = Math.round(Number(n)); return Number.isFinite(v) ? v : 0; }
+  function normItem(it) {
+    if (!it || typeof it !== 'object' || !/^\d{4}-\d{2}-\d{2}$/.test(it.date || '')) return null;
+    const out = {
+      id: typeof it.id === 'string' ? it.id : U.uid('c'),
+      date: it.date,
+      merchant: String(it.merchant || '').slice(0, 80),
+      kind: KINDS.includes(it.kind) ? it.kind : '기타',
+      rawKind: String(it.rawKind || '').slice(0, 20),
+      amount: int(it.amount),
+      months: int(it.months),
+      round: int(it.round),
+      principal: int(it.principal),
+      benefit: int(it.benefit),
+      fee: int(it.fee),
+      balance: int(it.balance),
+      cat: typeof it.cat === 'string' && it.cat ? it.cat : '기타'
+    };
+    if (it.usd) out.usd = String(it.usd).slice(0, 20);
+    if (it.rate) out.rate = String(it.rate).slice(0, 20);
+    if (it.chk) out.chk = true;
+    return out;
+  }
+  function totalsOf(items) {
+    const t = { principal: 0, benefit: 0, fee: 0, balance: 0, pay: 0, count: items.length };
+    items.forEach(it => { t.principal += it.principal; t.benefit += it.benefit; t.fee += it.fee; t.balance += it.balance; });
+    t.pay = t.principal + t.fee;
+    return t;
+  }
+  function normStatement(st, key) {
+    if (!st || typeof st !== 'object') return null;
+    const items = Array.isArray(st.items) ? st.items.map(normItem).filter(Boolean) : [];
+    items.forEach(it => { delete it.chk; });
+    const out = {
+      payYm: key,
+      payDate: /^\d{4}-\d{2}-\d{2}$/.test(st.payDate || '') ? st.payDate : key + '-' + PAY_DAY,
+      usageYm: /^\d{4}-\d{2}$/.test(st.usageYm || '') ? st.usageYm : U.addMonths(key, -1),
+      fileName: String(st.fileName || '').slice(0, 120),
+      savedAt: String(st.savedAt || ''),
+      items,
+      totals: totalsOf(items),
+      sub: null,
+      ok: !!st.ok
+    };
+    if (st.sub && typeof st.sub === 'object') {
+      out.sub = { principal: int(st.sub.principal), benefit: int(st.sub.benefit), fee: int(st.sub.fee), balance: int(st.sub.balance) };
+    }
+    return out;
+  }
+  function hydrateCards(d) {
+    const next = emptyCards();
+    if (!d || typeof d !== 'object') return next;
+    if (Number.isFinite(d.v)) next.v = d.v;
+    if (d.statements && typeof d.statements === 'object') {
+      Object.keys(d.statements).forEach(k => {
+        if (!/^\d{4}-\d{2}$/.test(k)) return;
+        const st = normStatement(d.statements[k], k);
+        if (st) next.statements[k] = st;
+      });
+    }
+    const seen = new Set();
+    (Array.isArray(d.merchantCats) ? d.merchantCats : []).forEach(p => {
+      if (!p || typeof p.m !== 'string' || typeof p.c !== 'string' || seen.has(p.m)) return;
+      seen.add(p.m);
+      next.merchantCats.push({ m: p.m.slice(0, 80), c: p.c.slice(0, 12) });
+    });
+    return next;
+  }
+  function load() {
+    try { cards = hydrateCards(JSON.parse(localStorage.getItem(KEY) || 'null')); }
+    catch (e) { cards = emptyCards(); }
+  }
+  function save(opts) {
+    try { localStorage.setItem(KEY, JSON.stringify(cards)); }
+    catch (e) { alert('저장 공간이 부족해요.'); }
+    if ((!opts || !opts.localOnly) && window.RecordsCloud && window.RecordsCloud.onCardsSave) window.RecordsCloud.onCardsSave(cards);
+    document.dispatchEvent(new CustomEvent('records-cards-change'));
+  }
+  function applyCloud(d) {
+    cards = hydrateCards(d);
+    save({ localOnly: true });
+    if (isOpen()) renderNow();
+  }
+
+  /* ----- merchant → category memory ----- */
+  function mKey(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
+  function memGet(m) {
+    const k = mKey(m);
+    const p = cards.merchantCats.find(x => x.m === k);
+    return p ? p.c : null;
+  }
+  function memSet(m, c) {
+    const k = mKey(m);
+    if (!k) return;
+    const p = cards.merchantCats.find(x => x.m === k);
+    if (p) p.c = c; else cards.merchantCats.push({ m: k, c });
+    if (cards.merchantCats.length > 1500) cards.merchantCats.splice(0, cards.merchantCats.length - 1500);
+  }
+  const RULES = [
+    ['카페', /스타벅스|커피|카페|cafe|coffee|투썸|이디야|메가엠지씨|메가커피|빽다방|폴바셋|할리스|컴포즈|블루보틀|파스쿠찌|공차|매머드/i],
+    ['통신·구독', /넷플릭스|netflix|유튜브|youtube|스포티파이|spotify|멜론|지니뮤직|웨이브|티빙|왓챠|디즈니|쿠팡플레이|apple\.com|애플|구글플레이|google|에스케이텔레콤|skt|케이티|lg유플러스|유플러스|통신|알뜰폰|icloud|chatgpt|openai|노션|notion/i],
+    ['교통', /택시|카카오t|카카오모빌리티|티머니|버스|지하철|코레일|srt|에스알|고속|주유|주차|하이패스|교통|따릉이|쏘카|그린카/i],
+    ['식비', /배달의민족|배민|요기요|쿠팡이츠|맥도날드|버거|롯데리아|kfc|서브웨이|김밥|식당|분식|치킨|피자|국밥|한식|중식|일식|베이커리|파리바게뜨|뚜레쥬르|제과|떡|도시락|푸드|레스토랑|gs25|씨유|cu |세븐일레븐|이마트24|편의점/i],
+    ['생활', /마트|이마트|홈플러스|롯데마트|코스트코|트레이더스|다이소|올리브영|쿠팡|약국|병원|의원|치과|한의원|세탁|무신사|지마켓|11번가|옥션|네이버페이|생활|마켓컬리|컬리/i]
+  ];
+  function guessCat(merchant) {
+    const mem = memGet(merchant);
+    if (mem) return { cat: U.CATS.includes(mem) ? mem : '기타', sure: true };
+    for (const [c, re] of RULES) {
+      if (re.test(merchant) && U.CATS.includes(c)) return { cat: c, sure: true };
+    }
+    return { cat: '기타', sure: false };
+  }
+
+  /* ----- parsing (the file never leaves the browser) ----- */
+  function norm(s) { return String(s == null ? '' : s).replace(/\s+/g, ''); }
+  function firstLine(s) { return String(s == null ? '' : s).split(/\r?\n/)[0]; }
+  function num(s) {
+    // first number only: an overseas cell reads like "22,985 USD17.04"
+    let t = firstLine(s).replace(/(USD|US\$|\$)\s*[\d.,]+/ig, ' ').trim();
+    let neg = false;
+    const mt = t.match(/\(?\s*-?\s*[\d,]*\.?\d+\s*\)?/);
+    t = mt ? mt[0] : '';
+    if (/^\(.*\)$/.test(t.trim())) { neg = true; t = t.replace(/[()]/g, ''); }
+    t = t.replace(/[^\d.\-]/g, '');
+    if (!t || t === '-' || t === '.') return 0;
+    const n = Number(t);
+    if (!Number.isFinite(n)) return 0;
+    return Math.round(neg ? -n : n);
+  }
+  function findCols(rows) {
+    for (let r = 0; r < Math.min(rows.length, 20); r++) {
+      const row = (rows[r] || []).map(norm);
+      const di = row.findIndex(c => c === '이용일자' || c === '이용일' || c === '거래일자');
+      const mi = row.findIndex(c => c.indexOf('가맹점') >= 0);
+      if (di < 0 || mi < 0) continue;
+      const sub = (rows[r + 1] || []).map(norm);
+      const both = row.map((c, i) => c || sub[i] || '');
+      const find = (arr, pred) => arr.findIndex(pred);
+      const col = {
+        date: di, merchant: mi,
+        kind: find(row, c => c.indexOf('매출구분') >= 0 || c === '구분'),
+        amount: find(row, c => c.indexOf('이용금액') === 0),
+        months: find(row, c => c.indexOf('할부개월') >= 0),
+        balance: find(row, c => c.indexOf('결제후잔액') >= 0),
+        round: find(sub, c => c === '회차'),
+        principal: find(sub, c => c === '원금'),
+        benefit: find(sub, c => c.indexOf('혜택') >= 0),
+        rate: find(sub, c => c === '환율'),
+        fee: find(sub, c => c === '수수료')
+      };
+      let start = r + 2;
+      if (col.principal < 0) {
+        col.round = find(both, c => c === '회차');
+        col.principal = find(both, c => c === '원금');
+        col.benefit = find(both, c => c.indexOf('혜택') >= 0);
+        col.rate = find(both, c => c === '환율');
+        col.fee = find(both, c => c === '수수료');
+        start = r + 1;
+      }
+      if (col.principal < 0) return null;
+      col.start = start;
+      return col;
+    }
+    return null;
+  }
+  function cell(row, i) { return i >= 0 ? row[i] : ''; }
+  function parseRows(rows) {
+    const col = findCols(rows || []);
+    if (!col) return null;
+    const items = [], cardSubs = [], billSubs = [];
+    for (let r = col.start; r < rows.length; r++) {
+      const row = rows[r] || [];
+      const kindRaw = norm(cell(row, col.kind));
+      const dateRaw = norm(cell(row, col.date));
+      if (/소계|합계/.test(kindRaw) || /소계|합계/.test(dateRaw)) {
+        const s = { principal: num(cell(row, col.principal)), benefit: num(cell(row, col.benefit)), fee: num(cell(row, col.fee)), balance: num(cell(row, col.balance)) };
+        if (/청구|결제번호/.test(kindRaw + dateRaw)) billSubs.push(s); else cardSubs.push(s);
+        continue;
+      }
+      let mm = 0, dd = 0, yy = 0;
+      let m = dateRaw.match(/^(\d{1,2})[.\-/](\d{1,2})$/);
+      if (m) { mm = +m[1]; dd = +m[2]; }
+      else if ((m = dateRaw.match(/^(\d{4})[.\-/]?(\d{1,2})[.\-/]?(\d{1,2})$/))) { yy = +m[1]; mm = +m[2]; dd = +m[3]; }
+      if (!mm || !dd || mm > 12 || dd > 31) continue;
+      const merchant = String(cell(row, col.merchant) || '').replace(/\s+/g, ' ').trim();
+      const pCell = String(cell(row, col.principal) || '');
+      const aCell = String(cell(row, col.amount) || '');
+      const principal = num(pCell);
+      const usdM = (pCell + ' ' + aCell).match(/USD\s*([\d.,]+)/i);
+      let kind = '기타';
+      if (kindRaw.indexOf('취소') >= 0 || principal < 0) kind = '취소';
+      else if (kindRaw.indexOf('할부') >= 0) kind = '할부';
+      else if (/국외|해외/.test(kindRaw) || usdM) kind = '해외';
+      else if (kindRaw.indexOf('일시불') >= 0) kind = '일시불';
+      const rate = String(cell(row, col.rate) || '').trim();
+      items.push({
+        mm, dd, yy, merchant, kind, rawKind: kindRaw,
+        amount: num(aCell), months: num(cell(row, col.months)), round: num(cell(row, col.round)),
+        principal, benefit: num(cell(row, col.benefit)), fee: num(cell(row, col.fee)),
+        balance: num(cell(row, col.balance)),
+        usd: usdM ? usdM[1] : '', rate: rate && num(rate) ? rate : ''
+      });
+    }
+    const subs = billSubs.length ? billSubs : cardSubs;
+    let sub = null;
+    if (subs.length) {
+      sub = { principal: 0, benefit: 0, fee: 0, balance: 0 };
+      subs.forEach(s => { sub.principal += s.principal; sub.benefit += s.benefit; sub.fee += s.fee; sub.balance += s.balance; });
+    }
+    return { items, sub };
+  }
+  function ymNum(ym) { return Number(ym.slice(0, 4)) * 12 + Number(ym.slice(5, 7)) - 1; }
+  function inferUsage(items, refYm) {
+    const pool = items.filter(it => it.kind !== '할부');
+    const src = pool.length ? pool : items;
+    const freq = {};
+    src.forEach(it => { freq[it.mm] = (freq[it.mm] || 0) + 1; });
+    let usageM = 0, best = -1;
+    Object.keys(freq).forEach(k => { if (freq[k] > best) { best = freq[k]; usageM = Number(k); } });
+    const withYear = src.find(it => it.yy && it.mm === usageM);
+    if (withYear) return withYear.yy + '-' + U.pad(usageM);
+    const ty = Number(refYm.slice(0, 4));
+    let pick = null, dist = Infinity;
+    [ty - 1, ty, ty + 1].forEach(y => {
+      const usage = y + '-' + U.pad(usageM);
+      const pay = U.addMonths(usage, 1);
+      const dd = Math.abs(ymNum(pay) - ymNum(refYm));
+      if (dd < dist) { dist = dd; pick = usage; }
+    });
+    return pick;
+  }
+  function buildStatement(parsed, fileName) {
+    const today = U.todayISO();
+    const usageYm = inferUsage(parsed.items, U.ymOf(today));
+    const uy = Number(usageYm.slice(0, 4)), um = Number(usageYm.slice(5, 7));
+    const payYm = U.addMonths(usageYm, 1);
+    const items = parsed.items.map(it => {
+      const y = it.yy || (it.mm <= um ? uy : uy - 1);
+      const g = guessCat(it.merchant);
+      const out = normItem({
+        id: U.uid('c'), date: y + '-' + U.pad(it.mm) + '-' + U.pad(it.dd),
+        merchant: it.merchant, kind: it.kind, rawKind: it.rawKind,
+        amount: it.amount, months: it.months, round: it.round,
+        principal: it.principal, benefit: it.benefit, fee: it.fee, balance: it.balance,
+        usd: it.usd, rate: it.rate, cat: g.cat
+      });
+      if (!g.sure || it.kind === '기타') out.chk = true;
+      return out;
+    });
+    const totals = totalsOf(items);
+    const sub = parsed.sub;
+    const ok = !!sub && sub.principal === totals.principal && sub.fee === totals.fee && sub.benefit === totals.benefit &&
+      (!sub.balance || sub.balance === totals.balance);
+    return { payYm, payDate: payYm + '-' + PAY_DAY, usageYm, fileName: String(fileName || '').slice(0, 120), savedAt: '', items, totals, sub, ok };
+  }
+
+  function ensureXLSX() {
+    if (window.XLSX && window.XLSX.read) return Promise.resolve(window.XLSX);
+    if (ensureXLSX._p) return ensureXLSX._p;
+    ensureXLSX._p = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = XLSX_SRC;
+      s.integrity = XLSX_SRI;
+      s.crossOrigin = 'anonymous';
+      s.onload = () => window.XLSX ? resolve(window.XLSX) : reject(new Error('xlsx'));
+      s.onerror = () => { ensureXLSX._p = null; s.remove(); reject(new Error('xlsx-load')); };
+      document.head.appendChild(s);
+    });
+    return ensureXLSX._p;
+  }
+  async function handleFile(file) {
+    if (!file) return;
+    errorMsg = '';
+    if (!/\.(xls|xlsx)$/i.test(file.name || '')) {
+      errorMsg = '엑셀 파일(.xls, .xlsx)만 올릴 수 있어요.';
+      renderNow(); return;
+    }
+    busy = true; renderNow();
+    try {
+      let XL;
+      try { XL = await ensureXLSX(); }
+      catch (e) { errorMsg = '엑셀을 읽는 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 올려 주세요.'; return; }
+      const buf = await file.arrayBuffer();
+      let wb;
+      try { wb = XL.read(buf, { type: 'array' }); }
+      catch (e) { errorMsg = '파일을 읽지 못했어요. 우리카드에서 받은 엑셀 파일인지 확인해 주세요.'; return; }
+      let parsed = null;
+      for (const name of wb.SheetNames) {
+        const rows = XL.utils.sheet_to_json(wb.Sheets[name], { header: 1, raw: false, defval: '' });
+        const p = parseRows(rows);
+        if (p && p.items.length) { parsed = p; break; }
+      }
+      if (!parsed) { errorMsg = '이 파일에서 이용 내역을 찾지 못했어요. 우리카드 ‘이용대금명세서’ 엑셀인지 확인해 주세요.'; return; }
+      pending = buildStatement(parsed, file.name);
+      viewPay = pending.payYm;
+    } finally {
+      busy = false;
+      renderNow();
+    }
+  }
+
+  /* ----- pay months ----- */
+  function nextPay() {
+    const today = U.todayISO();
+    const ym = U.ymOf(today);
+    const payYm = Number(today.slice(8, 10)) <= PAY_DAY ? ym : U.addMonths(ym, 1);
+    const payDate = payYm + '-' + U.pad(PAY_DAY);
+    return { payYm, payDate, usageYm: U.addMonths(payYm, -1), daysLeft: U.daysBetween(today, payDate) };
+  }
+  function defaultView() {
+    const keys = Object.keys(cards.statements).sort();
+    return keys.length ? keys[keys.length - 1] : nextPay().payYm;
+  }
+  function payLabel(ym) { return Number(ym.slice(5)) + '/' + PAY_DAY; }
+  function usageRange(usageYm) {
+    const y = Number(usageYm.slice(0, 4)), m = Number(usageYm.slice(5, 7));
+    const last = new Date(y, m, 0).getDate();
+    return U.pad(m) + '.01 ~ ' + U.pad(m) + '.' + U.pad(last);
+  }
+
+  /* ----- render ----- */
+  function isOpen() {
+    const c = document.getElementById('ledgerCard');
+    const l = document.getElementById('ledger');
+    return !!(c && !c.hidden && l && !l.hidden);
+  }
+  function renderNow() {
+    if (!isOpen()) return;
+    render(document.getElementById('ledgerNav'), document.getElementById('ledgerCard'));
+  }
+  function kindChip(it) {
+    if (it.kind === '할부') return '<span class="chip ins">할부 ' + (it.round || '?') + '/' + (it.months || '?') + '회차</span>';
+    if (it.kind === '취소') return '<span class="chip neg">취소</span>';
+    if (it.kind === '해외') return '<span class="chip os">해외' + (it.usd ? ' USD' : '') + '</span>';
+    if (it.kind === '일시불') return '<span class="chip ghost">일시불</span>';
+    return '<span class="chip warn">' + U.escapeHtml(it.rawKind || '기타') + '</span>';
+  }
+  function subLine(it, usageYm) {
+    if (it.usd) return '<span class="sub">USD ' + U.escapeHtml(it.usd) + (it.rate ? ' · 환율 ' + U.escapeHtml(it.rate) : '') + '</span>';
+    if (it.kind === '할부') {
+      const other = it.date.slice(0, 7) !== usageYm;
+      return '<span class="sub">' + (other ? '원 이용일 ' + it.date.slice(5).replace('-', '.') + ' · ' : '') + '이용금액 ' + U.fmtWon(it.amount) + '</span>';
+    }
+    return '';
+  }
+  function money(n, cls) {
+    if (!n) return '<span class="m zero">-</span>';
+    return '<span class="m' + (n < 0 ? ' neg' : '') + (cls ? ' ' + cls : '') + '">' + U.fmtWon(n) + '</span>';
+  }
+  function catCell(it, i) {
+    const cur = U.CATS.includes(it.cat) ? it.cat : '기타';
+    return '<select class="gx-csel' + (it.chk ? ' warn' : '') + '" data-ci="' + i + '" aria-label="분류">' +
+      U.CATS.map(c => '<option value="' + U.escapeHtml(c) + '"' + (c === cur ? ' selected' : '') + '>' + U.escapeHtml(c) + '</option>').join('') +
+      '</select>' + (it.chk ? '<span class="chip warn">확인 필요</span>' : '');
+  }
+  function tableHtml(st) {
+    const head = '<div class="gx-th"><span>이용일</span><span>가맹점</span><span>매출구분</span><span>분류</span><span class="r">혜택</span><span class="r">수수료</span><span class="r">청구금액</span></div>';
+    const rows = st.items.map((it, i) => {
+      const bill = it.principal + it.fee;
+      return '<div class="gx-tr' + (it.chk ? ' chk' : '') + '" data-row="' + i + '">' +
+        '<span class="d">' + it.date.slice(5).replace('-', '.') + '</span>' +
+        '<span class="mer"><span class="mn">' + U.escapeHtml(it.merchant || '(이름 없음)') + '</span>' + subLine(it, st.usageYm) + '</span>' +
+        '<span class="kind">' + kindChip(it) + '</span>' +
+        '<span class="cat">' + catCell(it, i) + '</span>' +
+        '<span class="r ben">' + money(it.benefit) + '</span>' +
+        '<span class="r fee">' + money(it.fee) + '</span>' +
+        '<span class="r bill">' + money(bill) + '</span>' +
+        '</div>';
+    }).join('');
+    const t = st.totals;
+    const foot = '<div class="gx-tr gx-tsum"><span></span><span class="mer">합계</span><span></span><span></span>' +
+      '<span class="r ben">' + money(t.benefit) + '</span><span class="r fee">' + money(t.fee) + '</span><span class="r bill">' + money(t.pay) + '</span></div>';
+    return '<div class="gx-tbl" id="cardTable">' + head + rows + foot + '</div>';
+  }
+  function summaryHtml(st, payYm) {
+    const pm = Number(payYm.slice(5));
+    if (!st) {
+      return '<div class="gx-card gx-csum"><h4><span>우리카드 · ' + pm + '월 ' + PAY_DAY + '일 납부</span></h4>' +
+        '<p class="gx-note">' + Number(U.addMonths(payYm, -1).slice(5)) + '월 이용분 명세서를 올리면 납부 예정액을 계산해요.</p></div>';
+    }
+    const t = st.totals;
+    const byCat = {};
+    st.items.forEach(it => {
+      const c = U.CATS.includes(it.cat) ? it.cat : '기타';
+      byCat[c] = (byCat[c] || 0) + it.principal + it.fee;
+    });
+    const list = Object.keys(byCat).map(c => ({ c, n: byCat[c] })).filter(x => x.n !== 0).sort((a, b) => b.n - a.n);
+    const max = Math.max.apply(null, list.map(x => x.n).concat([0]));
+    const catHtml = list.map(x =>
+      '<div class="cat"><div class="cat-row"><span class="cat-name">' + U.escapeHtml(x.c) + '</span><span class="cat-amt">' + U.fmtWon(x.n) + '</span></div>' +
+      '<div class="bar"><i style="width:' + (max > 0 && x.n > 0 ? Math.round(x.n / max * 100) : 0) + '%"></i></div></div>').join('');
+    return '<div class="gx-card gx-csum" id="cardSummary">' +
+      '<h4><span>우리카드 · ' + pm + '월 ' + PAY_DAY + '일 납부</span>' + (st === pending ? '<span class="chip warn">저장 전</span>' : '') + '</h4>' +
+      '<div class="gx-big" id="cardPay">' + U.fmtWon(t.pay) + '<small>원</small></div>' +
+      '<p class="gx-note">' + Number(st.usageYm.slice(5)) + '월 이용분 (' + usageRange(st.usageYm) + ')</p>' +
+      '<div class="gx-row"><span>이용 원금</span><b id="cardPrincipal">' + U.fmtWon(t.principal) + '</b></div>' +
+      '<div class="gx-row"><span>수수료 (할부·해외)</span><b id="cardFee">' + U.fmtWon(t.fee) + '</b></div>' +
+      '<div class="gx-row"><span>혜택 (이미 빠진 금액)</span><b id="cardBenefit">' + (t.benefit ? '-' : '') + U.fmtWon(t.benefit) + '</b></div>' +
+      '<div class="gx-sep"></div>' +
+      '<div class="gx-row"><span>납부 예정액</span><b>' + U.fmtWon(t.pay) + '원</b></div>' +
+      '<div class="gx-row"><span>남은 할부 잔액</span><b id="cardBalance">' + U.fmtWon(t.balance) + '</b></div>' +
+      '</div>' +
+      (catHtml ? '<p class="cats-label">분류별 (청구금액 기준)</p><div class="cats">' + catHtml + '</div>' : '');
+  }
+  function dropHtml(compact) {
+    const steps = '<div class="gx-steps"><b>① 로그인</b>›<b>② MY → 이용대금명세서</b>›<b>③ 결제월 선택</b>›<b>④ 엑셀저장</b>›<b>⑤ 아래에 올리기</b></div>';
+    const wbtn = '<a class="gx-wbtn" id="wooriLink" href="' + WOORI_URL + '" target="_blank" rel="noopener noreferrer">우리카드 PC 홈페이지 열기 ↗</a>';
+    if (compact) {
+      return '<div class="gx-drop compact" id="cardDrop"><div class="gx-dropline">' + wbtn +
+        '<label class="gx-btn" for="cardFile">다른 파일 올리기</label>' +
+        '<span class="gx-note">PC에서만 엑셀 저장이 돼요.</span></div></div>';
+    }
+    return '<div class="gx-drop" id="cardDrop">' +
+      '<div class="gx-dropline"><div class="ic">⬆</div><div class="gx-dtxt">내려받은 <b>이용대금명세서(.xls / .xlsx)</b>를 끌어다 놓거나 <label class="gx-pick" for="cardFile">파일 선택</label>' +
+      '<div class="gx-note">파일은 내 브라우저에서만 읽어요. 서버·AI로 보내지 않아요.</div></div></div>' +
+      '<div class="gx-dropline">' + wbtn + '<span class="gx-note">PC에서만 엑셀 저장이 돼요. 휴대폰이면 PC에서 내려받아 옮겨 주세요.</span></div>' +
+      steps + '</div>';
+  }
+  function checkHtml(st) {
+    const t = st.totals;
+    if (st.ok) {
+      return '<div class="gx-ok" id="cardCheck" data-ok="1">✓ <span><b>파일 내용과 맞아요.</b> 내 계산과 명세서 소계가 같아요 — 이용 원금 ' + U.fmtWon(t.principal) +
+        ' · 수수료 ' + U.fmtWon(t.fee) + ' · 혜택 ' + U.fmtWon(t.benefit) + ' · 할부 잔액 ' + U.fmtWon(t.balance) + '. ' + t.count + '건을 읽었어요.</span></div>';
+    }
+    const s = st.sub;
+    if (!s) return '<div class="gx-banner amber" id="cardCheck" data-ok="0">⚠ 파일에 소계 줄이 없어서 맞는지 확인하지 못했어요. ' + t.count + '건을 읽었어요. 금액을 한 번 살펴봐 주세요.</div>';
+    const diff = [];
+    if (s.principal !== t.principal) diff.push('원금 ' + U.fmtWon(t.principal) + ' / 명세서 ' + U.fmtWon(s.principal));
+    if (s.fee !== t.fee) diff.push('수수료 ' + U.fmtWon(t.fee) + ' / 명세서 ' + U.fmtWon(s.fee));
+    if (s.benefit !== t.benefit) diff.push('혜택 ' + U.fmtWon(t.benefit) + ' / 명세서 ' + U.fmtWon(s.benefit));
+    if (s.balance && s.balance !== t.balance) diff.push('할부 잔액 ' + U.fmtWon(t.balance) + ' / 명세서 ' + U.fmtWon(s.balance));
+    return '<div class="gx-banner amber" id="cardCheck" data-ok="0">⚠ 명세서 소계와 내 계산이 달라요 — ' + diff.join(' · ') + '. 저장은 할 수 있지만 파일을 한 번 확인해 주세요.</div>';
+  }
+  function monthsHtml(cur) {
+    const keys = Object.keys(cards.statements).sort();
+    const np = nextPay().payYm;
+    const set = new Set(keys.slice(-4));
+    set.add(cur);
+    if (pending) set.add(pending.payYm);
+    if (!cards.statements[np]) set.add(np);
+    return '<div class="gx-months" id="cardMonths">' + Array.from(set).sort().map(k => {
+      const saved = !!cards.statements[k];
+      const pend = pending && pending.payYm === k;
+      const em = pend ? '미저장' : (saved ? '저장됨' : '');
+      const txt = payLabel(k) + ' 납부' + (!saved && !pend ? ' · ' + Number(U.addMonths(k, -1).slice(5)) + '월 이용분 대기' : '');
+      return '<button type="button" class="gx-mchip' + (k === cur ? ' on' : '') + (!saved && !pend ? ' wait' : '') + '" data-pay="' + k + '">' + txt + (em ? '<em>' + em + '</em>' : '') + '</button>';
+    }).join('') + '</div>';
+  }
+  function render(navEl, root) {
+    if (!viewPay) viewPay = defaultView();
+    const cur = viewPay;
+    navEl.innerHTML =
+      '<button type="button" class="nav-btn" data-cnav="-1" aria-label="이전 납부월">‹</button>' +
+      '<div class="date-label">' + cur.slice(0, 4) + '.' + cur.slice(5) + '.' + PAY_DAY + ' 납부분</div>' +
+      '<button type="button" class="nav-btn" data-cnav="1" aria-label="다음 납부월">›</button>';
+    const isPend = pending && pending.payYm === cur;
+    const st = isPend ? pending : cards.statements[cur] || null;
+    let main = '';
+    if (errorMsg) main += '<div class="gx-banner amber" id="cardError">⚠ ' + U.escapeHtml(errorMsg) + '</div>';
+    if (busy) main += '<div class="gx-banner" id="cardBusy">파일을 읽는 중이에요…</div>';
+    if (isPend) {
+      main += dropHtml(true) + checkHtml(st);
+      const nChk = st.items.filter(it => it.chk).length;
+      main += nChk
+        ? '<div class="gx-banner amber" id="cardReview">분류가 애매한 ' + nChk + '건(노란 줄)만 확인하고 저장해 주세요. 저장하기 전에는 아무것도 기록되지 않아요.</div>'
+        : '<div class="gx-banner" id="cardReview">분류를 확인하고 저장해 주세요. 저장하기 전에는 아무것도 기록되지 않아요.</div>';
+      const replace = cards.statements[cur] ? ' (기존 내역 바꾸기)' : '';
+      main += '<div class="gx-save"><span class="gx-cnt">이용 내역 ' + st.items.length + '건</span><span>' +
+        '<button type="button" class="gx-btn" data-cact="cancel">취소</button> ' +
+        '<button type="button" class="gx-btn pri" id="cardSave" data-cact="save">' + payLabel(cur) + ' 납부분 저장' + replace + '</button></span></div>';
+      main += tableHtml(st);
+    } else if (st) {
+      main += dropHtml(true);
+      main += '<div class="gx-save"><span class="gx-cnt">이용 내역 ' + st.items.length + '건' + (st.savedAt ? ' · ' + U.escapeHtml(st.savedAt.slice(5, 10).replace('-', '.')) + ' 저장' : '') + '</span><span>' +
+        '<button type="button" class="gx-btn danger" data-cact="delete">이 납부분 지우기</button></span></div>';
+      main += '<p class="gx-note gx-tip">분류를 바꾸면 그 가맹점은 다음 달부터 자동으로 같은 분류가 돼요.</p>';
+      main += tableHtml(st);
+    } else {
+      main += dropHtml(false);
+      main += '<p class="empty-msg">' + payLabel(cur) + ' 납부분(' + Number(U.addMonths(cur, -1).slice(5)) + '월 이용분)은 아직 없어요. 카드사가 말일에 마감한 뒤 명세서를 내려받아 올려 주세요.</p>';
+    }
+    root.innerHTML =
+      '<div class="gx-banner" id="cardNotice">ⓘ 신용카드 전용 장부예요. 가계부 잔액·예산·직접 입력한 내역에는 들어가지 않아요.</div>' +
+      monthsHtml(cur) +
+      '<div class="ledger-grid gx-cgrid"><div class="side" id="cardSide">' + summaryHtml(st, cur) + '</div>' +
+      '<div class="list-col" id="cardMain">' + main + '</div></div>' +
+      '<input type="file" id="cardFile" accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>';
+    if (navBound !== navEl) {
+      navBound = navEl;
+      navEl.addEventListener('click', e => {
+        const b = e.target.closest('[data-cnav]');
+        if (!b) return;
+        viewPay = U.addMonths(viewPay || defaultView(), Number(b.dataset.cnav));
+        errorMsg = '';
+        renderNow();
+      });
+    }
+    if (rootBound !== root) {
+      rootBound = root;
+      bindRoot(root);
+    }
+  }
+  function bindRoot(root) {
+    root.addEventListener('change', e => {
+      if (e.target.id === 'cardFile') {
+        const f = e.target.files && e.target.files[0];
+        e.target.value = '';
+        handleFile(f);
+        return;
+      }
+      const sel = e.target.closest('[data-ci]');
+      if (sel) onCatPick(Number(sel.dataset.ci), sel.value);
+    });
+    root.addEventListener('click', e => {
+      const chip = e.target.closest('[data-pay]');
+      if (chip) { viewPay = chip.dataset.pay; errorMsg = ''; renderNow(); return; }
+      const act = e.target.closest('[data-cact]');
+      if (!act) return;
+      const a = act.dataset.cact;
+      if (a === 'cancel') { pending = null; errorMsg = ''; renderNow(); }
+      else if (a === 'save') savePending();
+      else if (a === 'delete') {
+        const st = cards.statements[viewPay];
+        if (st && confirm(payLabel(viewPay) + ' 납부분 카드 내역(' + st.items.length + '건)을 지울까요? 가계부에는 영향이 없어요.')) {
+          delete cards.statements[viewPay];
+          save();
+          renderNow();
+        }
+      }
+    });
+    root.addEventListener('dragover', e => {
+      if (!e.target.closest('#cardDrop')) return;
+      e.preventDefault();
+      e.target.closest('#cardDrop').classList.add('over');
+    });
+    root.addEventListener('dragleave', e => {
+      const d = e.target.closest('#cardDrop');
+      if (d) d.classList.remove('over');
+    });
+    root.addEventListener('drop', e => {
+      if (!e.target.closest('#cardDrop')) return;
+      e.preventDefault();
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      handleFile(f);
+    });
+  }
+  function onCatPick(i, cat) {
+    const isPend = pending && pending.payYm === viewPay;
+    const st = isPend ? pending : cards.statements[viewPay];
+    if (!st || !st.items[i] || !U.CATS.includes(cat)) return;
+    const merchant = mKey(st.items[i].merchant);
+    st.items.forEach((it, j) => {
+      if (j === i || (mKey(it.merchant) === merchant && (it.chk || !it.userSet))) {
+        it.cat = cat;
+        if (j === i) it.userSet = true;
+        delete it.chk;
+      }
+    });
+    if (!isPend) {
+      memSet(merchant, cat);
+      st.items.forEach(it => { delete it.userSet; });
+      save();
+    }
+    renderNow();
+  }
+  function savePending() {
+    if (!pending) return;
+    const k = pending.payYm;
+    if (cards.statements[k] && !confirm(payLabel(k) + ' 납부분이 이미 있어요. 새 파일 내용으로 바꿀까요?')) return;
+    pending.items.forEach(it => {
+      // remember what the user picked or confirmed, so next month fills in by itself
+      if (it.userSet || it.chk) memSet(it.merchant, it.cat);
+      delete it.userSet; delete it.chk;
+    });
+    const st = normStatement(Object.assign({}, pending, { savedAt: new Date().toISOString() }), k);
+    cards.statements[k] = st;
+    pending = null;
+    save();
+    renderNow();
+  }
+
+  /* categories renamed or deleted in the ledger editor apply here too */
+  document.addEventListener('records-cats-change', ev => {
+    const d = (ev && ev.detail) || {};
+    const ren = d.renames || {}, del = d.deleted || [];
+    if (!Object.keys(ren).length && !del.length) { renderNow(); return; }
+    const mapCat = c => {
+      if (Object.prototype.hasOwnProperty.call(ren, c)) c = ren[c];
+      return (del.includes(c) || !U.CATS.includes(c)) ? '기타' : c;
+    };
+    Object.keys(cards.statements).forEach(k => cards.statements[k].items.forEach(it => { it.cat = mapCat(it.cat); }));
+    if (pending) pending.items.forEach(it => { it.cat = mapCat(it.cat); });
+    cards.merchantCats.forEach(p => { p.c = mapCat(p.c); });
+    save();
+    renderNow();
+  });
+
+  function catCounts() {
+    const out = {};
+    Object.keys(cards.statements).forEach(k => cards.statements[k].items.forEach(it => { out[it.cat] = (out[it.cat] || 0) + 1; }));
+    return out;
+  }
+
+  load();
+  window.RecordsCards = {
+    PAY_DAY, WOORI_URL,
+    getState: () => cards,
+    applyCloud,
+    empty: emptyCards,
+    hydrate: hydrateCards,
+    get: ym => cards.statements[ym] || null,
+    nextPay,
+    render,
+    catCounts,
+    handleFile,
+    _parseRows: parseRows,
+    _build: buildStatement,
+    _pending: () => pending,
+    _setView(ym) { viewPay = ym; }
+  };
+})();
+
+
 /* ===== shared money UI helpers + ledger + dday ===== */
 (function () {
   const U = window.RecordsUtil;
@@ -6271,15 +7270,19 @@ window.RecordsMemo = {
     const state = window.RecordsMoney.getState();
     const e = (state.entries || []).find(x => x.id === id);
     if (!e) return;
-    const catOpts = U.CATS.map(c => '<option value="' + c + '"' + (e.cat === c ? ' selected' : '') + '>' + c + '</option>').join('');
+    const catOpts = U.CATS.map(c => '<option value="' + U.escapeHtml(c) + '"' + (e.cat === c ? ' selected' : '') + '>' + U.escapeHtml(c) + '</option>').join('');
+    const payOpts = '<option value="">결제수단 (선택 안 함)</option>' + U.PAYS.map(p => '<option value="' + p + '"' + (e.pay === p ? ' selected' : '') + '>' + p + '</option>').join('');
+    const srcNote = e.source === 'fixed' ? '<p class="gx-modal-note">고정지출로 자동 입력된 내역이에요. 고쳐도 다음 달 입력에는 영향이 없어요.</p>' : '';
     window.RecordsModal.open({
       title: '항목 수정',
       body:
+        srcNote +
         '<input type="text" name="name" value="' + U.escapeHtml(e.name) + '" placeholder="항목">' +
         '<input type="number" name="amount" value="' + e.amount + '" min="1" step="1">' +
         '<input type="date" name="date" value="' + U.escapeHtml(e.date) + '">' +
         '<label class="modal-check"><input type="checkbox" name="isIn"' + (e.type === 'in' ? ' checked' : '') + '> 수입</label>' +
-        '<select name="cat">' + catOpts + '</select>',
+        '<select name="cat">' + catOpts + '</select>' +
+        '<select name="pay" class="gx-paysel">' + payOpts + '</select>',
       actions: [
         { act: 'ok', label: '저장' },
         { act: 'delete', label: '삭제', className: 'danger' },
@@ -6298,24 +7301,35 @@ window.RecordsMemo = {
       const typ = res.form.isIn ? 'in' : 'out';
       window.RecordsMoney.update(id, {
         name, amount, date, type: typ,
-        cat: typ === 'in' ? '수입' : (res.form.cat || e.cat)
+        cat: typ === 'in' ? '수입' : (res.form.cat || e.cat),
+        pay: typ === 'in' ? '' : (res.form.pay || '')
       });
     });
   }
   window.RecordsMoneyEdit = editMoney;
 
   /* ----- ledger ----- */
+  const RM = window.RecordsMoney;
   const nav = document.getElementById('ledgerNav');
   const side = document.getElementById('ledgerSide');
   const listEl = document.getElementById('ledgerList');
   const form = document.getElementById('ledgerMoneyAdd');
   const catBtn = document.getElementById('ledgerCatBtn');
+  const viewSeg = document.getElementById('ledgerView');
+  const bookEl = document.getElementById('ledgerBook');
+  const cardEl = document.getElementById('ledgerCard');
+  const dateIn = document.getElementById('ledgerDate');
+  const paysEl = document.getElementById('ledgerPays');
   let ledgerYm = U.ymOf(U.todayISO());
   let ledgerType = 'out';
   let ledgerCat = '식비';
+  let ledgerPay = '체크카드';
+  let ledgerView = 'book';
+  if (dateIn) dateIn.value = U.todayISO();
 
   function updateLedgerCatBtn() {
     if (!catBtn) return;
+    if (!U.CATS.includes(ledgerCat)) ledgerCat = U.CATS[0];
     catBtn.hidden = ledgerType === 'in';
     catBtn.textContent = ledgerCat;
     const seg = form.querySelector('.seg');
@@ -6323,16 +7337,107 @@ window.RecordsMemo = {
       seg.dataset.type = ledgerType;
       seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.type === ledgerType));
     }
+    const pw = document.getElementById('ledgerPayWrap');
+    if (pw) pw.hidden = ledgerType === 'in';
+    if (paysEl) paysEl.querySelectorAll('[data-pay]').forEach(b => b.classList.toggle('sel', b.dataset.pay === ledgerPay));
+  }
+
+  function budgetHtml(sum) {
+    const b = sum.budget;
+    const spent = sum.expense;
+    const left = b - spent;
+    const pct = b > 0 ? Math.round(spent / b * 100) : (spent > 0 ? 101 : 0);
+    const cls = pct > 100 ? ' over' : (pct >= 80 ? ' warn' : '');
+    const today = U.todayISO();
+    const curYm = U.ymOf(today);
+    const y = Number(ledgerYm.slice(0, 4)), m = Number(ledgerYm.slice(5, 7));
+    const lastDay = new Date(y, m, 0).getDate();
+    let dayLine = '';
+    if (ledgerYm === curYm) {
+      const dl = lastDay - Number(today.slice(8, 10)) + 1;
+      dayLine = '남은 ' + dl + '일' + (left > 0 ? ' · 하루 약 <b>' + U.fmtWon(Math.floor(left / dl / 100) * 100) + '</b>원' : '');
+    } else if (ledgerYm > curYm) {
+      dayLine = lastDay + '일 · 하루 약 <b>' + U.fmtWon(Math.max(0, Math.floor(left / lastDay / 100) * 100)) + '</b>원';
+    } else {
+      dayLine = '지난 달 결과';
+    }
+    const big = left >= 0
+      ? U.fmtWon(left) + '<small>원 남음</small>'
+      : U.fmtWon(-left) + '<small>원 초과</small>';
+    return '<div class="gx-card gx-budget' + cls + '" id="ledgerBudget">' +
+      '<h4><span>' + m + '월 예산</span><button type="button" class="gx-link" id="ledgerBudgetEdit">예산 수정</button></h4>' +
+      '<div class="gx-big">' + big + '</div>' +
+      '<div class="gx-bar' + cls + '"><i style="width:' + Math.min(100, Math.max(0, pct)) + '%"></i></div>' +
+      '<div class="gx-row"><span>사용 <b>' + U.fmtWon(spent) + '</b>원 · ' + pct + '%</span><span>예산 <b>' + U.fmtWon(b) + '</b>원</span></div>' +
+      '<div class="gx-row"><span>' + dayLine + '</span></div>' +
+      '<p class="gx-note">체크카드·현금·고정지출이 들어가요. 신용카드(우리카드)는 제외예요.</p>' +
+      '</div>';
+  }
+
+  function fixedStatus(f, ym, ids, today) {
+    const id = RM.fixedEntryId(f.id, ym);
+    if (ids.has(id)) return { cls: 'fx', txt: '입력됨', done: true };
+    const date = RM.fixedDate(ym, f.day);
+    if (ym < f.startYm) return { cls: 'ghost', txt: '등록 전', pend: true };
+    if (RM.isSkipped(id)) return { cls: 'ghost', txt: '지움', pend: true };
+    if (date > today) return { cls: 'ghost', txt: date.slice(5).replace('-', '.') + ' 예정', pend: true };
+    return { cls: 'ghost', txt: '—', pend: true };
+  }
+  function fixedHtml() {
+    const list = RM.getFixed().filter(f => f.on).sort((a, b) => a.day - b.day);
+    const today = U.todayISO();
+    const ents = RM.getState().entries;
+    const ids = new Set(ents.map(e => e.id));
+    let total = 0;
+    const rows = list.map(f => {
+      const st = fixedStatus(f, ledgerYm, ids, today);
+      const ent = st.done ? ents.find(e => e.id === RM.fixedEntryId(f.id, ledgerYm)) : null;
+      const amt = ent ? ent.amount : f.amount;
+      if (st.done || st.txt.indexOf('예정') > 0) total += amt;
+      return '<div class="gx-fx' + (st.pend ? ' pending' : '') + '"><span class="n">' + U.escapeHtml(f.name) + ' <span class="d">· ' + f.day + '일</span></span>' +
+        '<span class="a">' + U.fmtWon(amt) + '</span><span class="chip ' + st.cls + '">' + st.txt + '</span></div>';
+    }).join('');
+    const cur = ledgerYm === U.ymOf(today);
+    return '<div class="gx-card gx-fixed" id="ledgerFixed">' +
+      '<h4><span>고정지출</span><button type="button" class="gx-link" data-fixed-manage>관리</button></h4>' +
+      (rows
+        ? rows + '<div class="gx-row gx-fxsum"><span>' + (cur ? '이번 달' : Number(ledgerYm.slice(5)) + '월') + ' 합계</span><b>' + U.fmtWon(total) + '원</b></div>'
+        : '<p class="gx-note">통신비·구독료처럼 매달 나가는 돈을 등록하면 정한 날짜에 자동으로 들어가요.</p>' +
+          '<button type="button" class="gx-pill" data-fixed-manage>+ 고정지출 등록</button>') +
+      '</div>';
+  }
+  function wooriHtml() {
+    const RC = window.RecordsCards;
+    if (!RC) return '';
+    const np = RC.nextPay();
+    const st = RC.get(np.payYm);
+    const pm = Number(np.payYm.slice(5)), um = Number(np.usageYm.slice(5));
+    return '<div class="gx-card gx-woori" id="ledgerWoori">' +
+      '<h4><span>우리카드</span><button type="button" class="gx-link" data-view-go="card">카드사용내역 ›</button></h4>' +
+      '<div class="gx-row"><span>다음 납부일</span><b>' + pm + '월 ' + RC.PAY_DAY + '일 (' + (np.daysLeft ? np.daysLeft + '일 남음' : '오늘') + ')</b></div>' +
+      '<div class="gx-row"><span>' + um + '월 이용분</span>' + (st ? '<b>' + U.fmtWon(st.totals.pay) + '원</b>' : '<span class="gx-muted">명세서 올리면 계산돼요</span>') + '</div>' +
+      '</div>';
+  }
+
+  function setView(v) {
+    ledgerView = v === 'card' ? 'card' : 'book';
+    renderLedger();
   }
 
   function renderLedger() {
+    if (viewSeg) viewSeg.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === ledgerView));
+    if (bookEl) bookEl.hidden = ledgerView !== 'book';
+    if (cardEl) cardEl.hidden = ledgerView !== 'card';
+    if (ledgerView === 'card' && window.RecordsCards) {
+      window.RecordsCards.render(nav, cardEl);
+      return;
+    }
     const today = U.todayISO();
-    const sum = window.RecordsMoney.monthSummary(ledgerYm);
+    const sum = RM.monthSummary(ledgerYm);
     nav.innerHTML =
       '<button type="button" class="nav-btn" data-nav="-1" aria-label="이전 달">‹</button>' +
       '<div class="date-label">' + U.fmtYmDot(ledgerYm) + '</div>' +
       '<button type="button" class="nav-btn" data-nav="1" aria-label="다음 달">›</button>';
-    const prevCls = sum.canEditPrev ? 'amt' : 'amt';
     const prevTag = sum.canEditPrev
       ? '<button type="button" class="amt" id="ledgerPrevEdit" title="시작 잔액 수정">' + U.fmtWon(sum.prev) + '</button>'
       : '<span class="amt">' + U.fmtWon(sum.prev) + '</span>';
@@ -6342,17 +7447,19 @@ window.RecordsMemo = {
       .filter(x => x.n > 0)
       .sort((a, b) => b.n - a.n)
       .map(x =>
-        '<div class="cat"><div class="cat-row"><span class="cat-name">' + x.c + '</span><span class="cat-amt">' + U.fmtWon(x.n) + '</span></div>' +
+        '<div class="cat"><div class="cat-row"><span class="cat-name">' + U.escapeHtml(x.c) + '</span><span class="cat-amt">' + U.fmtWon(x.n) + '</span></div>' +
         '<div class="bar"><i style="width:' + (maxCat ? Math.round(x.n / maxCat * 100) : 0) + '%"></i></div></div>'
       ).join('');
     side.innerHTML =
+      budgetHtml(sum) + fixedHtml() + wooriHtml() +
       '<div class="prev-bal"><span class="lbl">전월 잔액</span>' + prevTag + '</div>' +
       '<div class="flow">' +
       '<div class="flow-row"><span class="lbl">이번 달 수입</span><span class="amt in">+' + U.fmtWon(sum.income) + '</span></div>' +
       '<div class="flow-row"><span class="lbl">이번 달 지출</span><span class="amt">' + U.fmtWon(sum.expense) + '</span></div>' +
       '</div>' +
       '<div class="month-total"><p class="lbl">잔액</p><div class="num">' + U.fmtWon(sum.balance) + '<span class="won">원</span></div></div>' +
-      (catHtml ? '<p class="cats-label">지출 분류</p><div class="cats">' + catHtml + '</div>' : '');
+      '<div class="cats-label gx-catlbl"><span>지출 분류</span><button type="button" class="gx-pill" id="ledgerCatEdit">✎ 분류 편집</button></div>' +
+      (catHtml ? '<div class="cats">' + catHtml + '</div>' : '<p class="gx-note">이번 달 지출이 아직 없어요.</p>');
 
     const groups = [];
     const byDate = {};
@@ -6374,10 +7481,13 @@ window.RecordsMemo = {
           '<div class="day-head"><div class="day-name">' + U.fmtDot(iso).slice(5) + ' ' + U.dowName(iso) + todayMark + '</div>' +
           '<div class="day-sum">' + sums + '</div></div>' +
           rows.map(e =>
-            '<div class="spend-row' + (e.type === 'in' ? ' in' : '') + '" data-id="' + U.escapeHtml(e.id) + '">' +
+            '<div class="spend-row' + (e.type === 'in' ? ' in' : '') + '" data-id="' + U.escapeHtml(e.id) + '" data-source="' + e.source + '">' +
             '<span class="name">' + U.escapeHtml(e.name) + '</span>' +
             '<span class="chip">' + U.escapeHtml(e.type === 'in' ? '수입' : e.cat) + '</span>' +
+            (e.pay && e.pay !== '체크카드' ? '<span class="chip ghost gx-pay">' + U.escapeHtml(e.pay) + '</span>' : '') +
             (e.source === 'daily' ? '<span class="chip ghost">매일 기록</span>' : '') +
+            (e.source === 'ledger' ? '<span class="chip hand">직접 입력</span>' : '') +
+            (e.source === 'fixed' ? '<span class="chip fx">고정지출</span>' : '') +
             '<span class="amt">' + (e.type === 'in' ? '+' : '') + U.fmtWon(e.amount) + '</span>' +
             '<button type="button" class="row-del" data-del="' + U.escapeHtml(e.id) + '" title="삭제">✕</button>' +
             '</div>'
@@ -6388,15 +7498,306 @@ window.RecordsMemo = {
     updateLedgerCatBtn();
   }
 
+  /* ----- budget edit ----- */
+  function openBudgetEdit() {
+    const m = Number(ledgerYm.slice(5));
+    const cur = RM.getBudget(ledgerYm);
+    window.RecordsModal.open({
+      title: '월 예산',
+      body:
+        '<p class="gx-modal-note">체크카드·현금·매일 기록·직접 입력·고정지출이 예산에 들어가요. 신용카드(우리카드)는 빠져요.</p>' +
+        '<input type="number" name="amount" value="' + cur + '" min="0" step="10000" placeholder="금액">' +
+        '<label class="modal-check"><input type="checkbox" name="only"> ' + m + '월만 이 금액으로</label>',
+      actions: [
+        { act: 'ok', label: '저장' },
+        { act: 'cancel', label: '취소', className: 'ghost' }
+      ]
+    }).then(res => {
+      if (res.act !== 'ok') return;
+      const n = U.parseWon(res.form.amount);
+      if (n < 0) return;
+      RM.setBudget(n, res.form.only ? ledgerYm : null);
+    });
+  }
+
+  /* ----- fixed expenses manager ----- */
+  function dayOpts(sel) {
+    let h = '';
+    for (let d = 1; d <= 31; d++) h += '<option value="' + d + '"' + (d === sel ? ' selected' : '') + '>매월 ' + d + '일</option>';
+    return h;
+  }
+  function catOptsHtml(sel) {
+    return U.CATS.map(c => '<option value="' + U.escapeHtml(c) + '"' + (c === sel ? ' selected' : '') + '>' + U.escapeHtml(c) + '</option>').join('');
+  }
+  function nextFixedText(f) {
+    if (!f.on) return '멈춤';
+    const today = U.todayISO();
+    const curYm = U.ymOf(today);
+    const ids = new Set(RM.getState().entries.map(e => e.id));
+    const d = RM.fixedDate(curYm, f.day);
+    if (f.isNew || !f.startYm) return d <= today ? '저장하면 이번 달분 입력' : d.slice(5).replace('-', '.');
+    if (ids.has(RM.fixedEntryId(f.id, curYm)) || d < today) return RM.fixedDate(U.addMonths(curYm, 1), f.day).slice(5).replace('-', '.');
+    return d.slice(5).replace('-', '.');
+  }
+  function openFixedManager() {
+    const draft = RM.getFixed();
+    const todayDay = Number(U.todayISO().slice(8, 10));
+    function rowsHtml() {
+      if (!draft.length) return '<p class="gx-empty">아직 등록한 고정지출이 없어요. 아래에서 추가해 주세요.</p>';
+      return '<div class="gx-t gx-fxt"><div class="h"></div><div class="h">이름</div><div class="h">금액</div><div class="h">날짜</div><div class="h">분류</div><div class="h">다음 입력</div>' +
+        draft.map((f, i) =>
+          '<label class="gx-swl c-sw" title="켜기/끄기"><input type="checkbox" data-i="' + i + '" data-f="on"' + (f.on ? ' checked' : '') + '><span class="gx-sw"></span></label>' +
+          '<input type="text" class="gx-fin c-name" data-i="' + i + '" data-f="name" value="' + U.escapeHtml(f.name) + '" maxlength="40">' +
+          '<input type="text" class="gx-fin num c-amt" data-i="' + i + '" data-f="amount" value="' + U.fmtWon(f.amount) + '" inputmode="numeric">' +
+          '<select class="gx-fin c-day" data-i="' + i + '" data-f="day">' + dayOpts(f.day) + '</select>' +
+          '<select class="gx-fin c-cat" data-i="' + i + '" data-f="cat">' + catOptsHtml(f.cat) + '</select>' +
+          '<div class="nxt"><span data-nxt="' + i + '">' + nextFixedText(f) + '</span><button type="button" class="gx-x" data-fdel="' + i + '" title="삭제">✕</button></div>'
+        ).join('') + '</div>';
+    }
+    const body =
+      '<p class="gx-sub">한 번만 등록하면 매달 정한 날짜에 가계부 지출로 자동으로 들어가요.</p>' +
+      '<div id="gxFxRows">' + rowsHtml() + '</div>' +
+      '<div class="gx-addrow">' +
+      '<input type="text" class="gx-fin" id="gxFxName" placeholder="이름 (예: 휴대폰 요금)" maxlength="40">' +
+      '<input type="text" class="gx-fin num" id="gxFxAmt" placeholder="금액" inputmode="numeric">' +
+      '<select class="gx-fin" id="gxFxDay">' + dayOpts(todayDay) + '</select>' +
+      '<select class="gx-fin" id="gxFxCat">' + catOptsHtml(U.CATS.includes('통신·구독') ? '통신·구독' : '기타') + '</select>' +
+      '<button type="button" class="gx-btn pri" id="gxFxAdd">+ 추가</button>' +
+      '</div>' +
+      '<div class="gx-rule">• 사이트를 열 때 지난 날짜 분까지 빠짐없이 채워 넣어요 (열지 않은 달도 한꺼번에).<br>' +
+      '• 등록한 달에 날짜가 이미 지났으면 이번 달분도 바로 넣어요.<br>' +
+      '• 31일처럼 없는 날짜가 있는 달은 그 달 말일에 넣어요.<br>' +
+      '• 금액을 바꾸면 아직 안 들어간 이번 달분부터 적용되고, 이미 들어간 내역은 그대로예요.<br>' +
+      '• 들어간 내역은 가계부에서 “고정지출” 표시가 붙고, 지우거나 고칠 수 있어요.<br>' +
+      '• 스위치를 끄면 그때부터 멈춰요. 다시 켜면 그 달부터 다시 넣어요.</div>';
+    const p = window.RecordsModal.open({
+      title: '고정지출 관리',
+      wide: true,
+      body,
+      actions: [{ act: 'ok', label: '저장', className: 'main' }, { act: 'cancel', label: '닫기', className: 'ghost' }]
+    });
+    const mb = document.getElementById('appModalBody');
+    const rowsEl = mb.querySelector('#gxFxRows');
+    function rerender() { rowsEl.innerHTML = rowsHtml(); }
+    function addFromInputs() {
+      const n = mb.querySelector('#gxFxName'), a = mb.querySelector('#gxFxAmt');
+      const name = window.RecordsIme.nfc(n.value || '').trim();
+      const amount = U.parseWon(a.value);
+      if (!name || amount <= 0) return false;
+      draft.push({ id: U.uid('fx'), name, amount, day: Number(mb.querySelector('#gxFxDay').value) || 1, cat: mb.querySelector('#gxFxCat').value, on: true, isNew: true });
+      n.value = ''; a.value = '';
+      rerender();
+      return true;
+    }
+    const onInput = e => {
+      const el = e.target.closest('[data-f]');
+      if (!el) return;
+      const i = Number(el.dataset.i), f = draft[i];
+      if (!f) return;
+      const k = el.dataset.f;
+      if (k === 'on') f.on = el.checked;
+      else if (k === 'name') f.name = window.RecordsIme.nfc(el.value);
+      else if (k === 'amount') f.amount = U.parseWon(el.value);
+      else if (k === 'day') f.day = Number(el.value) || 1;
+      else if (k === 'cat') f.cat = el.value;
+      const nx = mb.querySelector('[data-nxt="' + i + '"]');
+      if (nx) nx.textContent = nextFixedText(f);
+    };
+    const onClick = e => {
+      const del = e.target.closest('[data-fdel]');
+      if (del) {
+        const i = Number(del.dataset.fdel);
+        const f = draft[i];
+        if (f && confirm('‘' + f.name + '’ 고정지출을 지울까요? 이미 들어간 내역은 그대로 남아요.')) { draft.splice(i, 1); rerender(); }
+        return;
+      }
+      if (e.target.closest('#gxFxAdd')) {
+        if (!addFromInputs()) { const n = mb.querySelector('#gxFxName'); if (n) n.focus(); }
+      }
+    };
+    const onKey = e => {
+      if (e.key === 'Enter' && e.target.closest('.gx-addrow') && !window.RecordsIme.isActiveComposing()) { e.preventDefault(); addFromInputs(); }
+    };
+    mb.addEventListener('input', onInput);
+    mb.addEventListener('change', onInput);
+    mb.addEventListener('click', onClick);
+    mb.addEventListener('keydown', onKey);
+    // read the add row before the modal clears it
+    const acts = document.getElementById('appModalActions');
+    const pre = e => { const b = e.target.closest('button'); if (b && b.textContent === '저장') addFromInputs(); };
+    acts.addEventListener('click', pre, true);
+    p.then(res => {
+      mb.removeEventListener('input', onInput);
+      mb.removeEventListener('change', onInput);
+      mb.removeEventListener('click', onClick);
+      mb.removeEventListener('keydown', onKey);
+      acts.removeEventListener('click', pre, true);
+      if (res.act !== 'ok') return;
+      const clean = draft.filter(f => f.name && f.name.trim() && f.amount > 0).map(f => {
+        const c = Object.assign({}, f); delete c.isNew; return c;
+      });
+      RM.setFixed(clean);
+    });
+  }
+
+  /* ----- category editor ----- */
+  function openCatEditor() {
+    const counts = RM.catCounts();
+    const cardCounts = window.RecordsCards ? window.RecordsCards.catCounts() : {};
+    const rows = U.CATS.map(c => ({ orig: c, name: c }));
+    const deleted = [];
+    let confirmIdx = -1;
+    function cnt(c) { return c ? (counts[c] || 0) + (cardCounts[c] || 0) : 0; }
+    function rowsHtml() {
+      return rows.map((r, i) => {
+        const locked = r.orig === '기타';
+        const n = cnt(r.orig);
+        let h = '<div class="gx-cat' + (confirmIdx === i ? ' confirm' : '') + (locked ? ' locked' : '') + '" data-ri="' + i + '">' +
+          (locked ? '<span class="hd"></span>' : '<span class="hd" data-drag="' + i + '" title="끌어서 순서 바꾸기">⋮⋮</span>') +
+          '<input type="text" class="nm" data-nm="' + i + '" value="' + U.escapeHtml(r.name) + '" maxlength="12"' + (locked ? ' readonly' : '') + '>' +
+          '<span class="cnt">' + (r.orig ? n + '건' : '새 분류') + '</span>' +
+          (locked ? '<span class="lock">기본 · 삭제 불가</span>' : '<button type="button" class="del" data-cdel="' + i + '">' + (confirmIdx === i ? '삭제?' : '삭제') + '</button>') +
+          '</div>';
+        if (confirmIdx === i) {
+          const a = counts[r.orig] || 0, b = cardCounts[r.orig] || 0;
+          h += '<div class="gx-cconf">‘' + U.escapeHtml(r.orig || r.name) + '’ 분류의 내역 ' + (a + b) + '건' + (r.orig ? '(가계부 ' + a + ' · 카드 ' + b + ')' : '') +
+            '은 <b>기타</b>로 옮겨져요. 분류만 사라지고 내역은 그대로 남아요. ' +
+            '<button type="button" class="gx-btn" data-cdelok="' + i + '">옮기고 삭제</button> <button type="button" class="gx-btn" data-cdelno>취소</button></div>';
+        }
+        return h;
+      }).join('');
+    }
+    const body =
+      '<p class="gx-sub">이름을 바꾸고, ⋮⋮를 끌어 순서를 바꾸고, 새 분류를 추가해요. 가계부와 카드사용내역이 같은 분류를 써요.</p>' +
+      '<div class="gx-cats" id="gxCats">' + rowsHtml() + '</div>' +
+      '<div class="gx-addrow"><input type="text" class="gx-fin gx-newcat" id="gxNewCat" placeholder="새 분류 이름 (예: 반려동물)" maxlength="12"><button type="button" class="gx-btn pri" id="gxCatAdd">+ 추가</button></div>' +
+      '<div class="gx-rule">• 이름을 바꾸면 이미 적어 둔 내역도 새 이름으로 바뀌어요.<br>• 분류를 지우면 그 분류 내역은 ‘기타’로 옮겨져요. ‘기타’는 지울 수 없어요.<br>• 순서는 입력할 때 분류 버튼과 지출 분류 그래프에 그대로 반영돼요.<br>• 저장을 눌러야 바뀌어요.</div>' +
+      '<div class="gx-foot"><b id="gxCatCount">분류 ' + rows.length + '개</b></div>';
+    const p = window.RecordsModal.open({
+      title: '지출 분류 편집',
+      wide: true,
+      body,
+      actions: [{ act: 'ok', label: '저장', className: 'main' }, { act: 'cancel', label: '닫기', className: 'ghost' }]
+    });
+    const mb = document.getElementById('appModalBody');
+    const listBox = mb.querySelector('#gxCats');
+    function rerender() {
+      listBox.innerHTML = rowsHtml();
+      const c = mb.querySelector('#gxCatCount');
+      if (c) c.textContent = '분류 ' + rows.length + '개';
+    }
+    function addNew() {
+      const inp = mb.querySelector('#gxNewCat');
+      const v = window.RecordsIme.nfc(inp.value || '').trim().slice(0, 12);
+      if (!v || v === '수입' || rows.some(r => r.name.trim() === v)) { inp.focus(); return; }
+      rows.splice(rows.length - 1, 0, { orig: null, name: v });
+      inp.value = '';
+      rerender();
+    }
+    let changed = false;
+    const onInput = e => {
+      const el = e.target.closest('[data-nm]');
+      if (!el) return;
+      rows[Number(el.dataset.nm)].name = window.RecordsIme.nfc(el.value);
+      changed = true;
+    };
+    const onClick = e => {
+      const d = e.target.closest('[data-cdel]');
+      if (d) { const i = Number(d.dataset.cdel); confirmIdx = confirmIdx === i ? -1 : i; rerender(); return; }
+      const ok = e.target.closest('[data-cdelok]');
+      if (ok) {
+        const i = Number(ok.dataset.cdelok);
+        const r = rows[i];
+        if (r && r.orig) deleted.push(r.orig);
+        rows.splice(i, 1);
+        confirmIdx = -1; changed = true;
+        rerender();
+        return;
+      }
+      if (e.target.closest('[data-cdelno]')) { confirmIdx = -1; rerender(); return; }
+      if (e.target.closest('#gxCatAdd')) { addNew(); changed = true; }
+    };
+    const onKey = e => {
+      if (e.key === 'Enter' && e.target.id === 'gxNewCat' && !window.RecordsIme.isActiveComposing()) { e.preventDefault(); addNew(); changed = true; }
+    };
+    let drag = null;
+    const onDown = e => {
+      const h = e.target.closest('[data-drag]');
+      if (!h) return;
+      e.preventDefault();
+      drag = { i: Number(h.dataset.drag) };
+      listBox.classList.add('dragging');
+    };
+    const onMove = e => {
+      if (!drag) return;
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const row = el && el.closest && el.closest('.gx-cat[data-ri]');
+      if (!row || !listBox.contains(row)) return;
+      let to = Number(row.dataset.ri);
+      if (to >= rows.length - 1) to = rows.length - 2; // 기타 stays last
+      if (to < 0 || to === drag.i) return;
+      const [it] = rows.splice(drag.i, 1);
+      rows.splice(to, 0, it);
+      drag.i = to; confirmIdx = -1; changed = true;
+      rerender();
+      const nr = listBox.querySelector('.gx-cat[data-ri="' + to + '"]');
+      if (nr) nr.classList.add('drag-on');
+    };
+    const onUp = () => {
+      if (!drag) return;
+      drag = null;
+      listBox.classList.remove('dragging');
+      listBox.querySelectorAll('.drag-on').forEach(x => x.classList.remove('drag-on'));
+    };
+    mb.addEventListener('input', onInput);
+    mb.addEventListener('click', onClick);
+    mb.addEventListener('keydown', onKey);
+    listBox.addEventListener('pointerdown', onDown);
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+    p.then(res => {
+      mb.removeEventListener('input', onInput);
+      mb.removeEventListener('click', onClick);
+      mb.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
+      let go = res.act === 'ok';
+      if (!go && changed) go = confirm('바꾼 분류를 저장할까요?');
+      if (!go) return;
+      const renames = {};
+      const list = [];
+      rows.forEach(r => {
+        let nm = (r.name || '').trim().slice(0, 12);
+        if (r.orig === '기타') nm = '기타';
+        if (!nm || nm === '수입') nm = r.orig || '';
+        if (!nm) return;
+        if (r.orig && nm !== r.orig) renames[r.orig] = nm;
+        if (!list.includes(nm)) list.push(nm);
+      });
+      RM.applyCatEdit({ list, renames, deleted });
+    });
+  }
+
   nav.addEventListener('click', e => {
     const btn = e.target.closest('[data-nav]');
     if (!btn) return;
     ledgerYm = U.addMonths(ledgerYm, Number(btn.dataset.nav));
     renderLedger();
   });
+  if (viewSeg) viewSeg.addEventListener('click', e => {
+    const b = e.target.closest('[data-view]');
+    if (b) setView(b.dataset.view);
+  });
   side.addEventListener('click', e => {
+    if (e.target.closest('#ledgerBudgetEdit')) { openBudgetEdit(); return; }
+    if (e.target.closest('[data-fixed-manage]')) { openFixedManager(); return; }
+    if (e.target.closest('#ledgerCatEdit')) { openCatEditor(); return; }
+    const go = e.target.closest('[data-view-go]');
+    if (go) { setView(go.dataset.viewGo); return; }
     if (!e.target.closest('#ledgerPrevEdit')) return;
-    const sum = window.RecordsMoney.monthSummary(ledgerYm);
+    const sum = RM.monthSummary(ledgerYm);
     window.RecordsModal.open({
       title: '전월 잔액 (시작 잔액)',
       body: '<input type="number" name="amount" value="' + sum.prev + '" min="0" step="1" placeholder="금액">',
@@ -6406,12 +7807,14 @@ window.RecordsMemo = {
       ]
     }).then(res => {
       if (res.act !== 'ok') return;
-      window.RecordsMoney.setOpening(ledgerYm, U.parseWon(res.form.amount));
+      RM.setOpening(ledgerYm, U.parseWon(res.form.amount));
     });
   });
   form.addEventListener('click', e => {
     const typ = e.target.closest('.seg [data-type]');
     if (typ) { ledgerType = typ.dataset.type; updateLedgerCatBtn(); return; }
+    const pay = e.target.closest('[data-pay]');
+    if (pay) { ledgerPay = pay.dataset.pay; updateLedgerCatBtn(); return; }
     if (e.target.closest('#ledgerCatBtn')) {
       openCatMenu(catBtn, v => { ledgerCat = v; updateLedgerCatBtn(); });
     }
@@ -6422,11 +7825,15 @@ window.RecordsMemo = {
     const name = window.RecordsIme.nfc(form.name.value).trim();
     const amount = U.parseWon(form.amount.value);
     if (!name || amount <= 0) return;
-    window.RecordsMoney.add({
-      date: U.todayISO(), type: ledgerType, name, amount,
+    const date = dateIn && /^\d{4}-\d{2}-\d{2}$/.test(dateIn.value) ? dateIn.value : U.todayISO();
+    const partial = {
+      date, type: ledgerType, name, amount,
       cat: ledgerType === 'in' ? '수입' : ledgerCat,
       source: 'ledger'
-    });
+    };
+    if (ledgerType === 'out') partial.pay = ledgerPay;
+    if (U.ymOf(date) !== ledgerYm) ledgerYm = U.ymOf(date);
+    RM.add(partial);
     form.name.value = '';
     form.amount.value = '';
     form.name.focus();
@@ -6434,20 +7841,33 @@ window.RecordsMemo = {
   listEl.addEventListener('click', e => {
     const del = e.target.closest('[data-del]');
     if (del) {
-      if (confirm('이 항목을 지울까요?')) window.RecordsMoney.remove(del.dataset.del);
+      if (confirm('이 항목을 지울까요?')) RM.remove(del.dataset.del);
       return;
     }
     const row = e.target.closest('.spend-row[data-id]');
     if (row) editMoney(row.dataset.id);
   });
   document.addEventListener('records-panel', ev => {
-    if (ev.detail === 'ledger') renderLedger();
+    if (ev.detail === 'ledger') { RM.fillFixed(); renderLedger(); }
   });
-  window.RecordsMoney.onChange(() => {
+  RM.onChange(() => {
+    if (!document.getElementById('ledger').hidden) renderLedger();
+  });
+  document.addEventListener('records-cards-change', () => {
+    if (!document.getElementById('ledger').hidden) renderLedger();
+  });
+  document.addEventListener('records-cats-change', () => {
     if (!document.getElementById('ledger').hidden) renderLedger();
   });
 
-  window.RecordsLedger = { render: renderLedger, _setYm(ym) { ledgerYm = ym; } };
+  window.RecordsLedger = {
+    render: renderLedger,
+    setView,
+    openCatEditor,
+    openFixedManager,
+    _setYm(ym) { ledgerYm = ym; }
+  };
+
 
   /* ----- dday ----- */
   const DDAY_KEY = 'records-dday';
@@ -7794,6 +9214,7 @@ let moneyUnsub = null;
 let dailyUnsub = null;
 let ddayUnsub = null;
 let linksUnsub = null;
+let cardsUnsub = null;
 let studyUnsub = null;
 let studyTimer = null;
 let lastStudyJson = "";
@@ -7803,12 +9224,14 @@ let moneyTimer = null;
 let dailyTimer = null;
 let ddayTimer = null;
 let linksTimer = null;
+let cardsTimer = null;
 let lastNotesJson = "";
 let lastTodosJson = "";
 let lastMoneyJson = "";
 let lastDailyJson = "";
 let lastDdayJson = "";
 let lastLinksJson = "";
+let lastCardsJson = "";
 let lastPhotoJson = "";
 let toastTimer = null;
 
@@ -8228,6 +9651,7 @@ function moneyRef(uid) { return doc(fbDb, "users", uid, "data", "money"); }
 function dailyRef(uid) { return doc(fbDb, "users", uid, "data", "daily"); }
 function ddayRef(uid) { return doc(fbDb, "users", uid, "data", "dday"); }
 function linksRef(uid) { return doc(fbDb, "users", uid, "data", "links"); }
+function cardsRef(uid) { return doc(fbDb, "users", uid, "data", "cards"); }
 function studyRef(uid) { return doc(fbDb, "users", uid, "data", "study"); }
 function emptyStudy() {
   if (window.RecordsStudy) return window.RecordsStudy.empty();
@@ -8291,6 +9715,77 @@ function emptyDaily() {
 }
 function emptyDday() { return { v: 1, items: [] }; }
 function emptyLinks() { return { v: 1, items: [] }; }
+function emptyCards() { return { v: 1, statements: {}, merchantCats: [] }; }
+function cardsPayload(state) {
+  const s = state || emptyCards();
+  return clean({
+    v: s.v || 1,
+    statements: s.statements && typeof s.statements === "object" ? s.statements : {},
+    merchantCats: Array.isArray(s.merchantCats) ? s.merchantCats : [],
+    updatedAt: new Date().toISOString()
+  });
+}
+function cardsSignature(state) {
+  const s = cardsPayload(state);
+  delete s.updatedAt;
+  return stableStringify(s);
+}
+function localCards() {
+  if (window.RecordsCards && typeof window.RecordsCards.getState === "function") return window.RecordsCards.getState();
+  try { return JSON.parse(localStorage.getItem("records-cards") || "null") || emptyCards(); }
+  catch (e) { return emptyCards(); }
+}
+function applyCards(state) {
+  applyingCloud = true;
+  lastCardsJson = cardsSignature(state);
+  if (window.RecordsCards) window.RecordsCards.applyCloud(state);
+  applyingCloud = false;
+}
+function mergeCards(cloud, local) {
+  const hyd = window.RecordsCards && window.RecordsCards.hydrate;
+  const c = hyd ? hyd(cloud) : (cloud || emptyCards());
+  const l = hyd ? hyd(local) : (local || emptyCards());
+  const statements = Object.assign({}, c.statements);
+  Object.keys(l.statements || {}).forEach(k => {
+    const a = statements[k], b = l.statements[k];
+    if (!a || String(b.savedAt || "") > String(a.savedAt || "")) statements[k] = b;
+  });
+  const mc = new Map();
+  (c.merchantCats || []).forEach(p => mc.set(p.m, p));
+  (l.merchantCats || []).forEach(p => { if (!mc.has(p.m)) mc.set(p.m, p); });
+  return { v: Math.max(c.v || 1, l.v || 1), statements, merchantCats: Array.from(mc.values()) };
+}
+async function uploadCards(uid, state) {
+  const data = cardsPayload(state);
+  if (byteSize(data) > DOC_LIMIT) {
+    toast("카드사용내역이 너무 많아서 계정에 올리지 못했어요. 오래된 납부분을 지워 주세요.");
+    return;
+  }
+  await setDoc(cardsRef(uid), data);
+}
+async function pushCardsNow(state) {
+  if (!currentUser || !fbDb || applyingCloud) return;
+  const sig = cardsSignature(state);
+  if (sig === lastCardsJson) return;
+  try {
+    await uploadCards(currentUser.uid, state);
+    lastCardsJson = sig;
+  } catch (err) { toast(friendlyError(err)); }
+}
+// the card ledger has its own doc; on sign-in keep every statement from both sides (newer save wins per month)
+async function syncCardsOnSignIn(uid) {
+  const snap = await getDoc(cardsRef(uid));
+  const cloud = snap.exists() ? snap.data() : emptyCards();
+  let owner = null;
+  try { owner = localStorage.getItem("records-cards-owner"); } catch (e) {}
+  // a cache left by another account in this browser is never merged into this one
+  const merged = (owner && owner !== uid)
+    ? ((window.RecordsCards && window.RecordsCards.hydrate) ? window.RecordsCards.hydrate(cloud) : cloud)
+    : mergeCards(cloud, localCards());
+  try { localStorage.setItem("records-cards-owner", uid); } catch (e) {}
+  if (cardsSignature(merged) !== cardsSignature(cloud)) await uploadCards(uid, merged);
+  applyCards(merged);
+}
 
 function moneyPayload(state) {
   const s = state || emptyMoney();
@@ -8299,6 +9794,10 @@ function moneyPayload(state) {
     openingBalance: Number.isFinite(Number(s.openingBalance)) ? Number(s.openingBalance) : null,
     openingMonth: s.openingMonth || null,
     entries: Array.isArray(s.entries) ? s.entries : [],
+    cats: Array.isArray(s.cats) ? s.cats : null,
+    budget: s.budget && typeof s.budget === "object" ? s.budget : null,
+    fixed: Array.isArray(s.fixed) ? s.fixed : [],
+    fixedSkips: Array.isArray(s.fixedSkips) ? s.fixedSkips : [],
     updatedAt: new Date().toISOString()
   });
 }
@@ -8453,7 +9952,14 @@ function mergeMoney(cloud, local) {
   } else if (c.openingMonth && c.openingBalance != null) {
     openingMonth = c.openingMonth; openingBalance = c.openingBalance;
   }
-  return { v: Math.max(c.v || 1, l.v || 1), openingBalance, openingMonth, entries: Array.from(byId.values()) };
+  const fx = new Map();
+  (c.fixed || []).forEach(f => fx.set(f.id, f));
+  (l.fixed || []).forEach(f => fx.set(f.id, f));
+  const skips = Array.from(new Set([].concat(c.fixedSkips || [], l.fixedSkips || [])));
+  return {
+    v: Math.max(c.v || 1, l.v || 1), openingBalance, openingMonth, entries: Array.from(byId.values()),
+    cats: l.cats || c.cats || null, budget: l.budget || c.budget || null, fixed: Array.from(fx.values()), fixedSkips: skips
+  };
 }
 
 function mergeDaily(cloud, local) {
@@ -8777,6 +10283,7 @@ function findLocalOnly(cloud, local, synced) {
   const cMKeys = new Set((cm.entries || []).map(e => e && mKeyOf(e)));
   (lm.entries || []).forEach(e => {
     if (!e || !e.id) return;
+    if (e.source === "fixed") return;
     const k = "m:" + e.id;
     if (cMIds.has(e.id) || cMKeys.has(mKeyOf(e)) || seen(k)) return;
     out.entries.push(e); out.keys.push(k);
@@ -9144,6 +10651,7 @@ function stopCloudSync() {
   if (dailyUnsub) { dailyUnsub(); dailyUnsub = null; }
   if (ddayUnsub) { ddayUnsub(); ddayUnsub = null; }
   if (linksUnsub) { linksUnsub(); linksUnsub = null; }
+  if (cardsUnsub) { cardsUnsub(); cardsUnsub = null; }
   if (studyUnsub) { studyUnsub(); studyUnsub = null; }
   if (studyTimer) { clearTimeout(studyTimer); studyTimer = null; }
   if (photosUnsub) { photosUnsub(); photosUnsub = null; }
@@ -9152,6 +10660,7 @@ function stopCloudSync() {
   if (dailyTimer) { clearTimeout(dailyTimer); dailyTimer = null; }
   if (ddayTimer) { clearTimeout(ddayTimer); ddayTimer = null; }
   if (linksTimer) { clearTimeout(linksTimer); linksTimer = null; }
+  if (cardsTimer) { clearTimeout(cardsTimer); cardsTimer = null; }
 }
 
 function startCloudSync(uid) {
@@ -9210,6 +10719,14 @@ function startCloudSync(uid) {
     applyLinks(data);
   }, err => toast(friendlyError(err)));
 
+  cardsUnsub = onSnapshot(cardsRef(uid), snap => {
+    if (applyingCloud) return;
+    const data = snap.exists() ? snap.data() : emptyCards();
+    const sig = cardsSignature(data);
+    if (sig === lastCardsJson) return;
+    applyCards(data);
+  }, err => toast(friendlyError(err)));
+
   studyUnsub = onSnapshot(studyRef(uid), snap => {
     if (applyingCloud) return;
     if (!snap.exists()) return;
@@ -9263,6 +10780,7 @@ async function enterSignedIn(user) {
       cloudMoney, cloudDaily, cloudDday, cloudLinks, cloudPhotos, cloudPhotoIds: pSnap.docs.map(d => d.id),
       cloudStudy: sSnap.exists() ? sSnap.data() : null
     };
+    try { await syncCardsOnSignIn(user.uid); } catch (e) { console.warn(e); }
     const wrote = await maybeMigrate(user.uid, bag);
     if (!wrote) {
       applyNotes(cloudNotes);
@@ -9289,6 +10807,7 @@ function enterSignedOut() {
   lastDailyJson = "";
   lastDdayJson = "";
   lastLinksJson = "";
+  lastCardsJson = "";
   lastStudyJson = "";
   lastPhotoJson = "";
   updateAuthUi();
@@ -9316,6 +10835,10 @@ function enterSignedOut() {
   try {
     const links = JSON.parse(localStorage.getItem("records-links") || "null");
     if (window.RecordsLinks) window.RecordsLinks.applyCloud(links || emptyLinks());
+  } catch (e) {}
+  try {
+    const cardsLocal = JSON.parse(localStorage.getItem("records-cards") || "null");
+    if (window.RecordsCards) window.RecordsCards.applyCloud(cardsLocal || emptyCards());
   } catch (e) {}
   try {
     const study = JSON.parse(localStorage.getItem("records-study") || "null");
@@ -9452,12 +10975,14 @@ async function logoutGoogle() {
     if (dailyTimer) { clearTimeout(dailyTimer); dailyTimer = null; }
     if (ddayTimer) { clearTimeout(ddayTimer); ddayTimer = null; }
     if (studyTimer) { clearTimeout(studyTimer); studyTimer = null; }
+    if (cardsTimer) { clearTimeout(cardsTimer); cardsTimer = null; }
     if (currentUser && fbDb) {
       try { await pushTodosNow(localTodos()); } catch (e) {}
       try { await pushMoneyNow(localMoney()); } catch (e) {}
       try { await pushDailyNow(localDaily()); } catch (e) {}
       try { await pushDdayNow(localDday()); } catch (e) {}
       try { await pushLinksNow(localLinks()); } catch (e) {}
+      try { await pushCardsNow(localCards()); } catch (e) {}
       try { await pushStudyNow(localStudy()); } catch (e) {}
     }
     stopCloudSync();
@@ -9502,6 +11027,11 @@ window.RecordsCloud = {
     if (!currentUser || applyingCloud) return;
     clearTimeout(linksTimer);
     linksTimer = setTimeout(() => { linksTimer = null; pushLinksNow(state); }, 250);
+  },
+  onCardsSave(state) {
+    if (!currentUser || applyingCloud) return;
+    clearTimeout(cardsTimer);
+    cardsTimer = setTimeout(() => { cardsTimer = null; pushCardsNow(state); }, 250);
   },
   onStudySave(state) {
     if (!currentUser || applyingCloud) return;
